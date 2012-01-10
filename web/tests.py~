@@ -1,0 +1,25 @@
+from django.utils import unittest
+from grayson import GraysonCompiler
+from grayson import GraysonPackager
+import logging
+
+#http://code.djangoproject.com/svn/django/branches/attic/queryset-refactor/tests/regressiontests/test_client_regress/models.py
+
+class GraysonTestCase (unittest.TestCase):
+
+    def setUp (self):
+        self.archiveName = "grayson-workflow.zip"
+
+    def testCompile (self):
+        logging.info "why not ======================================================================================="
+        print "why not ======================================================================================="
+        self.assertEqual('a', 'a')
+
+    def tearDown (self):
+        print "complete"
+
+ 
+def suite ():
+    suite = unittest.TestSuite ()
+    suite.addTest (GraysonTestCase ())
+    return suite

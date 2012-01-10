@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yFiles for Java HEAD-Current-->
+  <key for="graphml" id="d0" yfiles.type="resources"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key attr.name="Description" attr.type="string" for="graph" id="d7">
+    <default/>
+  </key>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <node id="n0">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="37.0" width="400.7058890032433" x="-1874.852944501622" y="-1555.1218749999987"/>
+          <y:Fill color="#FFFFFF" color2="#C0C0C0" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.271484375" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="301.216796875" x="49.74454606412155" y="4.8642578125"> Blackdiamond Local Context</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d5"><![CDATA[{
+  "type"       : "abstract",
+  "path"       : "${appHome}/${kegLocation}",
+  "installed" : "${kegInstalled}",
+  "site"        : "${kegSite}"
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="24.562125748502922" width="49.643712574850724" x="-1664.5000000000005" y="-1504.2810628742516"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="22.821856287425362" y="10.281062874251575"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="25.181640625" x="12.231035974925362" y="3.2996175617515746">keg</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{
+  "type" : "properties",
+  "map" : {
+    "kegLocation"  : "samples/blackdiamond/bin/keg",
+    "kegSite"         : "local",
+    "kegInstalled" : "true"
+  },
+  "testMap" : {
+    "kegLocation" : "samples/blackdiamond/bin/keg"
+  },
+  "site" : {
+    "name" : "local",
+    "CLUSTER_ID" : "TestCluster",
+    "CLUSTER_HOSTNAME" : "brgw1.renci.org",
+    "CLUSTER_SCHEDULER" : "pbs",
+    "CLUSTER_WORK_DIR" : "/osg/osg-data",
+    "CLUSTER_PEGASUS_HOME" : "/home/scox/app/pegasus-3.0.1",
+    "CLUSTER_GLOBUS_LOCATION" : "/opt/osg/1.2.13/osg-1.2.13/globus"
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="30.0" width="90.0" x="-1774.5000000000005" y="-1507.0000000000002"/>
+          <y:Fill color="#586F13" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="68.08984375" x="10.955078125" y="6.0185546875">properties</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d5"><![CDATA[{ 
+   "type" : "workflow"
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="30.0" width="150.0" x="-1749.5000000000005" y="-1456.7189371257487"/>
+          <y:Fill color="#FF9900" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="90.9296875" x="29.53515625" y="6.0185546875">blackdiamond</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+  </graph>
+  <data key="d0">
+    <y:Resources/>
+  </data>
+</graphml>

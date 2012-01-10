@@ -1,0 +1,126 @@
+#!/bin/bash
+
+set -x
+set -e
+
+getarg () {
+    echo $1 | sed s,.*=,,
+}
+
+usage () {
+   echo "usage: $0 --type=<> --var=<> --flow=<> --modelpath=<> --contextmodels=<> --sites=<> --graysonhome=<> --apphome=<>"
+}
+
+map_tar () {
+    local tar=$1
+    local var=$2
+    local flow=$3
+    local model_path=$4
+    local sites=$5
+    local contextModels=$6
+    local outputdir=$7
+    local appHome=$8
+    local index=$9
+    local outputBasename=${10}
+
+    local main_flow_name=$outputdir/$( echo $flow | sed -e "s,.graphml,.dax," )
+    local models=""
+    for model in $(echo $contextModels | sed -e "s,:, ,g"); do
+	models="--model=$model ${models}"
+    done
+
+    namespace=$( echo $flow | sed -e "s,.graphml,," )
+    version=1.0
+
+    echo "<?xml version='1.0' encoding='UTF-8'?>                                                                 " >  $main_flow_name
+    echo "<!-- generated: $(date) -->                                                                            " >> $main_flow_name
+    echo "<!-- generator: grayson -->                                                                            " >> $main_flow_name
+    echo "<adag xmlns='http://pegasus.isi.edu/schema/DAX'                                                        " >> $main_flow_name
+    echo "      xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'                                            " >> $main_flow_name
+    echo "      xsi:schemaLocation='http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd' " >> $main_flow_name
+    echo "      version='3.2'                                                                                    " >> $main_flow_name
+    echo "      name='$namespace'>                                                                               " >> $main_flow_name
+
+    echo >> $outputdir/replica-catalog.rc
+
+    c=0
+    for file in $(tar tf $tar); do
+	outputname=$outputBasename.$c.dax #$( echo $flow | sed -e "s,.graphml,.$c.dax," )
+	graysonc                                          \
+	    --model=$flow                                 \
+	    --output=$outputname                          \
+	    --modelpath=${model_path}                     \
+	    --namespace=${namespace}                      \
+	    --version=${version}                          \
+	    --define="$var=$file"                         \
+	    --define="$index=$c"                          \
+	    --define="appHome=$appHome"                   \
+	    --sites=$sites                                \
+	    --directory=$outputdir/tmp                    \
+	    $models
+
+        echo "   <dax id='${namespace}_$c' file='$outputname' >" >> $main_flow_name
+        echo "      <argument>--force</argument>"                >> $main_flow_name
+        echo "   </dax>"                                         >> $main_flow_name
+	
+	echo "$outputname file://$outputdir/$outputname pool=\"local\"" >> $outputdir/replica-catalog.rc
+
+	mv $outputdir/tmp/$outputname $outputdir
+
+	c=$(( c + 1 ))
+
+    done
+
+    echo '</adag>' >> $main_flow_name
+
+    echo "$main_flow_name file://$main_flow_name pool='local'" >> $outputdir/replica-catalog.rc
+    echo >> $outputdir/replica-catalog.rc
+}
+
+function main () {
+    local type=
+    local var=
+    local index=
+    local flow=
+    local outputname=
+    local input=
+    local modelpath=
+    local sites=
+    local contextmodels=
+    local outputdir=
+    local appHome=
+    
+    for arg in $*; do
+	case $arg in
+	    --type\=*)           type=$( getarg $arg );;
+	    --each\=*)           each=$( getarg $arg );;
+	    --index\=*)          index=$( getarg $arg );;
+	    --flow\=*)           flow=$( getarg $arg );;
+	    --outputname\=*)     outputname=$( getarg $arg );;
+	    --input\=*)          input=$( getarg $arg );;
+	    --modelpath\=*)      modelpath=$( getarg $arg );;
+	    --contextmodels\=*)  contextmodels=$( getarg $arg );;
+	    --outputdir\=*)      outputdir=$( getarg $arg );;
+	    --sites\=*)          sites=$( getarg $arg );;
+	    --apphome\=*)        appHome=$( getarg $arg );;
+	    --graysonhome\=*)    export GRAYSON_HOME=$( getarg $arg );
+		                 . $GRAYSON_HOME/bin/setup.sh;;
+	    *)                   echo $arg; usage; return 1;;
+	esac
+    done
+    
+    test -z $type && usage && return 1;
+    test -z $each && usage && return 1;
+    test -z $flow && usage && return 1;
+    test -z $modelpath && usage && return 1;
+    test -z $sites && usage && return 1;
+
+    test -z $outputdir && usage && return 1;
+    test -z $appHome && usage && return 1;
+    
+    if [ "$type" == "tar" ]; then
+	map_tar $input $each $flow $modelpath $sites $contextmodels $outputdir $appHome $index $outputname
+    fi
+}
+
+main $*

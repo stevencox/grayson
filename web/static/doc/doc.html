@@ -1,0 +1,454 @@
+<DOCTYPE html>
+<html>
+
+  <head>
+    <title>Grayson SDK</title>
+    <link rel='stylesheet' href='css/style.css' type='text/css' />
+  </head>
+
+  <body>
+    <div id='main'>
+
+      <div class='title section'>The Grayson Workflow SDK </div>
+      <div class='warning'>
+	<p>1. This is Alpha software. Future versions will change interfaces and specifications.</p>
+	<p>2. See the Client Platforms section for information on system requirements.</p>
+      </div>
+      <div class='toc section'>
+	<div class='heading'>Table of Contents</div>
+	<ul>
+	  <li><a href='#introduction'>Introduction</a>
+<!--
+	    <ul>
+	      <li>High Throughput Computing</li>
+	      <li>High Performance Computing</li>
+	      <li>Pegasus</li>
+	      <li>GlideinWMS</li>
+	      <li>Condor</li>
+	      <li>Globus</li>
+	    </ul>
+-->
+	  </li>
+	  <li><a href='#install'>Install</a></li>
+	  <li><a href='#overview'>Overview</a></li>
+	  <li><a href='#compile'>Compile</a></li>
+	  <li><a href='#package'>Package</a></li>
+	  <li><a href='#execute'>Execute and Steer</a></li>
+	  <li><a href='#clientPlatform'>Client Platforms</a></li>
+	</ul>
+      </div>
+<!--<li><a href='#develop'>Develop</a></li>-->
+
+      <div id='introduction' class='section'>
+	<div class='heading'>Introduction</div>
+	<p>
+	  Grayson simplifies design, steering and reuse of grid scale scientific workflows.
+	</p>
+	<p>
+Conventional scientific workflows make extensive use of high performance and high throughput computing. High Performance computing workflows are typically developed to target execution on specific computing clusters. Often, they are encoded as shell scripts making explicit reference to hardcoded paths available only on the target cluster and using batch scheduler commands and features that make the workflows non-portable. It's also not possible to visualize workflows created in this paradigm. 
+	</p>
+	<p>
+	  Grayson provides tools that make it possible to create visual, multi-scale workflows. They're inherently graphical and can be executed on the desktop, a campus cluster or on the Open Science Grid.
+	</p>
+	<p>
+	  Grayson uses the model you create as the user interface for monitoring and steering execution. The debugger adds rich content and controls directly to the graphs you supply.
+	</p>
+	<p>
+	  Grayson also makes it much easier to build complex hierarchical workflows. Today, taking advantage of Pegasus' ability to build hierarchical DAXes requires a significant amount of highly detailed code that is not very reusable.
+	  Grayson models provides functional programming capabilities via map operators for generating complex hierarchical structures.
+	</p>
+	<p>
+	  Once the model is generated and executing, the debugger has build in knowledge of Pegasus' execution data hierarchy enabling it to drill down directly to detailed information to facilitiate debugging of complex models.
+	</p>
+      </div>
+
+      <div id='install' class='section'>
+	<div class='heading'>Install</div>
+	<p>
+	  <ul>
+	    <li>Download the <a href='https://engage-submit3.renci.org/grayson/static/grayson-sdk.tar.gz'>SDK distribution</a>.</li>
+	    <li>Unpack the distribution.
+	      <div class='code'>
+		<p>$ mkdir &lt;installdir&gt; </p>
+		<p>$ cd &lt;installdir&gt; </p>
+		<p>$ tar xvzf ../grayson-sdk.tar.gz </p>
+		<p>$ cd ..</p>
+	      </div>
+	    </li>
+
+	    <li>Set GRAYSON_HOME environment variable
+	      <div class='code'>
+		<p>$ export GRAYSON_HOME=&lt;installdir&gt;</p>
+		<p>$ source $GRAYSON_HOME/bin/setup.sh</p>
+	      </div>
+	    </li>
+
+	    <li>Verify the Grayson compiler is found:
+	      <div class='code'>
+		<p>$ graysonc</p>
+	      </div>
+	    </li>
+	    
+	    <li>Install the yWorks <a target='yEd' href='http://www.yworks.com/en/products_yed_about.html'>yEd Graph Editor</a>. 
+
+	  </ul>
+	</p>
+      </div>
+
+      <div id='overview' class='section'>
+	<div class='heading'>Overview</div>
+	<p>
+	  Grayson uses <a href='http://en.wikipedia.org/wiki/GraphML'>GraphML</a> and <a href='http://en.wikipedia.org/wiki/Json'>JSON</a> to describe workflows. 
+	</p>
+
+	<p>
+	  GraphML is used to represent the structure of the workflow including the precedence of execution items as well as input and output artifacts. JSON is used to annotate graph nodes to provide the necessary detail to generate and plan a workflow for execution on on a campus cluster, grid or other National Cyberinfrastructure. To annotate a Grayson graph node with JSON, 
+	  <ul>
+	    <li>Select the node in yEd</li>
+	    <li>Edit the node's Description field using the property editor</li>
+	  </ul>
+
+	  A Grayson workflow may contain the following types of objects:
+	  <ul>
+
+	    <li><div class='subheading'>Executable</div>
+	      <div class='subsection'>
+		<pre class='code'>
+{
+   "type" : "executable"
+}</pre>
+	      </div>
+	    </li>
+
+	    <li><div class='subheading'>Job</div>
+	      <div class='subsection'>
+		A job node may specify a list of arguments to be passed to the job on execution.		
+		<pre class='code'>
+{
+   "type" : "job",
+   "args" : "arg-1 arg-2 .. arg-n"
+}</pre>
+	      </div>
+	    </li>
+
+	    <li><div class='subheading'>File</div>
+	      <div class='subsection'>
+		Files in a workflow are annotated with the file type as follows:
+		<pre class='code'>
+{
+   "type" : "file"
+}</pre>
+	      </div>
+	    </li>
+	    <li><div class='subheading'>Context</div>
+	      <div class='subsection'>
+		A context is a model which provides resource or environment rather than job components. Context models may be aggregated using the context annotation. 
+		The name of the node to which this annotation is attached must be the name of the GraphML file containing the context model without the ".graphml" extension.
+		<pre class='code'>
+{
+   "type" : "context"
+}</pre>
+	      </div>
+	    </li>
+	    <li> <div class='subheading'>Reference</div>
+	      <div class='subsection'>
+		Grayson supports separate compilation. That is, several separate GraphML model files can be compiled into a workflow.
+		The reference annotation is used to refer to a component in one model from another. The name of the node must evaluate to a valid model component of any type in another model in the compilation set.
+		See the discussion of the 'abstract' notation below for more information.
+		<pre class='code'>
+{
+   "type" : "reference"
+}</pre>
+	      </div>
+	    </li>
+	    <li><div class='subheading'>Abstract</div>
+	      <div class='subsection'>
+		Abstract objects let users describe a set of common annotation attributes to be re-used across multiple objects. 
+		This makes it easy to build a hierarchy of related objects without repeating information.
+		<pre class='code'>
+{
+   "type" : "abstract"
+}</pre>
+		Used in conjunction with references, abstract objects provide a powerful means of keeping workflow information separate and reusable.
+		For example, the definition below serves as the generic basis for characterizing MPI jobs at the RENCI-Blueridge cluster.
+		It is defined in a context model specific to that cluster but can be referenced from other models.
+		This is done by defining a reference to the context model object and pointing it to a model specific MPI object.
+		This causes the annotations in the Blueridge specific MPI object to be copied into the model.
+		TODO: reference to samples.
+		<pre class='code'>
+{
+  "type"     : "abstract",
+  "profiles" : {
+    "globus" : {
+      "jobType"     : "single",
+      "host_xcount" : "1",
+      "xcount"      : "8",
+      "maxWallTime" : "2800"
+    }
+  },
+  "site" : "${clusterId}",
+  "arch" : "x86_64"
+}</pre>
+	      </div>
+	    </li>
+
+	    <li><div class='subheading'>Properties</div>
+	      <div class='subsection'>
+		Properties objects define attributes that can be referenced from other model nodes.
+		The syntax for referencing a property is ${identifier}. $identifier will also work, providing the identifier is exclusively alphanumeric.
+		<pre class='code'>
+{
+   "type" : "properties",
+   "map"  : {
+       "slice_count" : "7",
+       "data"        : "${appHome}/data/"
+    }
+}</pre>
+		The site property is a special property which is used to define the attributes of a cluster. The example below configures the RENCI-Blueridge cluster.
+                <pre class='code'>
+{
+  "type" : "properties",
+  "map"  : {
+     "clusterId"    : "RENCI-Blueridge"
+  },
+  "site" : {
+     "CLUSTER_ID"              : "RENCI-Blueridge",
+     "CLUSTER_HOSTNAME"        : "brgw1.renci.org",
+     "CLUSTER_SCHEDULER"       : "pbs",
+     "CLUSTER_WORK_DIR"        : "/osg/osg-data",
+     "CLUSTER_PEGASUS_HOME"    : "/osg/osg-app/pegasus-3.0.3/",
+     "CLUSTER_GLOBUS_LOCATION" : "/opt/osg/1.2.13/osg-1.2.13/globus"
+  }
+</pre>
+	      </div>
+	    </li>
+	    <li><div class='subheading'>Map</div>
+	      <div class='subsection'>
+		Map operators provide advanced workflow generation capabilities.
+		The map operator works like a lambda operator from functional programming languages.
+		It accepts a set of objecs and applies a common operation to each. 
+		
+		<pre class='code'>
+{
+   "type" : "map"
+}</pre>
+		In the example below, the operator selects all files in the data directory matching the provided regular expression.
+		For every node the map operator points to, a copy will be made.
+		In that copy, all occurrences of @variable, in this case @file, will be replaced with the current value of the mapping set.
+		Where the mapping variable is a file path, as in the example beow, another variable will also be available: @file_base, which corresponds to the basename of the file without leading directories.
+		Also, where, the variable is numeric, simple arithmetic expressions are allowed such as: @{slice - 1}.
+		Finally, map operators are recursive. That is, a map operator may be applied to a map operator. 
+		
+		See the lambda example for further details. It uses a map over a set of files pointing to a map over a numeric range to plan a multi-level dax.
+		Each of the files is processed in parallel by a sequential chain of operations.
+		Each of the operations in the sequential chain is a sub-workflow.
+
+		<pre class='code'>
+{
+   "type"     : "map",
+   "variable" : "file",
+   "each"     : "file://${data}/*.22.tar.gz"
+}</pre>
+		The following example shows the syntax for a map operator generating a sequential chain over a numeric range.
+		Again, see the lambda sample for further details.
+		<pre class='code'>
+{
+   "type"      : "map",
+   "variable"  : "slice",
+   "each"      : {
+       "start" : 0,
+       "end"   : "${slice_count}"
+   },
+   "style"     : "chain"
+}</pre>
+		Every node pointed to by this operator will be copied in a context where the map variable 'slice' is set to a value between the start and end values.
+	      </div>
+	    </li>
+
+	    <li><div class='subheading'>Workflow</div>
+	      <div class='subsection'>
+		A workflow object designates a separate GraphML model which will be referenced as a separate workflow. The name of the node must be the name of the GraphML file containing the workflow, without the ".graphml" suffix.
+		<pre class='code'>
+{
+   "type" : "workflow" 
+}</pre>
+	      </div>
+	    </li>
+
+	  </ul>
+	</p>
+      </div>
+
+<!--
+      <div id='develop' class='section'>
+	<div class='heading'>Develop</div>
+	<p>
+	  The most practical way to develop a model is to start with one of the samples.
+	</p>
+      </div>
+-->
+
+      <div id='compile' class='section'>
+	<div class='heading'>Compile</div>
+	<p>
+	  Compiling the model collects all of the referenced context and workflow models to generate executable content.
+	  The following example shows the command used to compile lambda, the most complex sample.
+	  <ul>
+	    <li><b>--model</b> specifies the context model to use as the root of the compilation.</li>
+	    <li><b>--modelpath</b> specifies the directories to search for models.</li>
+	    <li><b>--loglevel</b> controls the amount of logging to do with debug being the most and error the least.</li>
+	    <li><b>--directory</b> puts all outputs in a specific output directory.</li>
+	    <li><b>--output</b> names the main output file.</li>
+	  </ul>
+	</p>
+	<pre class='code'>
+#!/bin/bash
+
+set -e
+set +x
+
+mode=$1
+shift
+
+output_dax=lambda-uber.dax
+output_dir=$(pwd)/daxen-$mode
+
+rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
+
+set -x
+graysonc                                                                    \
+    --model=$GRAYSON_HOME/samples/lambda/model/$mode-context.graphml        \
+    --modelpath="$GRAYSON_HOME/samples:model"                               \
+    --loglevel=debug                                                        \
+    --directory=$output_dir                                                 \
+    --output=$output_dax                                                    \
+    $*  > log.txt 2>&1
+set +x
+mv log.txt $output_dir
+</pre>
+
+      </div>
+
+
+      <div id='package' class='section'>
+	<div class='heading'>Package</div>
+	<p>
+	  Package the artifacts into a format suitable for upload and execution by the hosted infrastructure.	  
+	</p>
+	<p>
+	  The following example packages the lambda model for execution.
+	  Many of the options specified are the same as in the compilation example above and serve the same purpose.
+	  The new options are:
+	  <ul>
+	    <li><b>--define</b> assign a value to a model property from the command line.</li>
+	    <li><b>--package</b> tells the compiler to write a package archive instead of generating the typical output files.</li>
+	    <li><b>--package-file</b> specifies an additional file - in this case a directory - to be included in the archive.</li>
+	  </ul>
+	</p>
+
+	<pre class='code'>
+#!/bin/bash
+
+set -e
+set -x
+
+mode=$1
+shift
+
+output_dax=lambda-uber.dax
+output_dir=$(pwd)/daxen-$mode
+
+rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
+
+args="$*"
+
+graysonc                                                                    \
+    --model=$PWD/model/$mode-context.graphml      \
+    --modelpath="$GRAYSON_HOME/samples:${PWD}/model"                        \
+    --loglevel=debug                                                        \
+    --output=$output_dax                                                    \
+    --define="data=\$appHome/data"                                          \
+    --package                                                               \
+    --package-file=bin                                                      \
+    --package-file=data                                                     \
+    ${args} > log.txt 2>&1
+
+tail -100 log.txt</pre>
+	</div>
+
+
+
+      <div id='execute' class='section'>
+	<div class='heading'>Execute and Steer</div>
+	<p>
+	  Go to the <a target='grayson' href='https://engage-submit3.renci.org/grayson' >RENCI Engage Grayson </a> instance.
+	  Upload the package file created using the packaging approach above.
+	  The system will compile the artifacts in the package, render the workflow and begin its execution.
+	</p>
+      </div>
+
+
+      <div id='clientPlatform' class='section'>
+	<div class='heading'>Client Platforms</div>
+	<p>
+	  <ul>
+	    <li>Green cells indicate browser and platform cominations where the client is known to work.</li>
+	    <li>Gray cells indicate untested combinations.</li>
+	    <li>Red cells indicate combinations that do not work.</li>
+	</p>
+	<table id='browser' padding='5' margin='0' border='0'>
+	  <tr>
+	    <th rowspan='2'>Browser</th>
+	    <th colspan='6'>Platform</th>
+	  </tr>
+	  <tr>
+	    <th>Windows 7</th>
+	    <th>Ubuntu 10.4</th>
+	    <th>Fedora 15</th>
+	    <th>MacOS</th>
+	    <th>iOS</th>
+	    <th>Android</th>
+	  </tr>
+	  <tr>
+	    <td class='browserName'>Chrome 13</td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	  </tr>
+	  <tr>
+	    <td class='browserName'>Firefox 3.6</td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	  </tr>
+	  <tr>
+	    <td class='browserName'>Safari</td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='yes browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	  </tr>
+	  <tr>
+	    <td class='browserName'>IE 9</td>
+	    <td class='no browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	    <td class='na browserCell'></td>
+	  </tr>
+	</table>
+      </div>
+
+
+    </div>
+  </body>
+</html>

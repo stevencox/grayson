@@ -1,0 +1,36 @@
+#!/bin/bash
+
+usage () {
+    echo usage: $0 -i input -o output
+    exit 1
+}
+
+main () {
+	if [ "$#" != "4" ]; then
+	    usage
+	fi
+	if [ "$1" != "-i" ]; then
+	    usage
+	fi
+	if [ "$3" != "-o" ]; then
+	    usage
+	fi
+	if [ ! -f $2 ]; then
+	    echo "   error: required input file [$2] does not exist"
+	    usage
+	fi
+
+	echo "   cat $2 into $4"
+	cat $2 > $4
+	
+	if [ $? == 0 ]; then
+	    echo "   info: operation succeeded:"
+	    echo "   info: cat $4"
+	    cat $4
+	else
+	    echo "   error: an error occurred executing the command."
+	    echo "   exit code: $?"	  
+        fi
+}
+
+main $*

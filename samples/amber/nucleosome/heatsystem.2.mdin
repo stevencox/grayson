@@ -1,0 +1,16 @@
+Heat system
+ &cntrl
+  imin=0,irest=1,ntx=5,
+  nstlim=25,dt=0.002,tol=0.000001,
+  ntf=2,ntc=2,ntb=0,
+  igb=5,cut=9999.0,rgbmax=15.0,
+  ntpr=1,ntwx=0,ntwr=50000,
+  ntr=1,saltcon=0.1,
+  ntt=0,
+  nscm=0,
+ /
+RESTRAIN DNA
+0.1
+RES 1 294
+END
+END

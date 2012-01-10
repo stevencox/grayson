@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>{{app.title}}</title>
+    
+    {% load compress %}
+    {% compress css %}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.css" />
+    {% endcompress %}
+    
+    {% if client_unit_test %}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/qunit/qunit.css" media="screen" />
+    {% endif %}
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />    
+  </head>
+  
+  <body>
+    <div id="tree">
+    </div>
+  </body>
+
+  {% compress js %}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.js"></script>
+  {% endcompress %}
+
+  <script type='text/javascript'>
+	$(document).ready( function() {
+		var treeConfiguration = {
+		    root: '{{ dir }}/',
+		    script: '../dirlist/',
+		    expandSpeed: 1000,
+		    collapseSpeed: 1000,
+		    multiFolder: false
+		};
+		$('#tree').fileTree (treeConfiguration,
+				     function(file) {
+					 alert(file);
+				     });
+	    });
+  </script>
+
+</html>
+
+ 

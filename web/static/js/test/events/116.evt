@@ -1,0 +1,104 @@
+{
+    "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+    "type": "composite", 
+    "events": [
+        {
+            "state": "pending", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "register_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759702", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "pending", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_stage_out_local_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759702", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "executing", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "register_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759702", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "pending", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_merge_1n4", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759702", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "succeeded", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "register_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759707", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "executing", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_stage_out_local_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759707", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "executing", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_merge_1n4", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759707", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "succeeded", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_stage_out_local_local_3_0", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759707", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "succeeded", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "clean_up_merge_1n4", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759707", 
+            "type": "jobstatus"
+        }, 
+        {
+            "state": "succeeded", 
+            "clientId": "scox", 
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "job": "INTERNAL", 
+            "logdir": "pegasus/delta-uber/20111004T145938-0500", 
+            "time": "1317759712", 
+            "type": "jobstatus"
+        }, 
+        {
+            "flowId": "delta-test-context.grayson_upk/delta-uber.dax", 
+            "type": "endEventStream", 
+            "clientId": "scox", 
+            "time": 1317761797.684015
+        }
+    ], 
+    "clientId": "scox", 
+    "time": 1317761797.684019
+}

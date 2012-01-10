@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{{app.title}}</title>
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticcss/style.css" />
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticcss/menu.css"/>
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticcss/graysondetail.css" />
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticcss/tooltip.css"  />
+    <link type="text/css" rel="stylesheet" href="web/grayson/static/js/datatable/media/css/demo_page.css"  />
+    <link type="text/css" rel="stylesheet" href="web/grayson/static/js/datatable/media/css/demo_table_jui.css" />
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticjs/jquery-ui/css/smoothness/jquery-ui-1.8.15.custom.css"/>
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticjs/uploadify/uploadify.css" />
+    
+    <link type="text/css" rel="stylesheet" href="web/grayson/staticjs/qunit/qunit.css" media="screen">
+    
+  </head>
+
+  <body>
+
+    <div id="loginDialog">
+      <form id='login_form' method='post'>
+	
+	<div id="login_title" class="title">{{ app.title }}</div>
+	<div id="auth_cred">
+	  <div id='username_txt'>Username</div> <input type='text'     id='login_username' name='username' value='' size='35' class='cred'/><br/>
+	  <div id='password_txt'>Password</div> <input type='password' id='login_password' name='password' value='' size='35' class='cred'/><br/>
+	  <div id="login_button">Login</div>
+	</div>
+      </form>
+    </div>
+
+    <div id="appVersion">Private Alpha</div>
+    <ul id="nav" >
+      <li><a href="#" id="title" class="title">{{ app.title }}</a> 
+	<ul class="subnav"> 
+	  <li><a href="#" id="run_menu">Run a Workflow</a></li>
+	  <li><a href="#" id="connect_menu">Connect to a Workflow</a></li>
+	  <li><a href="#" id="detail_menu">Detail View</a></li>
+	  <li><a href="#" id="login_menu">Login</a></li>
+	  
+	  <li><a href="#" id="test_menu">Test</a></li>
+	  
+	</ul> 
+      </li> 
+    </ul>
+
+    <div id="header">
+      <div id="divider"></div>
+      <img id='ajax-loader' src="web/grayson/staticimg/ajax-loader.gif"/>
+    </div>
+
+    <div id="about">
+      <div id="aboutOne" class="aboutPanel" >
+	<div class="aboutHeader">Your Workflow</div>
+	<div class="aboutBody">
+	  Grayson is a platform for <b>developing and sharing grid scale scientific workflows.</b> The  tool chain has three components:
+	  <ul type="square" >
+	    <li><p class="infoSegmentHeader">Editor</p>
+	      <ul>
+		<li>yWorks yEd for <a href="http://www.yworks.com/en/products_yed_about.html" target="yEd">high quality graph drawing</a>.</li>
+		<li>Mature, <b>free, full featured</b> product..</li>
+		<li><b>Easy to use</b> and produces portable XML.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  <ul type="square">
+	    <li><p class="infoSegmentHeader">Compiler</p>
+	      <ul>
+		<li>Supports separate, <b>reusable components</b>.</li>
+		<li><b>Functional programming</b> for multilevel models.</li>
+		<li><b>Aspect oriented modeling</b> for selective reuse.</li>
+		<li>Supports granular, <b>hybrid job targeting</b>.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  <ul type="square">
+	    <li><p class="infoSegmentHeader">Debugger</p>
+	      <ul>
+		<li><b>Monitor</b> workflow execution progress.</li>
+		<li>Drill down to <b>steer hierarchical workflows</b>.</li>
+		<li>Provides a <b>dynamic, event driven</b> view.</li>
+		<li><b>Examine</b> output of each phase.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  Model, compile and debug in an environment built to scale.
+	</div>
+      </div>
+      <div id="aboutTwo" class="aboutPanel">
+	<div class="aboutHeader">Our Infrastructure</div>
+	<div class="aboutBody">
+	  A cloud based interface to the worlds most <b>scalable computation infrastructure</b> with <b>consulting services</b> to get your workflows running at scale.
+	  <br/><br/>
+	  RENCI manages an Open Science Grid virtual organization, Engage, 
+	  which provides hosted infrastructure and access to the technology used for data analysis by 
+	  several of CERN's Large Hadron Collider (LHC) experiments:
+	  <ul>
+	    <li>Workflow Management   : <a href="http://pegasus.isi.edu/projects/pegasus" target="pegasuswms">Pegasus WMS</a>.</li>
+	    <li>Glidein Submission    : <a href="http://www.uscms.org/SoftwareComputing/Grid/WMS/glideinWMS/doc.prd/index.html" target="glideinwms">GlideinWMS</a>.</li>
+	    <li>Grid Scheduling       : <a href="http://www.cs.wisc.edu/condor/" target="glideinwms">Condor</a>.</li>
+	    <li>Grid Services         : <a href="http://www.globus.org/" target="glideinwms">Globus</a>.</li>
+	    <li>Engagement Consulting : <a href="http://www.renci.org/" target="glideinwms">RENCI</a>.</li>
+	  </ul>
+	</div>
+      </div>
+      <div id="aboutThree" class="aboutPanel">
+	<div class="aboutHeader">Get Started</div>
+	<div class="aboutBody">
+	  <!-- screencasts. presentations. download. docs. -->
+	  <b>Try it!. </b> The best way to get to know Grayson is to download the SDK and give it a try. The documentation below will guide you through the steps needed to configure the tools and provide an overview of the provided samples.
+	  <ul>
+	    <li><b>Download</b> the Grayson SDK.
+	      <a href="web/grayson/staticgrayson-sdk.tar.gz">
+	        <img id='downloadButton' src="web/grayson/staticimg/download_arrow.svg.med.png" />
+	      </a>
+	    </li>
+	    <li>Includes sample workflows.</li>
+	    <li>See the getting started <a target='getting_started' href='web/grayson/staticdoc/doc.html'>guide</a>.</li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+
+    <div id="workflowUpload" title="Upload Workflow">
+      <form id="workflowUploadForm" action='api_run/' method='post' enctype="multipart/form-data">
+	<p>Select a Grayson model archive to upload. For more information, see the documentation on packaging and running workflows.</p> 
+	<input id="file_upload" type="file" name="workflow" ></input>
+	<p id='upload_file_name'></p>
+	<input type="submit"  name="submitButton" value="Submit" />
+      </form>
+      <p id='upload_file_status'></p>
+    </div>    
+    
+    <div id="status">Connecting...</div>
+    <div style='visibility:hidden' id="uploadOutput"></div>
+    <div id="jobOutputDialog"></div>
+    <div id="flowDialog" title="Connecto to an Existing Workflow">
+      <div id="flows"></div>
+    </div>
+    
+    <div id="detail_view" class="detailpanel">
+      <div id="detailTabs" > 
+	<ul id="tab-labels"> 
+	  <li><a href="#event_detail">Events</a></li>
+	  <li><a href="#network_detail">Network</a></li>
+	  <!--
+	  <li><a href="#compute_detail">Compute</a></li>
+	  -->
+	  <li><a href="#dax_detail">Pegasus DAX</a></li>
+	  <li><a href="#submit_detail">Condor Submit</a></li>
+	</ul> 
+	<div id="event_detail" class="detailTab">
+	  <table id="eventTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Target</th> 
+		<th>Type</th> 
+		<th>Time</th> 
+		<th>Status</th> 
+		<th>Workdir</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="eventList" > 
+	    </tbody> 
+	  </table>
+	</div>
+	<div id="network_detail" class="detailTab">
+	  <table id="networkTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Source</th> 
+		<th>Destination</th> 
+		<th>Protocol</th> 
+		<th>Status</th> 
+		<th>Size</th> 
+		<th>Time</th> 
+		<th>Downstream</th> 
+		<th>Upstream</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="networkEventList" > 
+	    </tbody> 
+	  </table>
+	</div>
+	<!--
+	<div id="compute_detail" class="detailTab">
+	  <div id="compute_graph" ></div>
+	</div>
+	-->
+	<div id="dax_detail">
+	</div>
+	<div id="submit_detail">
+	</div>
+      </div>
+    </div>
+
+  </body>
+
+  <script type="text/javascript" src="web/grayson/staticjs/jquery/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/jquery/tools/jquery.tools.tooltip-1.2.5.min.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/jquery-ui/js/jquery-ui-1.8.15.custom.min.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/jquery/jquery.form.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/socket.io/0.8.4/socket.io.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/raphael/raphael-min.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/raphael/scale.raphael.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/raphael/raphael.draggable.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/raphael/graffle.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/uploadify/swfobject.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/datatable/media/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/jqplot/jquery.jqplot.min.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/jqplot/jqplot.barRenderer.min.js"></script> 
+  <script type="text/javascript" src="web/grayson/staticjs/jqplot/jqplot.categoryAxisRenderer.min.js"></script> 
+  <script type="text/javascript" src="web/grayson/staticjs/jqplot/jqplot.pointLabels.min.js"></script> 
+  <script type="text/javascript">
+      //<![CDATA[
+    var graysonConf = {
+	clientId           : "{{ clientId }}",
+	socketioListenPort : "{{ app.socketioListenPort }}",
+	uriPrefix          : "{{ app.URL_PREFIX }}",
+	staticDataURL      : "web/grayson/static"
+    };
+    if (graysonConf.uriPrefix !== '/') {
+        if (location.href.indexOf("https://") == -1 && location.href.indexOf ("http://") > -1) {
+           location.href = location.href.replace("http://", "https://");
+        }
+    }
+      //]]>
+  </script>
+  <script type="text/javascript" src="web/grayson/staticjs/grayson.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/graysondetail.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/printstacktrace.js"></script>
+
+  
+  <script type="text/javascript" src="web/grayson/staticjs/qunit/qunit.js"></script>
+  <script type="text/javascript" src="web/grayson/staticjs/test/graysontest.js"></script>
+  <script type="text/javascript">
+    $(function () {
+    var text = [
+    '<div id="qunit" style="z-index:2;position:absolute;top:0;width:100%;height:100%;display:block;">',
+      '<h1 id="qunit-header">Grayson QUnit Test Suite</h1>',
+      '<h2 id="qunit-banner"></h2>',
+      '<div id="qunit-testrunner-toolbar"></div>',
+      '<h2 id="qunit-userAgent"></h2>',
+      '<ol id="qunit-tests"></ol>',
+      '<div id="qunit-fixture">test markup</div>',
+      '</div>' ].join ('');
+    $("body").append ( $ ( text ) ).css ({ overflow : 'auto' });
+    $("#qunit").click (function () {
+        $(this).fadeToggle ();
+    });
+    $("#test_menu").click (function () {
+       $("#qunit").fadeToggle ();
+    });
+    });
+  </script>
+  
+
+
+</html>

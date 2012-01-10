@@ -1,0 +1,4 @@
+local        grayson-template::job1                target/basic-composite/bin/sample             false   INTEL64::LINUX
+local        grayson-template::job2                target/basic-composite/bin/sample             false   INTEL64::LINUX
+local        app::job1                target/basic-composite/bin/sample             false   INTEL64::LINUX
+local        app::job2                target/basic-composite/bin/sample             false   INTEL64::LINUX

@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yFiles for Java 2.8-->
+  <key for="graphml" id="d0" yfiles.type="resources"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key attr.name="Description" attr.type="string" for="graph" id="d7">
+    <default/>
+  </key>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <node id="n0" yfiles.foldertype="group">
+      <data key="d6">
+        <y:TableNode configuration="YED_TABLE_NODE">
+          <y:Geometry height="321.668001497005" width="440.7393913345177" x="-1945.6240487774442" y="-1569.305501497006"/>
+          <y:Fill color="#ECF5FF" color2="#98B4FF40" transparent="false"/>
+          <y:BorderStyle color="#808080" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="26.0517578125" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="345.05078125" x="47.84430504225884" y="4.0">Grayson Composite Workflow Template</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" rotationAngle="270.0" textColor="#000000" visible="true" width="4.0" x="3.0" y="93.125">
+            <y:LabelModel>
+              <y:RowNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:RowNodeLabelModelParameter horizontalPosition="0.0" id="row_0" inside="true"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="30.689453125" x="33.6552734375" y="33.0">Input<y:LabelModel>
+              <y:ColumnNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:ColumnNodeLabelModelParameter id="column_0" inside="true" verticalPosition="0.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="23.34765625" x="148.19586754225884" y="33.0">Job<y:LabelModel>
+              <y:ColumnNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:ColumnNodeLabelModelParameter id="column_1" inside="true" verticalPosition="0.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" rotationAngle="270.0" textColor="#000000" visible="true" width="4.0" x="3.0" y="185.4590007485026">
+            <y:LabelModel>
+              <y:RowNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:RowNodeLabelModelParameter horizontalPosition="0.0" id="row_1" inside="true"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="40.0234375" x="276.7276725845177" y="33.0">Output<y:LabelModel>
+              <y:ColumnNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:ColumnNodeLabelModelParameter id="column_2" inside="true" verticalPosition="0.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="custom" textColor="#000000" visible="true" width="63.373046875" x="362.5528678970177" y="33.0">Executable<y:LabelModel>
+              <y:ColumnNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:ColumnNodeLabelModelParameter id="column_3" inside="true" verticalPosition="0.0"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" rotationAngle="270.0" textColor="#000000" visible="true" width="4.0" x="3.0" y="278.168001497005">
+            <y:LabelModel>
+              <y:RowNodeLabelModel offset="3.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:RowNodeLabelModelParameter horizontalPosition="0.0" id="row_2" inside="true"/>
+            </y:ModelParameter>
+          </y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.awt.Color" name="yed.table.header.color.main" value="#c4d7ed"/>
+            <y:Property class="java.awt.Color" name="yed.table.section.color" value="#c8d4df"/>
+            <y:Property name="y.view.tabular.TableNodePainter.ALTERNATE_COLUMN_SELECTION_STYLE">
+              <y:SimpleStyle fillColor="#474A4380" lineColor="#000000" lineType="line" lineWidth="3.0"/>
+            </y:Property>
+            <y:Property class="java.lang.String" name="yed.table.lane.style" value="lane.style.rows"/>
+            <y:Property name="y.view.tabular.TableNodePainter.ALTERNATE_ROW_STYLE">
+              <y:SimpleStyle fillColor="#474A4340" lineColor="#000000" lineType="line" lineWidth="1.0"/>
+            </y:Property>
+            <y:Property name="y.view.tabular.TableNodePainter.ALTERNATE_ROW_SELECTION_STYLE">
+              <y:SimpleStyle fillColor="#474A4380" lineColor="#000000" lineType="line" lineWidth="3.0"/>
+            </y:Property>
+            <y:Property class="java.awt.Color" name="yed.table.lane.color.alternating" value="#f2f8fc"/>
+            <y:Property class="java.awt.Color" name="yed.table.header.color.alternating" value="#abc8e2"/>
+            <y:Property name="y.view.tabular.TableNodePainter.ALTERNATE_COLUMN_STYLE">
+              <y:SimpleStyle fillColor="#474A4340" lineColor="#000000" lineType="line" lineWidth="1.0"/>
+            </y:Property>
+            <y:Property class="java.awt.Color" name="yed.table.lane.color.main" value="#e0eaf5"/>
+            <y:Property class="java.lang.Double" name="yed.table.header.height" value="24.0"/>
+          </y:StyleProperties>
+          <y:State autoResize="true" closed="false" closedHeight="80.0" closedWidth="100.0"/>
+          <y:Insets bottom="0" bottomF="0.0" left="0" leftF="0.0" right="0" rightF="0.0" top="0" topF="0.0"/>
+          <y:BorderInsets bottom="14" bottomF="13.732372754490598" left="67" leftF="67.27835706404971" right="9" rightF="9.064533224990328" top="11" topF="11.155127245508538"/>
+          <y:Table autoResizeTable="true" defaultColumnWidth="120.0" defaultMinimumColumnWidth="50.0" defaultMinimumRowHeight="50.0" defaultRowHeight="80.0">
+            <y:DefaultColumnInsets bottom="0.0" left="0.0" right="0.0" top="24.0"/>
+            <y:DefaultRowInsets bottom="0.0" left="24.0" right="0.0" top="0.0"/>
+            <y:Insets bottom="0.0" left="0.0" right="0.0" top="30.0"/>
+            <y:Columns>
+              <y:Column id="column_0" minimumWidth="50.0" width="50.0">
+                <y:Insets bottom="0.0" left="0.0" right="0.0" top="24.0"/>
+              </y:Column>
+              <y:Column id="column_1" minimumWidth="50.0" width="171.73939133451768">
+                <y:Insets bottom="0.0" left="0.0" right="0.0" top="24.0"/>
+              </y:Column>
+              <y:Column id="column_2" minimumWidth="50.0" width="102.0">
+                <y:Insets bottom="0.0" left="0.0" right="0.0" top="24.0"/>
+              </y:Column>
+              <y:Column id="column_3" minimumWidth="50.0" width="93.0">
+                <y:Insets bottom="0.0" left="0.0" right="0.0" top="24.0"/>
+              </y:Column>
+            </y:Columns>
+            <y:Rows>
+              <y:Row height="82.25" id="row_0" minimumHeight="50.0">
+                <y:Insets bottom="0.0" left="24.0" right="0.0" top="0.0"/>
+              </y:Row>
+              <y:Row height="102.41800149700498" id="row_1" minimumHeight="50.0">
+                <y:Insets bottom="0.0" left="24.0" right="0.0" top="0.0"/>
+              </y:Row>
+              <y:Row height="83.0" id="row_2" minimumHeight="50.0">
+                <y:Insets bottom="0.0" left="24.0" right="0.0" top="0.0"/>
+              </y:Row>
+            </y:Rows>
+          </y:Table>
+        </y:TableNode>
+      </data>
+      <graph edgedefault="directed" id="n0:">
+        <node id="n0::n0">
+          <data key="d4"/>
+          <data key="d5"><![CDATA[{ "type" : "file" }]]></data>
+          <data key="d6">
+            <y:GenericNode configuration="BevelNode2">
+              <y:Geometry height="30.0" width="71.64371257485067" x="-1680.6346574429265" y="-1291.3698727544916"/>
+              <y:Fill color="#FFCC00" transparent="false"/>
+              <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="br" textColor="#000000" visible="true" width="59.9794921875" x="7.664220387350724" y="4.8486328125">output-2</y:NodeLabel>
+              <y:StyleProperties>
+                <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
+              </y:StyleProperties>
+            </y:GenericNode>
+          </data>
+        </node>
+        <node id="n0::n1">
+          <data key="d5"><![CDATA[{
+  "type"       : "executable",
+  "path"       : "${appHome}/bin/sample",
+  "installed" : "false",
+  "site"        : "local"
+}]]></data>
+          <data key="d6">
+            <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+              <y:Geometry height="24.562125748502922" width="71.64371257485072" x="-1585.5929032427675" y="-1395.0378742514968"/>
+              <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
+              <y:BorderStyle color="#000000" type="line" width="1.0"/>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="33.82185628742536" y="10.281062874251347"/>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.701171875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="42.68359375" x="14.480059412425362" y="2.9304769367513472">sample</y:NodeLabel>
+              <y:StyleProperties>
+                <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+              </y:StyleProperties>
+            </y:GenericNode>
+          </data>
+        </node>
+        <node id="n0::n2">
+          <data key="d4"/>
+          <data key="d5"><![CDATA[{ "type" : "file" }]]></data>
+          <data key="d6">
+            <y:GenericNode configuration="BevelNode2">
+              <y:Geometry height="30.0" width="87.64371257485055" x="-1826.4706917133951" y="-1449.594124251497"/>
+              <y:Fill color="#FFCC00" transparent="false"/>
+              <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="b" textColor="#000000" visible="true" width="58.4345703125" x="14.604571131175362" y="4.8486328125">job2.out</y:NodeLabel>
+              <y:StyleProperties>
+                <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
+              </y:StyleProperties>
+            </y:GenericNode>
+          </data>
+        </node>
+        <node id="n0::n3">
+          <data key="d5"><![CDATA[{ "type" : "workflow" }]]></data>
+          <data key="d6">
+            <y:GenericNode configuration="BevelNode3">
+              <y:Geometry height="29.999999999999986" width="143.39371257485004" x="-1854.3456917133944" y="-1504.1503742514974"/>
+              <y:Fill color="#2A2D6E" transparent="false"/>
+              <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="120.6962890625" x="11.348711756174907" y="4.42431640625">grayson-template</y:NodeLabel>
+            </y:GenericNode>
+          </data>
+        </node>
+      </graph>
+    </node>
+    <node id="n1">
+      <data key="d5"><![CDATA[{ "type" : "job" }]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="29.999999999999986" width="61.14371257485004" x="-1813.2206917133947" y="-1395.0378742514968"/>
+          <y:Fill color="#993300" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="32.779296875" x="14.182207849925135" y="4.42431640625">job1</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{ "type" : "job" } ]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="29.248502994011957" width="61.14371257484993" x="-1813.2206917133947" y="-1290.9941242514974"/>
+          <y:Fill color="#993300" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="32.779296875" x="14.182207849924907" y="4.048567903256071">job2</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{ "type" : "file" }]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode2">
+          <y:Geometry height="30.0" width="81.64371257485055" x="-1823.4706917133951" y="-1345.515999251497"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="21.1513671875" modelName="internal" modelPosition="b" textColor="#000000" visible="true" width="59.9794921875" x="10.832110193675362" y="4.8486328125">output-1</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="179.0" width="440.7393913345179" x="-1945.6240487774444" y="-1748.305501497006"/>
+          <y:Fill color="#FCFCDA0D" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Forte" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="218.36969566725884" y="87.5"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Verdana" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="149.83984375" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="392.669921875" x="24.03473472975884" y="14.580078125">This workflow incoroprates a sub-workflow, 
+It shows the sub-workflow's outputs being used as inputs
+to jobs in this workflow. Sub-workflows enable the composition
+of large, complex systems out of discrete components.
+
+Preconditions:
+   * All inputs for sub-workflow are available
+
+Postconditions:
+   * All outputs of sub-workflow and this workflow are produced.</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <edge id="e0" source="n1" target="n3">
+      <data key="d9"><![CDATA[{ "type" : "out", "arg" : "-o" }]]></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="14.990234375" tx="0.0" ty="-14.990234375"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="true"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n2" target="n0::n0">
+      <data key="d9"><![CDATA[{ "type" : "out", "arg" : "-o"  }]]></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="30.56691759506661" sy="0.0" tx="-35.84311454358604" ty="0.0">
+            <y:Point x="-1734.4665612221397" y="-1276.3698727544913"/>
+          </y:Path>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="true"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n0::n1" target="n1">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-35.857959250319254" sy="2.7189371257484254" tx="30.5477550757862" ty="-2.2737367544323206E-13"/>
+          <y:LineStyle color="#808080" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="true"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e3" source="n3" target="n2">
+      <data key="d9"><![CDATA[{
+   "type" : "in", 
+   "arg" : "-i" 
+}]]></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="14.990234375" tx="0.0" ty="-14.668743567552838"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e4" source="n0::n1" target="n2">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="29.434313600038877" ty="-12.137784351826213">
+            <y:Point x="-1549.7710469553422" y="-1312.1045409181636"/>
+            <y:Point x="-1720.8589883622847" y="-1312.1045409181636"/>
+          </y:Path>
+          <y:LineStyle color="#808080" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="true"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e5" source="n0::n2" target="n1">
+      <data key="d9"><![CDATA[{    "type" : "in",     "arg" : "-i"  }]]></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-2.5171875000003183"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="n0::e0" source="n0::n3" target="n0::n2">
+      <data key="d9"><![CDATA[{ "type" : "out", "arg" : "-o" }]]></data>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="14.990234375" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </graph>
+  <data key="d0">
+    <y:Resources/>
+  </data>
+</graphml>

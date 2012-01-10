@@ -1,0 +1,15 @@
+<div id='flows' data-role='page'>
+  {% include "graysonmobile/html/includes/header.html" %}
+  <div id='flow_div' data-role='content'>
+    <ul data-role="listview" data-inset="true">
+      {% for flow in flows %}
+      <li>
+	<a class='flowName' href="../runs/?flow={{flow.flow}}">
+	  {{ flow.flow }} ({{ flow.runCount }})
+	</a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+

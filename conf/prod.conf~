@@ -1,0 +1,19 @@
+{
+    "listenPort" : 8080,
+
+    "urlPrefix"    : "/grayson",
+
+    "amqpSettings" : {
+	"host"     : "localhost",
+	"port"     : 5675,
+        "login"    : "guest",
+	"password" : "guest",
+	"vhost"    : "/"
+    },
+
+    "queueSettings" : {
+	"durable"     : "false",
+	"autoDelete"  : "false",
+	"exclusive"   : "false"
+    }
+}

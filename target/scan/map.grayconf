@@ -1,0 +1,19 @@
+{
+    "outputName": "scan-flow", 
+    "modelPath": "target/scan:target/scan:", 
+    "operator": {
+        "index": "chunk", 
+        "version": "1.0", 
+        "variable": "file", 
+        "input": "fasta-chunks.tar.gz", 
+        "flow": "scan-flow.graphml", 
+        "namespace": "scan-flow", 
+        "type": "dynamicMap", 
+        "method": "tar"
+    }, 
+    "graysonHome": "/home/scox/dev/grayson", 
+    "appHome": "target/scan", 
+    "outputDir": "target/scan", 
+    "contextModels": "scan-test-core-context.graphml:scan-executable-context.graphml", 
+    "sites": "local"
+}

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yFiles for Java 2.8-->
+  <key for="graphml" id="d0" yfiles.type="resources"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key attr.name="Description" attr.type="string" for="graph" id="d7">
+    <default/>
+  </key>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <node id="n0">
+      <data key="d4"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="99.33333333333348" width="141.71669272696363" x="-1912.2795393000806" y="-2330.293669871796"/>
+          <y:Fill color="#ECFBEC" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="68.85834636348181" y="47.66666666666697"/>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d4"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="169.33333333333348" width="308.5769230769233" x="-1992.1397696500403" y="-2230.960336538462"/>
+          <y:Fill color="#ECFBEC" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="152.28846153846166" y="82.66666666666697"/>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{
+  "type" : "properties",
+  "map" : {
+    "clusterId" : "NERSC-Carver"
+  },
+  "sites" : {
+      "local" : {
+          "hostName"                        : "${FQDN}",
+          "scratchFileServerProtocol"  : "gsiftp",
+          "scratchFileServerURL"        : "gsiftp://${FQDN}",
+          "scratchInternalMountPoint" : "${appHome}/work/outputs",
+          "storageFileServerProtocol"  : "gsiftp",
+          "storageFileServerURL"        : "gsiftp://${FQDN}",
+          "storageInternalMountPoint" : "${appHome}/work/outputs"  
+      },
+      "NERSC-Carver" : {
+          "hostName"                          : "carvergrid.nersc.gov",
+          "scheduler"                           : "pbs",
+          "scratchFileServerMountPoint" : "/project/projectdirs/osg/carver/data",
+          "pegasusLocation"                 : "/global/u1/s/stevecox/dev/pegasus-3.0.2",
+          "globusLocation"                    : "/usr/syscom/osg/1.2-ce/globus",
+          "x509userproxy"                    : "${graysonVar}/proxy/x509_proxy_${userName}"
+      }
+  },
+  "site" : {
+    "CLUSTER_ID" : "NERSC-Carver",
+    "CLUSTER_HOSTNAME" : "carvergrid.nersc.gov",
+    "CLUSTER_SCHEDULER" : "pbs",
+    "CLUSTER_WORK_DIR" : "/project/projectdirs/osg/carver/data",
+    "CLUSTER_PEGASUS_HOME" : "/global/u1/s/stevecox/dev/pegasus-3.0.2",
+    "CLUSTER_GLOBUS_LOCATION" : "/usr/syscom/osg/1.2-ce/globus",
+    "x509userproxy" : "${graysonHome}/../var/proxy/x509_proxy_${userName}"
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="44.0" width="100.92215568862252" x="-2043.2016949887031" y="-2316.84375"/>
+          <y:Fill color="#99CC00" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.75" x="12.586077844311376" y="11.8515625">properties</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "jobType" : "mpi",
+      "queue"   : "regular",
+      "host_xcount" : "1",
+      "xcount" : "8",
+      "maxWallTime" : "240"
+    }
+  },
+  "site"  : "${clusterId}",
+  "arch" : "x86_64"
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="44.0" width="93.62417664670733" x="-1887.4578606227797" y="-2294.6676294046533"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="44.81208832335369" y="20.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="38.763671875" x="27.43025238585369" y="13.015625">MPI_8</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="84.33333333333333" width="439.3345687531189" x="-2100.41677973239" y="-2511.7366173902183"/>
+          <y:Fill color="#F3FBF0" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="160.34765625" x="139.49345625155956" y="28.526041666666515">NERSC Carver</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="68.5" width="381.57692307692326" x="-2065.1397696500403" y="-2415.34375"/>
+          <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" bottomInset="2" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" leftInset="2" modelName="internal" modelPosition="c" rightInset="2" textColor="#000000" topInset="2" visible="true" width="4.0" x="188.78846153846166" y="32.25"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="242.34765625" x="69.61463341346166" y="11.296875">Characterize NERSC Carver cluster 
+* Properties for site catalog
+* MPI queues defined as abstract nodes</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n6">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "queue"   : "dirac_reg"
+    }
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="44.0" width="93.62417664670733" x="-1887.4578606227797" y="-2209.4518453477685"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="44.81208832335369" y="20.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="29.318359375" x="32.15290863585369" y="13.015625">GPU</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n7">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "xcount" : "8:fermi"
+    }
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="44.0" width="93.62417664670733" x="-1817.9833977083276" y="-2130.2360612908838"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="44.81208832335369" y="20.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="38.2421875" x="27.69099457335369" y="13.015625">Fermi</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n8">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "xcount" : "8:tesla"
+    }
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="44.0" width="93.62417664670733" x="-1951.8736720025377" y="-2130.2360612908838"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="44.81208832335369" y="20.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="35.65234375" x="28.98591644835369" y="13.015625">Tesla</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n9">
+      <data key="d4"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="169.33333333333348" width="73.0" x="-2065.1397696500403" y="-2230.960336538462"/>
+          <y:Fill color="#ECFBEC" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="45.90625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="56.8046875" x="8.09765625" y="61.71354166666697">Dirac
+
+</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n10">
+      <data key="d4"/>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="99.33333333333394" width="87.0" x="-1770.562846573117" y="-2330.293669871796"/>
+          <y:Fill color="#ECFBEC" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="71.0517578125" x="7.97412109375" y="37.19010416666697">Carver
+</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <edge id="e0" source="n3" target="n6">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n6" target="n7">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n6" target="n8">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </graph>
+  <data key="d0">
+    <y:Resources/>
+  </data>
+</graphml>

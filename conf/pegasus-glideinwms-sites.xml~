@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitecatalog xmlns="http://pegasus.isi.edu/schema/sitecatalog" 
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+             xsi:schemaLocation="http://pegasus.isi.edu/schema/sitecatalog 
+             http://pegasus.isi.edu/schema/sc-3.0.xsd" version="3.0"> 
+      <!-- =============================================================================================================================
+           ==   Table of Contents: Lists of sites in the catalog suitable for grepping:
+
+               all_sites=SPRACE MIT_CMS Purdue-RCAC UCR-HEP STAR-BNL FNAL_GPGRID_1 RENCI-Blueridge Nebraska_htpc Firefly_htpc BNL-ATLAS Clemson-Palmetto FNAL_FERMIGRID WQCG-Harvard-OSG AGLT2 UConn-OSG prairiefire 
+
+               htpc_sites=Nebraska_htpc Firefly_htpc 
+
+               non_htpc_sites=SPRACE MIT_CMS Purdue-RCAC UCR-HEP STAR-BNL FNAL_GPGRID_1 RENCI-Blueridge BNL-ATLAS Clemson-Palmetto FNAL_FERMIGRID WQCG-Harvard-OSG AGLT2 UConn-OSG prairiefire 
+
+          ============================================================================================================================= -->
+
+   <site handle="SPRACE" arch="x86_64" os="LINUX">
+        <grid  type="gt2" contact="osg-ce.sprace.org.br:2119/jobmanager-fork" scheduler="Fork" jobtype="auxillary"/>
+        <grid  type="gt2" contact="osg-ce.sprace.org.br:2119/jobmanager-condor" scheduler="unknown" jobtype="compute"/>
+        <head-fs>
+            <scratch>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://osg-ce.sprace.org.br:2119" mount-point="/osg/data/engage/tmp/scox"/>
+                    <internal-mount-point mount-point="/osg/data/engage/tmp/scox"/>
+                </shared>
+            </scratch>
+            <storage>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://osg-ce.sprace.org.br:2119" mount-point="/osg/data/engage/tmp/scox"/>
+                    <internal-mount-point mount-point="/osg/data/engage/tmp/scox"/>
+                </shared>
+            </storage>
+        </head-fs>
+        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+        <profile namespace="pegasus" key="style">glideinwms</profile>
+        <profile namespace="condor" key="+DESIRED_Sites">&quot;SPRACE&quot;</profile>
+        <profile namespace="condor" key="x509userproxy">/tmp/x509up_u1143</profile>
+        <profile namespace="condor" key="globusrsl">(queue=cms)(jobtype=single)</profile>
+        <profile namespace="env" key="PEGASUS_HOME" >/osg/app/engage/pegasus-3.0.3</profile>
+        <profile namespace="env" key="GLOBUS_LOCATION" >/OSG/worker-1.2/globus</profile>
+    </site>
+    
+   <site handle="MIT_CMS" arch="x86_64" os="LINUX">
+        <grid  type="gt2" contact="ce01.cmsaf.mit.edu:2119/jobmanager-fork" scheduler="Fork" jobtype="auxillary"/>
+        <grid  type="gt2" contact="ce01.cmsaf.mit.edu:2119/jobmanager-condor" scheduler="unknown" jobtype="compute"/>
+        <head-fs>
+            <scratch>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://ce01.cmsaf.mit.edu:2119" mount-point="/osg/data/engage/tmp/scox"/>
+                    <internal-mount-point mount-point="/osg/data/engage/tmp/scox"/>
+                </shared>
+            </scratch>
+            <storage>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://ce01.cmsaf.mit.edu:2119" mount-point="/osg/data/engage/tmp/scox"/>
+                    <internal-mount-point mount-point="/osg/data/engage/tmp/scox"/>
+                </shared>
+            </storage>
+        </head-fs>
+        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+        <profile namespace="pegasus" key="style">glideinwms</profile>
+        <profile namespace="condor" key="+DESIRED_Sites">&quot;MIT_CMS&quot;</profile>
+        <profile namespace="condor" key="x509userproxy">/tmp/x509up_u1143</profile>
+        <profile namespace="condor" key="globusrsl">(queue=cms)(jobtype=single)</profile>
+        <profile namespace="env" key="PEGASUS_HOME" >/osg/app/engage/pegasus-3.0.3</profile>
+        <profile namespace="env" key="GLOBUS_LOCATION" >/export/data1/osg/grid/globus</profile>
+   </sites>
+</sitecatalog>

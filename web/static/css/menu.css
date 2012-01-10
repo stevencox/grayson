@@ -1,0 +1,141 @@
+a {
+	color: #777;
+}
+#nav {
+    font-size    : 12px;
+    font-weight  : bold;
+    position     : absolute;
+    top          : 1px;
+    left         : 0px; 
+    height       : 32px;
+    margin       : 0;
+    line-height  : 100%;
+    z-index      : 2;
+    border       : 1px white solid;
+}
+#nav li {
+	margin: 0 5px;
+	padding: 4px 0 8px;
+	position: relative;
+	list-style: none;
+}
+
+/* main level link */
+#nav a {
+	font-weight: bold;
+	text-decoration: none;
+	display: block;
+	padding:  8px 20px;
+	margin: 0;
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+}
+
+
+#nav a:hover {
+	color: #888;
+}
+
+
+/* main level link hover */
+#nav .current a, #nav li:hover > a {
+	border-top: solid 1px #f8f8f8;
+}
+
+/* sub levels link hover */
+#nav ul li:hover a, #nav li:hover li a {
+ 	-webkit-border-radius: 0.5;
+	-moz-border-radius: 0.5;
+	background: none;
+	border: none;
+}
+#nav ul a:hover {
+    /*
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+
+color : #900;
+    */
+    color : #000; 
+
+    border: none;
+}
+
+/* new */
+#nav ul li:hover a, #nav li:hover li a:hover {
+ 	-webkit-border-radius: 0.5;
+	-moz-border-radius: 0.5;
+   color : #000; 
+    background: #F0F0F0;
+}
+
+
+/* dropdown */
+#nav li:hover > ul {
+	display: block;
+}
+
+
+/* level 2 list */
+#nav ul {
+	display: none;
+	margin: 0;
+	padding: 0px;
+	width: 220px;
+	position: absolute;
+	top: 34px;
+	left: 25px;
+	background  : #fff;
+	border      : 1px solid #b4b4b4;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px solid #f8f8f8;
+}
+/*
+#nav ul li:hover {
+    background-color : #f8f8f8;
+}
+*/
+
+#nav ul li {
+	float: none;
+	margin: 0;
+	padding: 3px;
+}
+
+#nav ul a {
+	font-weight: normal;
+}
+
+/* level 3+ list */
+#nav ul ul {
+	left: 181px;
+	top: -3px;
+}
+
+/* rounded corners of first and last link */
+#nav ul li:first-child > a {
+}
+#nav ul li:last-child > a {
+}
+
+/* clearfix */
+#nav:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+#nav {
+	display: inline-block;
+} 
+html[xmlns] #nav {
+	display: block;
+}
+ 
+* html #nav {
+	height: 1%;
+}
+

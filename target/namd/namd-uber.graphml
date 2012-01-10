@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yFiles for Java 2.8-->
+  <key for="graphml" id="d0" yfiles.type="resources"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key attr.name="Description" attr.type="string" for="graph" id="d7">
+    <default/>
+  </key>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <node id="n0">
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="238.89512083957987" width="215.48434542728626" x="298.0497493253369" y="279.76509265367304"/>
+          <y:Fill color="#ECFBEC" transparent="false"/>
+          <y:BorderStyle color="#CCFFCC" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="7.814453125" x="103.83494615114313" y="110.46318541978997"> </y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNode">
+          <y:Geometry height="93.45845757121435" width="215.48434542728614" x="298.0497493253369" y="92.84817751124433"/>
+          <y:Fill color="#E7F2E7" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="18" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="24.953125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="107.9658203125" x="53.75926255739307" y="34.25266628560718">NAMD Uber</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d5"><![CDATA[{
+    "type" : "workflow"
+}]]></data>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="79.05845757121438" width="109.49414092953526" x="351.04485157421243" y="417.63818170914516"/>
+          <y:Fill color="#F9F9D6" transparent="false"/>
+          <y:BorderStyle color="#F9ED05" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.37890625" x="17.057617339767603" y="30.544853785607188">namd-flow</y:NodeLabel>
+          <y:Shape type="ellipse"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d5"><![CDATA[{
+   "type"      : "map",
+   "style"      : "chain",
+   "variable" : "slice",
+   "each"      : {
+       "start" : 0,
+       "end" : "${slice_count}"
+   }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="30.0" width="92.61147226386797" x="359.48618590704604" y="357.63818170914516"/>
+          <y:Fill color="#DCCCFA" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="30.66015625" x="30.97565800693394" y="6.015625">map</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{
+   "type" : "properties",
+   "map"  : {
+       "namd_model"       : "ternarycomplex119819",
+       "namd_config"       : "ternarycomplex_popcwimineq-05",
+       "namd_runLength" : "100",
+       "slice_count"         : "3"
+    }
+}]]></data>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="29.90625" width="90.0" x="360.79192203898003" y="297.73193170914516"/>
+          <y:Fill color="#ECF2EA" transparent="false"/>
+          <y:BorderStyle color="#99CC00" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="65.5" x="12.25" y="5.96875">properties</y:NodeLabel>
+          <y:Shape type="roundrectangle"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNode">
+          <y:Geometry height="93.45845757121435" width="215.48434542728614" x="298.04974932533696" y="186.30663508245868"/>
+          <y:Fill color="#E7F2E7" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="31.9375" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="143.59375" x="35.94529771364307" y="30.760478785607177">Run a serial chain of 
+instances of namd-flow</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <edge id="e0" source="n3" target="n2">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#99CC00" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n4" target="n3">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#99CC00" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </graph>
+  <data key="d0">
+    <y:Resources/>
+  </data>
+</graphml>

@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>hi</title>
+  </head>
+  <body>
+    <form id='login_form' action='login/' method='post'>
+      {% csrf_token %}
+      <input type='text' name='username' value='scox'/>
+      <input type='password' name='password' value=''/>
+      <button onclick='login_form.submit()'>login</button>
+    </form>
+  </body>
+</html>

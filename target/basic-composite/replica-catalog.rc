@@ -1,0 +1,6 @@
+data/input1 file://target/basic-composite/data/input1 pool="local"
+grayson-template.dax file://target/basic-composite/grayson-template.dax pool="local"
+job1.out file://target/basic-composite/job1.out pool="local"
+job2.out file://target/basic-composite/job2.out pool="local"
+output-1 file://target/basic-composite/output-1 pool="local"
+output-2 file://target/basic-composite/output-2 pool="local"

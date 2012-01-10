@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+set -x
+
+mode=$1
+shift
+
+output_dax=namd-uber.dax
+output_dir=$(pwd)/daxen-$mode
+
+rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
+
+args="$*"
+
+graysonc                                                                    \
+    --model=$PWD/model/$mode-context.graphml                                \
+    --modelpath="$GRAYSON_HOME/samples:${PWD}/model"                        \
+    --loglevel=debug                                                        \
+    --output=$output_dax                                                    \
+    --package                                                               \
+    --package-file=bin                                                      \
+    --package-file=input                                                    \
+    ${args} > log.txt 2>&1
+
+tail -100 log.txt

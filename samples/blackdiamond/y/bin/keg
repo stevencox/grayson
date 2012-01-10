@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import time
+
+args = sys.argv
+firstArg = False
+secondArg = False
+count = 0
+for arg in args:
+    count += 1    
+    if count == 1:
+        continue
+    elif arg == "-a":
+       firstArg = True
+       continue
+    elif firstArg:
+       firstArg = False
+       continue
+    elif arg == "-T":
+       secondArg = True
+       continue
+    elif secondArg:
+       secondArg = False
+       continue
+    elif arg == "-i":
+        input = True
+    elif arg == "-o":
+        input = False
+        output = True
+    elif input:
+        print "    input: %s" % arg
+        fileName = arg
+        if arg.startswith ("data/"):
+            fileName = "../%s" % arg
+        if not os.path.exists (fileName):
+            raise ValueError ("missing required input file: %s" % arg)
+        time.sleep (1)
+        continue
+    elif output:
+        print "   output: %s" % arg
+        f = open (arg, "w")
+        f.write ("--data--")
+        f.close ()
+        continue
+    

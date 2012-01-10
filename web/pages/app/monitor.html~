@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Grayson</title>
+
+    <!-- CSS Files -->
+    <link type="text/css" href="{{ STATIC_URL }}js/jit/css/base.css" rel="stylesheet" />
+    <link type="text/css" href="{{ STATIC_URL }}js/jit/css/Spacetree.css" rel="stylesheet" />
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js"></script>
+
+    <!--[if IE]><script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/jit/Extras/excanvas.js"></script><![endif]-->
+
+    <!-- JIT Library File -->
+    <script language="javascript" type="text/javascript" src="{{ STATIC_URL }}js/jit/jit.js"></script>
+
+    <script src="{{ STATIC_URL }}js/socket.io/socket.io.js"></script>
+    <script src="{{ STATIC_URL }}js/grayson.js"></script>
+    <script src="{{ STATIC_URL }}js/graph.js"></script>
+  </head>
+  <body>
+
+    <div id="log"></div>
+    <div id="container">
+      <div id="left-container">
+	<div id="id-list"></div>
+      </div>
+      <div id="center-container">
+	<div id="infovis"></div>    
+      </div>
+      <div id="right-container">
+	</div>
+      </div>
+    </div>
+
+    <h1>Sample chat client</h1>
+    <div id="chat"><p>Connecting...</p></div>
+    <form id="form" onSubmit="send(); return false">
+      <input type="text" autocomplete="off" id="text"><input type="submit" value="Send">
+    </form>
+    <style>
+      #chat { height: 300px; overflow: auto; width: 800px; border: 1px solid #eee; font: 13px Helvetica, Arial; }
+      #chat p { padding: 8px; margin: 0; }
+      #chat p:nth-child(odd) { background: #F6F6F6; }
+      #form { width: 782px; background: #333; padding: 5px 10px; display: none; }
+      #form input[type=text] { width: 700px; padding: 5px; background: #fff; border: 1px solid #fff; }
+      #form input[type=submit] { cursor: pointer; background: #999; border: none; padding: 6px 8px; -moz-border-radius: 8px; -webkit-border-radius: 8px; margin-left: 5px; text-shadow: 0 1px 0 #fff; }
+      #form input[type=submit]:hover { background: #A2A2A2; }
+      #form input[type=submit]:active { position: relative; top: 2px; }
+    </style>
+    
+ </body>
+</html>

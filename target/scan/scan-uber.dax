@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated: 2011-12-09 15:51:23.051291 -->
+<!-- generator: python -->
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd" version="3.2" name="scan-uber">
+
+	<!-- part 1: Replica catalog (may be empty) -->
+	<file name="fasta-chunks.tar.gz">
+		<pfn url="file://target/scan/fasta-chunks.tar.gz" site="local"/>
+	</file>
+	<file name="fasta.txt">
+		<pfn url="file://target/scan/input/fasta.txt" site="local"/>
+	</file>
+	<file name="full-sifs.txt">
+		<pfn url="file://target/scan/full-sifs.txt" site="local"/>
+	</file>
+	<executable name="prepare" namespace="scan-uber" os="linux" installed="false">
+		<pfn url="file://target/scan/bin/prepare.sh" site="local"/>
+	</executable>
+	<executable name="reduce" namespace="scan-uber" os="linux" installed="false">
+		<pfn url="file://target/scan/bin/reduce.sh" site="local"/>
+	</executable>
+	<executable name="map" namespace="scan-uber" os="linux" installed="false">
+		<pfn url="file:///home/scox/dev/grayson/bin/graysonc" site="local"/>
+	</executable>
+
+	<!-- part 2: Transformation catalog (may be empty) -->
+
+	<!-- part 3: Definition of all jobs/dags/daxes (at least one) -->
+	<job id="1n2" namespace="scan-uber" name="prepare">
+		<argument><file name="fasta.txt"/> <file name="fasta-chunks.tar.gz"/> target/scan/work/outputs</argument>
+		<uses name="fasta.txt" link="input"/>
+		<uses name="fasta-chunks.tar.gz" link="output"/>
+	</job>
+	<job id="1n3" namespace="scan-uber" name="reduce">
+		<argument>target/scan/work/outputs</argument>
+		<uses name="full-sifs.txt" link="output"/>
+	</job>
+	<job id="1n6.synth" namespace="scan-uber" name="map">
+		<argument>--configuration=target/scan/map.grayconf</argument>
+		<profile namespace="env" key="PYTHONPATH">/home/scox/dev/grayson/lib/python:/home/scox/dev/grayson/lib/python:</profile>
+		<profile namespace="env" key="GRAYSON_HOME">/home/scox/dev/grayson</profile>
+		<profile namespace="env" key="GLOBUS_LOCATION">/none</profile>
+		<profile namespace="env" key="CONDOR_HOME">/usr</profile>
+		<profile namespace="env" key="PATH">/home/scox/dev/grayson/bin:/home/scox/dev/grayson/stack/node/bin:/home/scox/dev/grayson/stack/rabbitmq/rabbitmq_server-2.6.0/sbin:/home/scox/dev/grayson/stack/erlang/bin:/home/scox/dev/grayson/stack/apache/bin:/home/scox/dev/grayson/stack/python/bin:/home/scox/dev/grayson/stack/python:/home/scox/dev/grayson/bin:/home/scox/app/pegasus-3.0.2/bin:/home/scox/app/mono-2.8.1/bin:/home/scox/app/apache-tomcat-6.0.29/bin:/home/scox/app/soapui-3.6-beta1/bin:/home/scox/app/apache-maven-2.2.1/bin:/home/scox/app/jdk1.6.0_21/bin:/home/scox/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/scox/app/jython2.5.0/bin</profile>
+		<profile namespace="env" key="LD_LIBRARY_PATH">/home/scox/dev/grayson/stack/python/lib:</profile>
+		<uses name="fasta-chunks.tar.gz" link="input"/>
+		<uses name="fasta-chunks.tar.gz" link="output"/>
+	</job>
+	<dax id="ID0000001" file="scan-flow.dax">
+		<argument>--basename scan-flow</argument>
+		<uses name="fasta-chunks.tar.gz" link="input"/>
+	</dax>
+
+	<!-- part 4: List of control-flow dependencies (may be empty) -->
+	<child ref="1n6.synth">
+		<parent ref="1n2"/>
+	</child>
+	<child ref="ID0000001">
+		<parent ref="1n6.synth"/>
+		<parent ref="1n2"/>
+	</child>
+	<child ref="1n3">
+		<parent ref="ID0000001"/>
+	</child>
+</adag>

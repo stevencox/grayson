@@ -1,0 +1,5 @@
+
+pegasus.catalog.site=XML3
+pegasus.catalog.site.file=/home/scox/dev/grayson/web/data/workflows/scox/nucleosome_2.zip_upk/sites.xml
+pegasus.dir.useTimestamp=true
+pegasus.dir.storage.deep=false

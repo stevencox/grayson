@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated: 2011-12-09 15:51:21.980267 -->
+<!-- generator: python -->
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd" version="3.2" name="lambda-uber">
+
+	<!-- part 1: Replica catalog (may be empty) -->
+	<file name="input-one.tar.gz">
+		<pfn url="file://target/lambda/input-one.tar.gz" site="local"/>
+	</file>
+	<file name="input-two.tar.gz">
+		<pfn url="file://target/lambda/input-two.tar.gz" site="local"/>
+	</file>
+	<file name="report.txt">
+		<pfn url="file://target/lambda/report.txt" site="local"/>
+	</file>
+	<executable name="package" namespace="lambda-uber" os="linux" installed="false">
+		<pfn url="file://target/lambda/bin/package.sh" site="local"/>
+	</executable>
+	<executable name="merge" namespace="lambda-uber" os="linux" installed="false">
+		<pfn url="file://target/lambda/bin/merge.sh" site="local"/>
+	</executable>
+
+	<!-- part 2: Transformation catalog (may be empty) -->
+
+	<!-- part 3: Definition of all jobs/dags/daxes (at least one) -->
+	<job id="1n4" namespace="lambda-uber" name="package">
+		<argument>--one <file name="input-one.tar.gz"/> --two <file name="input-two.tar.gz"/></argument>
+		<uses name="input-one.tar.gz" link="output"/>
+		<uses name="input-two.tar.gz" link="output"/>
+	</job>
+	<job id="1n6" namespace="lambda-uber" name="merge">
+		<argument>lambda-output.tar.gz</argument>
+		<uses name="report.txt" link="output"/>
+	</job>
+	<dax id="ID0000001" file="wind.0.dax">
+		<uses name="input-one.tar.gz" link="input"/>
+		<uses name="input-two.tar.gz" link="input"/>
+	</dax>
+
+	<!-- part 4: List of control-flow dependencies (may be empty) -->
+	<child ref="1n6">
+		<parent ref="ID0000001"/>
+	</child>
+	<child ref="ID0000001">
+		<parent ref="1n4"/>
+	</child>
+</adag>

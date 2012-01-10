@@ -1,0 +1,5 @@
+
+graysonc \
+    --package --package-file f.a --package-file bin   \
+    --output=blackdiamond.dax                         \
+    --model=model/blackdiamond-local-context.graphml 

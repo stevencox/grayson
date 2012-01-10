@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated: 2011-10-06 11:22:50.377786 -->
+<!-- generator: python -->
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd" version="3.2" name="quality-check.2">
+
+	<!-- part 1: Replica catalog (may be empty) -->
+	<file name="c.22.tar.gz-0-out.tar.gz">
+		<pfn url="file://target/padcswan/c.22.tar.gz-0-out.tar.gz" site="local"/>
+	</file>
+	<executable name="unpack" namespace="quality-check.2" os="linux" installed="true">
+		<pfn url="file:///bin/tar" site="local"/>
+	</executable>
+	<executable name="fortcheck" namespace="quality-check.2" os="linux" installed="false">
+		<pfn url="file://target/padcswan/bin/fortcheck" site="local"/>
+	</executable>
+
+	<!-- part 2: Transformation catalog (may be empty) -->
+
+	<!-- part 3: Definition of all jobs/dags/daxes (at least one) -->
+	<job id="1n1" namespace="quality-check.2" name="unpack">
+		<argument>xvzf <file name="c.22.tar.gz-0-out.tar.gz"/></argument>
+		<uses name="c.22.tar.gz-0-out.tar.gz" link="input"/>
+	</job>
+	<job id="1n3" namespace="quality-check.2" name="fortcheck"/>
+
+	<!-- part 4: List of control-flow dependencies (may be empty) -->
+	<child ref="1n3">
+		<parent ref="1n1"/>
+	</child>
+</adag>

@@ -1,0 +1,6 @@
+local        alpha::one                target/alpha/bin/sample             false   INTEL64::LINUX
+local        alpha::one                target/alpha/bin/one             STAGEABLE   INTEL64::LINUX
+local        alpha::one                target/alpha/bin/one             STAGEABLE   INTEL64::LINUX
+local        alpha::two                target/alpha/bin/sample             false   INTEL64::LINUX
+local        alpha::two                target/alpha/bin/two             STAGEABLE   INTEL64::LINUX
+local        alpha::two                target/alpha/bin/two             STAGEABLE   INTEL64::LINUX

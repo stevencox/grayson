@@ -1,0 +1,7 @@
+#!/bin/bash
+
+echo alpha $*
+
+exit 0
+
+

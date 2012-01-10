@@ -1,0 +1,389 @@
+body {
+    background: #fff;
+    color: #777;
+    /*
+    font: 300 100.1% "Helvetica Neue", Helvetica, "Arial Unicode MS", Arial, sans-serif; 
+    */
+    font: 62.5% "Helvetica, Arial", sans-serif;
+    margin: 0px;
+    padding : 0px;
+    height : 100%;
+    overflow : hidden;
+}
+textarea {
+            -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+             box-sizing: border-box;         /* Opera/IE 8+ */
+           }
+
+#loginDialog {
+    display : none;
+    padding : 20px; 30px; 
+}
+#login_title {
+    position : absolute;
+    top      : 15px;
+    left     : 20px;
+}
+#login_kind {
+    position: absolute;
+    left: 170px;
+    top: 20px;
+}
+#login_form {
+    padding : 7px;
+}
+#login_button {
+    position         : absolute;
+    left             : 283px;
+    top              : 114px;
+    height           : 15px;
+    width            : 50px;
+    padding          : 10px;
+    color            : #eee;
+    background-color : #333;
+    text-align       : center;
+    font-size        : 12px;
+    font-weight      : bold;
+    text-transform   : uppercase;
+}
+#auth_cred {
+    font-size   : 12px;
+    font-weight : bold;
+}
+.cred {
+    position : absolute;
+    left     : 92px;
+ }
+#login_username {
+    top : 54px;
+}
+#login_password {
+    top : 82px;
+}
+#username_txt {
+    position : absolute;
+    top      :54px;
+}
+#password_txt {
+    position : absolute;
+    top      : 82px; 
+}
+
+/* header */
+#icon {
+    position  : absolute;
+    top       : 5px;
+    left      : 120px;
+    height    : 22px;
+    width     : 28px;
+    opacity   : 0.4;
+}
+#appVersion {
+    position : absolute;
+    right    : 15px;
+    top      : 12px;
+}
+#title {
+    position       : absolute;
+    left           : 5px;
+    top            : 5px;
+ }
+.title {
+    font-size      : 20px;
+    font-weight    : bold;
+    color          : #aac;
+    text-transform : uppercase; 
+    letter-spacing : 1px;
+    opacity        : 0.7;
+}
+#title:hover {
+    /*    opacity : 1; */
+}
+#ajax-loader {
+    position : absolute;
+    left     : 180px;
+    top      : 3px;
+    display  : none;
+    height   : 33px;
+    width    : 35px;
+}
+#divider {
+    position      : absolute;
+    top           : 35px;
+    left          : 0px;
+    border-style  : 1px solid;
+    border-bottom : 1px solid #ccc;
+    width         : 100%;
+}
+#downloadButton {
+    text-align : center;
+    padding    : 25px;
+    margin     : 10px;
+    height     : 120px;
+    width      : 120px;
+    opacity    : 0.4;
+    /*    border     : 1px dashed lightgray; */
+}
+
+#modelName {
+    position  : absolute;
+    height    : 20px;
+    width     : 400px;
+    left      : 220px;
+    top       : 15px;
+    font-size : 12px;
+}
+#compilationMessages {
+    position       : absolute;
+    top            : 35px;
+    padding-top    : 40px;
+    padding-left   : 40px;
+    width          : 98%;
+    height         : 90%;
+    overflow       : auto;
+    display        : none;
+}
+#compilationMessagesHead {
+    font-size   : 16px;
+    font-weight : bold;
+    width       : 100%;
+}
+
+/* main */
+.drawdiv {
+    height   : 100%;
+    width    : 100%;
+    margin   : 0px;
+    padding  : 0px;
+}
+#status {
+    float    : right;
+    width    : 270px;
+    top      : 25px;
+    padding  : 10px;
+}
+
+/* upload */
+#workflowUpload {
+    height   : 100%;
+    width    : 100%;
+    display  : none;
+}
+#workflowUploadForm {
+    width  : 100%;
+    height : 90%;
+}
+#uploadFileField {
+    width : 200px;
+}
+#uploadProgress {
+    display : none;
+    height  : 80%;
+    width   : 100%;
+}
+/* instanceSelectors */
+.instanceSelectorContainer {
+    margin : 0;
+    width  : 300px;
+    height : 150px;
+}
+.instanceSelectors {
+    height       : 130px;
+    width        : 300px;
+    padding-top  : 0px;
+    padding-left : 17px;
+    overflow     : auto;
+}
+.instanceSelector {
+    opacity : 0.3;
+}
+.instanceSelector:hover {
+    opacity : 0.8;
+}
+.selectedItem {
+    opacity : 1;
+    border  : 1px solid #3f0;
+
+}
+
+/* main workflow rendering area */
+.workflowTabs {
+    position : absoulute;
+    top      : 35px;
+    height   : 1200px; /* 92%;  1200px; 100%; */
+    /*
+    display  : inline;
+    */
+}
+.workflowTabs .ui-tabs-panel div {
+    height : 1200px;
+ }
+
+
+/* job output */
+#jobOutputDialog {
+    height   : 620px;
+    overflow : hidden;
+}
+.jobInfo {
+    color     : darkblue;
+    font-face : bold;
+}
+.outputTabSet {
+    padding   : 0px;
+    height    : 99%;
+    width     : 100%;
+    overflow  : hidden;
+ }
+
+.jobOutPanel {
+    position : absolute;
+ }
+
+.jobOutputTab {
+    height      : 99%;
+    overflow    : scroll;
+    font-family : "Courier New";
+    padding     : 5px;
+}
+
+/* flows */
+#flowDialog {
+    width : 95%;
+    height : 95%;
+    display  : none;
+}
+#flows {
+    border : 1px solid lightgray;
+    /*    height : 98%; */
+}
+.graph {
+    display : none;
+ }
+.flow {
+    padding : 10px;
+    margin  : 0px;
+    border-bottom : 1px solid lightgray;
+    background-color : #F5FFFF;
+ }
+.flow:hover {
+    background-color : #FFFFEE;
+ }
+.connectRuns {
+    display : none;
+    padding : 10px;
+ }
+.connectFlowRun {
+    padding     : 10px;
+    margin      : 0px 0px 0px 45px;
+    border      : 1px solid #eee;
+    
+ }
+.connectFlowRun:hover {
+    background-color :  #F5FFFF;
+ }
+/* about */
+#about {
+    position : absolute;
+    top      : 35px;
+    left     : 0px;
+    height   : 100%;
+    width    : 100%; 
+}
+.aboutPanel {
+    float     : right;
+    float     : left;
+    padding   : 40px;
+    border    : 1px solid lightgray;
+    height    : 70%;
+    width     : 20%;
+    margin    : 20px;
+    font-size : 12px;  
+    opacity   : 0.8;
+    overflow  : hidden;
+}
+.aboutPanel:hover {
+    opacity : 1;
+}
+#aboutOne {
+    background-color : #FFFFEE;
+}
+#aboutTwo {
+    background-color : #F5FFFF;
+}
+#aboutThree {
+    background-color : #FFF5FF;
+}
+.aboutHeader {
+    text-align : center;
+    text-transform : uppercase;
+    letter-spacing : 2px;
+    font-face : bold;
+    font-size : 20px;
+    padding-bottom : 20px;
+    border-bottom : 1px solid lightgray;
+}
+.aboutBody {
+    padding-top : 20px;
+}
+.infoSegmentHeader {
+    text-transform : uppercase;
+    letter-spacing : 2px;
+    font-weight : bold;
+    font-size : 12px;
+ }    
+/* tabs - jquery plugin styles */
+ul#icons {margin: 0; padding: 0;}
+ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+ul#icons span.ui-icon {float: left; margin: 0 4px;}
+
+.tooltip {
+    z-index : 2;
+ }
+
+/* job status */
+
+.pending   { background-color : #06f; }  // blue
+.executing { background-color : #ff3; }  // yellow
+.failed     { background-color : #f00; }  // red
+.succeeded  { background-color : #3f0; }  // green
+
+.runStatus {
+    float        : left;
+    margin-right : 5px;
+    width        : 10px;
+    height       : 10px;
+
+    background-color        : #fff;
+    opacity      : 0.0;
+
+}
+.runPending {
+    float        : left;
+    margin-right : 5px;
+    width        : 10px;
+    height       : 10px;
+
+    background-color : #06f;
+    opacity      : 0.7;
+
+}
+.runStatusSuccess {
+    float        : left;
+    margin-right : 5px;
+    width        : 10px;
+    height       : 10px;
+
+    background-color        : #3f0;
+    opacity      : 0.7;
+}
+.runStatusFailure {
+    float        : left;
+    margin-right : 5px;
+    width        : 10px;
+    height       : 10px;
+
+    background-color        : #f00;
+    opacity      : 0.7;
+ }

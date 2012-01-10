@@ -1,0 +1,29 @@
+# NAMD CONFIGURATION FILE FOR DECALANIN
+
+# protocol params
+numsteps	1000
+
+# initial config
+coordinates	input.pdb
+temperature	300K
+seed		12345
+
+# output params
+outputname 	./input
+binaryoutput	no
+
+# integrator params
+timestep	1.0
+
+# force field params
+structure	input.psf
+parameters	input.params
+exclude		scaled1-4
+1-4scaling	1.0
+switching	on
+switchdist	8.0
+cutoff		12.0
+pairlistdist	13.5
+margin		0.0
+stepspercycle	20
+

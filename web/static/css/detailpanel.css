@@ -1,0 +1,45 @@
+#detailpanel {
+    background : #ffffed;
+    height     : 450px;
+    display    : none;
+    position   : absolute;
+    bottom     : 0px;
+    left       : 0px;
+    width      : 120%;  
+    zindex     : 1;
+    border-top : solid 2px #422410;
+}
+.detailpanel-slide {
+}
+.detailpanel-btn-slide {
+    position        : absolute;
+    bottom          : 5px;
+    right           : 5px;
+    left            : 200px;
+    text-align      : center;
+    width           : 144px;
+    height          : 31px;
+    padding         : 10px 10px 0 0;
+    margin          : 0 auto;
+    display         : block;
+    font            : bold 120%/100% Arial, Helvetica, sans-serif;
+    color           : #111;
+    text-decoration : none;
+}
+.detailpanel-active {
+    position            : absolute;
+    bottom              : 5px;
+    right               : 2px;
+    background-position : right 12px;
+}
+#monitor_text {
+    overflow-y : auto;
+    heigth     : 300px;
+}
+#detail_stats {
+    position         : absolute;
+    bottom           : 0px;
+    height           : 20px;
+    width            : 100%;
+    background-color : #e0e0ee;
+}

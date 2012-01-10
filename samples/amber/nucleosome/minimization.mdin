@@ -1,0 +1,9 @@
+Benchmark for nucleosome
+ &cntrl
+  imin=1,irest=0,ntx=1,
+  maxcyc=10,ncyc=5,
+  ntf=1,ntc=1,ntb=0,
+  igb=5,cut=9999.0,rgbmax=15.0,
+  ntpr=1,
+  ntr=0,saltcon=0.1,
+ /

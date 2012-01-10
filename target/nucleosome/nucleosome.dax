@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated: 2011-12-09 15:51:18.065427 -->
+<!-- generator: python -->
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd" version="3.2" name="nucleosome">
+
+	<!-- part 1: Replica catalog (may be empty) -->
+	<file name="prmtop">
+		<pfn url="file://target/nucleosome/prmtop" site="local"/>
+	</file>
+	<file name="minimization.mdin">
+		<pfn url="file://target/nucleosome/minimization.mdin" site="local"/>
+	</file>
+	<file name="restart.min">
+		<pfn url="file://target/nucleosome/restart.min" site="local"/>
+	</file>
+	<file name="restrt">
+		<pfn url="file://target/nucleosome/restrt" site="local"/>
+	</file>
+	<file name="min.out">
+		<pfn url="file://target/nucleosome/min.out" site="local"/>
+	</file>
+	<file name="logfile">
+		<pfn url="file://target/nucleosome/logfile" site="local"/>
+	</file>
+	<file name="heatsystem.1.mdin">
+		<pfn url="file://target/nucleosome/heatsystem.1.mdin" site="local"/>
+	</file>
+	<file name="dyn1.out">
+		<pfn url="file://target/nucleosome/dyn1.out" site="local"/>
+	</file>
+	<file name="restart.1">
+		<pfn url="file://target/nucleosome/restart.1" site="local"/>
+	</file>
+	<file name="heatsystem.2.mdin">
+		<pfn url="file://target/nucleosome/heatsystem.2.mdin" site="local"/>
+	</file>
+	<file name="dyn2.out">
+		<pfn url="file://target/nucleosome/dyn2.out" site="local"/>
+	</file>
+	<file name="restart.2">
+		<pfn url="file://target/nucleosome/restart.2" site="local"/>
+	</file>
+	<executable name="minimization" namespace="nucleosome" os="linux" installed="false">
+		<pfn url="file:///home/scox/gpu/bin/pmemd.MPI" site="TestCluster"/>
+	</executable>
+	<executable name="dynamics-1" namespace="nucleosome" os="linux" installed="false">
+		<pfn url="file:///home/scox/gpu/bin/pmemd.cuda.MPI" site="TestCluster"/>
+	</executable>
+	<executable name="dynamics-2" namespace="nucleosome" os="linux" installed="false">
+		<pfn url="file:///home/scox/gpu/bin/pmemd.cuda.MPI" site="TestCluster"/>
+	</executable>
+
+	<!-- part 2: Transformation catalog (may be empty) -->
+
+	<!-- part 3: Definition of all jobs/dags/daxes (at least one) -->
+	<job id="1n2" namespace="nucleosome" name="minimization">
+		<argument>-i <file name="minimization.mdin"/> -ref <file name="restart.min"/> -c <file name="restart.min"/> -t <file name="prmtop"/> -r <file name="restrt"/> -o <file name="min.out"/></argument>
+		<profile namespace="globus" key="xcount">8</profile>
+		<profile namespace="globus" key="maxWallTime">2800</profile>
+		<profile namespace="globus" key="jobType">single</profile>
+		<profile namespace="globus" key="host_xcount">1</profile>
+		<uses name="restart.min" link="input"/>
+		<uses name="prmtop" link="input"/>
+		<uses name="minimization.mdin" link="input"/>
+		<uses name="min.out" link="output"/>
+		<uses name="logfile" link="output"/>
+		<uses name="restrt" link="output"/>
+	</job>
+	<job id="1n5" namespace="nucleosome" name="dynamics-1">
+		<argument>-o <file name="dyn1.out"/> -i <file name="heatsystem.1.mdin"/> -t <file name="prmtop"/> -c <file name="restart.1"/> -ref <file name="restart.1"/> -o <file name="dyn1.out"/> -r <file name="restrt"/></argument>
+		<profile namespace="globus" key="queue">gpgpu</profile>
+		<profile namespace="globus" key="xcount">8</profile>
+		<profile namespace="globus" key="jobType">single</profile>
+		<profile namespace="globus" key="maxWallTime">2800</profile>
+		<profile namespace="globus" key="host_xcount">1</profile>
+		<uses name="heatsystem.1.mdin" link="input"/>
+		<uses name="restrt" link="input"/>
+		<uses name="prmtop" link="input"/>
+		<uses name="restart.1" link="input"/>
+		<uses name="logfile" link="output"/>
+		<uses name="dyn1.out" link="output"/>
+		<uses name="restrt" link="output"/>
+	</job>
+	<job id="1n6" namespace="nucleosome" name="dynamics-2">
+		<argument>-i <file name="heatsystem.2.mdin"/> -t <file name="prmtop"/> -r <file name="restrt"/> -c <file name="restart.2"/> -ref <file name="restart.2"/> -o <file name="dyn2.out"/></argument>
+		<profile namespace="globus" key="queue">gpgpu</profile>
+		<profile namespace="globus" key="xcount">8</profile>
+		<profile namespace="globus" key="jobType">single</profile>
+		<profile namespace="globus" key="maxWallTime">2800</profile>
+		<profile namespace="globus" key="host_xcount">1</profile>
+		<uses name="restart.2" link="input"/>
+		<uses name="heatsystem.2.mdin" link="input"/>
+		<uses name="prmtop" link="input"/>
+		<uses name="restrt" link="input"/>
+		<uses name="logfile" link="output"/>
+		<uses name="dyn2.out" link="output"/>
+	</job>
+
+	<!-- part 4: List of control-flow dependencies (may be empty) -->
+	<child ref="1n5">
+		<parent ref="1n2"/>
+	</child>
+	<child ref="1n6">
+		<parent ref="1n5"/>
+	</child>
+</adag>

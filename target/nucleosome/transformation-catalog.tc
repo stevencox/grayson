@@ -1,0 +1,9 @@
+TestCluster        nucleosome::minimization                file:///home/scox/gpu/bin/pmemd.MPI             STAGEABLE   INTEL64::LINUX
+local        nucleosome::minimization                target/nucleosome/bin/minimization             STAGEABLE   INTEL64::LINUX
+local        nucleosome::minimization                target/nucleosome/bin/minimization             STAGEABLE   INTEL64::LINUX
+TestCluster        nucleosome::dynamics-1                file:///home/scox/gpu/bin/pmemd.cuda.MPI             STAGEABLE   INTEL64::LINUX
+local        nucleosome::dynamics-1                target/nucleosome/bin/dynamics-1             STAGEABLE   INTEL64::LINUX
+local        nucleosome::dynamics-1                target/nucleosome/bin/dynamics-1             STAGEABLE   INTEL64::LINUX
+TestCluster        nucleosome::dynamics-2                file:///home/scox/gpu/bin/pmemd.cuda.MPI             STAGEABLE   INTEL64::LINUX
+local        nucleosome::dynamics-2                target/nucleosome/bin/dynamics-2             STAGEABLE   INTEL64::LINUX
+local        nucleosome::dynamics-2                target/nucleosome/bin/dynamics-2             STAGEABLE   INTEL64::LINUX

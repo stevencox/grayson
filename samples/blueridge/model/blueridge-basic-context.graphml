@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
+  <!--Created by yFiles for Java 2.8-->
+  <key for="graphml" id="d0" yfiles.type="resources"/>
+  <key for="port" id="d1" yfiles.type="portgraphics"/>
+  <key for="port" id="d2" yfiles.type="portgeometry"/>
+  <key for="port" id="d3" yfiles.type="portuserdata"/>
+  <key attr.name="url" attr.type="string" for="node" id="d4"/>
+  <key attr.name="description" attr.type="string" for="node" id="d5"/>
+  <key for="node" id="d6" yfiles.type="nodegraphics"/>
+  <key attr.name="Description" attr.type="string" for="graph" id="d7">
+    <default/>
+  </key>
+  <key attr.name="url" attr.type="string" for="edge" id="d8"/>
+  <key attr.name="description" attr.type="string" for="edge" id="d9"/>
+  <key for="edge" id="d10" yfiles.type="edgegraphics"/>
+  <graph edgedefault="directed" id="G">
+    <node id="n0">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{
+  "type" : "properties",
+  "map" : {
+    "pmemdMPI" : "/home/scox/gpu/bin/pmemd.MPI",
+    "pmemdCudaMPI" : "/home/scox/gpu/bin/pmemd.cuda.MPI",
+    "clusterId" : "RENCI-Blueridge"
+  },
+  "testMap" : {
+    "pmemdMPI" : "${appHome}/test/pmemd.MPI",
+    "pmemdCudaMPI" : "${appHome}/test/pmemd.MPI"
+  },
+  "site" : {
+    "CLUSTER_ID" : "RENCI-Blueridge",
+    "CLUSTER_HOSTNAME" : "brgw1.renci.org",
+    "CLUSTER_SCHEDULER" : "pbs",
+    "CLUSTER_WORK_DIR" : "/osg/osg-data",
+    "CLUSTER_PEGASUS_HOME" : "/osg/osg-app/pegasus-3.0.3/",
+    "CLUSTER_GLOBUS_LOCATION" : "/opt/osg/1.2.13/osg-1.2.13/globus"
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="BevelNode3">
+          <y:Geometry height="52.0" width="100.92215568862252" x="-1556.5021833339465" y="-2153.784215943115"/>
+          <y:Fill color="#99CC00" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.75" x="12.586077844311149" y="15.8515625">properties</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n1">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="84.33333333333333" width="439.3345687531189" x="-1725.708389866195" y="-2326.7366173902183"/>
+          <y:Fill color="#F3FBF0" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="179.13671875" x="130.09892500155956" y="28.526041666666515">Blueridge Basic</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="68.5" width="306.99999999999994" x="-1659.5411054896354" y="-2232.34375"/>
+          <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" bottomInset="2" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" leftInset="2" modelName="internal" modelPosition="c" rightInset="2" textColor="#000000" topInset="2" visible="true" width="4.0" x="151.5" y="32.25"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="242.34765625" x="32.326171875" y="11.296875">Characterize Blueridge cluster basics 
+* Properties for site catalog
+* MPI queues defined as abstract nodes</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "jobType" : "single",
+      "host_xcount" : "1",
+      "xcount" : "8",
+      "maxWallTime" : "2800"
+    }
+  },
+  "arch" : "x86_64"
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="35.0" width="106.62417664670733" x="-1559.353193812989" y="-2091.7246818862304"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="51.31208832335369" y="15.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="54.349609375" x="26.13728363585369" y="8.515625">MPIBase</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract"
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="35.0" width="100.92215568862247" x="-1646.9632611782579" y="-2026.7246818862304"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="48.46107784431115" y="15.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="38.763671875" x="31.07924190681115" y="8.515625">MPI_8</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n5">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "queue"   : "largemem",
+      "xcount" : "32"
+    }
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="35.0" width="181.01735189665618" x="-1597.0497814379632" y="-1961.7246818862304"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="88.50867594832812" y="15.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="115.240234375" x="32.88855876082812" y="8.515625">MPI_Largememory</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n6">
+      <data key="d5"><![CDATA[{
+  "type" : "abstract",
+  "profiles" : {
+    "globus" : {
+      "queue" : "gpgpu"
+    }
+  }
+}]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="35.0" width="126.43791167664625" x="-1478.9790171662817" y="-2026.7246818862304"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="61.218955838323154" y="15.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="72.982421875" x="26.727744900823154" y="8.515625">MPI_GPGPU</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <edge id="e0" source="n3" target="n4">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n3" target="n6">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n3" target="n5">
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.4999999999997726" ty="0.0"/>
+          <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+  </graph>
+  <data key="d0">
+    <y:Resources/>
+  </data>
+</graphml>

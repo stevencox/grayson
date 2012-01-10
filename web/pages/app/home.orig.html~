@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>{{app.title}}</title>
+  </head>
+  <body>
+    <p>Welcome {{app.username}}.  {{path}}</p>
+    <div style='border:lightgray 1px solid'>
+      <form id='run_form' action='/run/' method='post' enctype="multipart/form-data">{% csrf_token %}
+	<input type='file' name='workflow' size='40' value='Upload'/>
+	<input type='submit' value='Run'/>
+      </form>
+    </div>
+
+    <div id="workflow" style="visibility:hidden" >
+      <h1>workflow</h1>
+      <div id="log"></div>
+      <div id="container">
+	<div id="left-container">
+	  <div id="id-list"></div>
+	</div>
+	<div id="center-container">
+	  <div id="infovis"></div>    
+	</div>
+	<div id="right-container"></div>
+      </div>
+      <div id="chat"><p>Connecting...</p></div>
+    </div>
+
+
+  </body>
+</html>

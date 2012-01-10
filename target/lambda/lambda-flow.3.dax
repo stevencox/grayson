@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- generated: 2011-12-09 15:51:21.270726 -->
+<!-- generator: python -->
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-3.2.xsd" version="3.2" name="lambda-flow.3">
+
+	<!-- part 1: Replica catalog (may be empty) -->
+	<file name="a.22.tar.gz-3-out.tar.gz">
+		<pfn url="file://target/lambda/a.22.tar.gz-3-out.tar.gz" site="local"/>
+	</file>
+	<file name="input-one.tar.gz">
+		<pfn url="file://target/lambda/input-one.tar.gz" site="local"/>
+	</file>
+	<file name="input-two.tar.gz">
+		<pfn url="file://target/lambda/input-two.tar.gz" site="local"/>
+	</file>
+	<file name="a.22.tar.gz">
+		<pfn url="file:///home/scox/dev/grayson/samples/lambda/data/a.22.tar.gz" site="local"/>
+	</file>
+	<file name="a.22.tar.gz-2-out.tar.gz">
+		<pfn url="file://target/lambda/a.22.tar.gz-2-out.tar.gz" site="local"/>
+	</file>
+	<executable name="lambda" namespace="lambda-flow.3" os="linux" installed="false">
+		<pfn url="file://target/lambda/bin/lambda.sh" site="local"/>
+	</executable>
+
+	<!-- part 2: Transformation catalog (may be empty) -->
+
+	<!-- part 3: Definition of all jobs/dags/daxes (at least one) -->
+	<job id="1n2" namespace="lambda-flow.3" name="lambda">
+		<argument><file name="a.22.tar.gz"/> 3 7</argument>
+		<uses name="a.22.tar.gz" link="input"/>
+		<uses name="input-one.tar.gz" link="input"/>
+		<uses name="a.22.tar.gz-2-out.tar.gz" link="input"/>
+		<uses name="input-two.tar.gz" link="input"/>
+		<uses name="a.22.tar.gz-3-out.tar.gz" link="output"/>
+	</job>
+	<dax id="ID0000001" file="quality-check.3.dax">
+		<argument>-Dpegasus.user.properties=target/lambda/pegasus.properties --sites local --force --verbose --verbose --verbose --output local</argument>
+		<uses name="a.22.tar.gz-3-out.tar.gz" link="input"/>
+		<uses name="a.22.tar.gz-3-out.tar.gz" link="output"/>
+	</dax>
+
+	<!-- part 4: List of control-flow dependencies (may be empty) -->
+	<child ref="ID0000001">
+		<parent ref="1n2"/>
+	</child>
+</adag>

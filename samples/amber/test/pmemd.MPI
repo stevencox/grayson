@@ -1,0 +1,114 @@
+#!/usr/bin/env python
+
+import sys
+import getopt
+import os
+import traceback
+import shutil
+
+# candidate material for a generic test library
+class Status:
+	def __init__(self):
+		self.nominal = True
+
+def usage (exit=True):
+	print "usage:"
+	print "-i    specify an input file"
+	print "-o    specify an output file"
+	print "-t    specify a top file"
+	print "-c    specify a crd file"
+	print "-r    specify a restart file"
+	print "-x    specify an x file"
+	if exit:
+		sys.exit (1)
+
+def writeFile (fileName, content):
+	output = open (str(fileName), "w")
+	output.write (content)
+	output.close ()
+
+def writeFiles (map):
+	for filename in map:
+		content = map [filename]
+		writeFile (filename, content)
+
+def requireNonEmpty (arg, var, status):
+	if not var:
+		print "      required arg %s does not exist" % arg
+		status.nominal = False
+	else:
+		print "      required arg %s is present" % var
+def requireFile (arg, var, status):
+	if var:
+		if not os.path.exists (var):
+			source = "../%s" % var
+			if os.path.exists (source):
+				shutil.copy (source, var)
+				print "      copied required file %s" % var
+			else:
+				print "      required file %s does not exist" % var
+				status.nominal = False
+		else:
+			print "      required file %s has been copied" % var
+	else:
+		status.nominal = False
+
+# the main test
+def main (argv):
+	input = None
+	output = None
+	top = None
+	crd = None
+	restart = None
+	ref = None
+	x = None
+	showUsage = False
+	try:
+		opts, args = getopt.getopt (argv, "i:o:t:c:r:x:z:", [])
+		for opt, arg in opts:
+			if opt in ("-i"):
+				input = arg
+			elif opt in ("-o"):
+				output = arg
+			elif opt in ("-t"):
+				top = arg
+			elif opt in ("-c"):
+				crd = arg
+			elif opt in ("-r"):
+				restart = arg
+			elif opt in ("-x"):
+				x = arg
+			else:
+				usage ()
+
+		c = 0
+		for arg in argv:
+			if arg == "-ref":
+				nextArg = argv [c + 1]
+				if nextArg:
+					ref = nextArg
+			c += 1
+
+		status = Status ()
+		requireFile ("-i", input, status)
+		#requireNonEmpty ("-o", output, status)
+		requireFile ("-t", top, status)
+		requireFile ("-c", crd, status)
+		requireNonEmpty ("-r", restart, status)
+		requireNonEmpty ("-ref", ref, status)
+		
+		if not status.nominal:
+			usage ()
+
+		writeFiles ( {
+				restart   : "restart",
+				"logfile" : "logfile",
+				"mdinfo"  : "mdinfo"
+				})
+	except getopt.GetoptError, ex:
+		formatted_lines = traceback.format_exc().splitlines()
+		print formatted_lines[-1]
+		usage ()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

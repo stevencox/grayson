@@ -1,0 +1,83 @@
+
+''' system '''
+import httplib
+import json
+import socket
+import ssl
+import urllib2
+import pycurl
+
+class HTTPUtil
+def do_curl ():
+    # upload binary file with pycurl by http post
+    curl = pycurl.Curl ()
+    curl.setopt (curl.POST, 1)
+    curl.setopt (curl.URL, "http://127.0.0.1:8000/api_run/")
+    curl.setopt (curl.HTTPPOST,
+              [ ("workflow",
+                 (curl.FORM_FILE, "x.zip")
+                 )
+                ])
+    curl.setopt (curl.VERBOSE, 1)
+    curl.setopt (curl.WRITEFUNCTION, curl_write)
+    curl.perform ()
+    curl.close ()
+
+def curl_write (data):
+    x = json.loads (data)
+    print "========== status: %s" % x['status']
+    return len(data)
+
+
+'''
+kudos: http://thejosephturner.com/blog/2011/03/19/https-certificate-verification-in-python-with-urllib2/
+       http://svn.osafoundation.org/m2crypto/trunk/demo/x509/certdata2pem.py
+       http://mxr.mozilla.org/seamonkey/source//security/nss/lib/ckfw/builtins/certdata.txt?raw=1
+'''
+
+class VerifiedHTTPSConnection (httplib.HTTPSConnection):
+    def connect (self):
+        # overrides the version in httplib so that we do
+        #    certificate verification
+        sock = socket.create_connection((self.host, self.port), self.timeout)
+        if self._tunnel_host:
+            self.sock = sock
+            self._tunnel()
+        # wrap the socket using verification with the root
+        #    certs in trusted_root_certs
+        self.sock = ssl.wrap_socket(sock,
+                                    self.key_file,
+                                    self.cert_file,
+                                    cert_reqs=ssl.CERT_REQUIRED,
+                                    ca_certs="lib/certs/trusted_root_certs")
+
+# wraps https connections with ssl certificate verification
+class VerifiedHTTPSHandler(urllib2.HTTPSHandler):
+    def __init__ (self, connection_class = VerifiedHTTPSConnection):
+        self.specialized_conn_class = connection_class
+        urllib2.HTTPSHandler.__init__(self)
+    def https_open (self, req):
+        return self.do_open(self.specialized_conn_class, req)
+
+class GraysonHTTP:
+    def getConnection (self):
+        https_handler = VerifiedHTTPSHandler ()
+        url_opener = urllib2.build_opener (https_handler)
+        return url_opener
+
+def do_stuff (url):
+    https_handler = VerifiedHTTPSHandler()
+    url_opener = urllib2.build_opener(https_handler)
+    handle = url_opener.open(url)
+    response = handle.readlines()
+    print response
+    handle.close()
+
+
+__version__ = '0.1'
+__all__ = [ "GraysonHTTPS" ]
+__author__ = 'Steve Cox <scox@renci.org>'
+
+
+
+

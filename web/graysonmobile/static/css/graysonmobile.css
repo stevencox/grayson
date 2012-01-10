@@ -1,0 +1,20 @@
+body {
+    font-family : Helvetica;
+    font-size : 10px;
+}
+#footer {
+    position : absolute;
+    bottom   : 0px;
+}
+.flowCount {
+    float : right;
+ }
+.runFail {
+    background-color : #ecc;
+}
+.runGoing {
+    background-color : #cce;
+}
+.runGood {
+    background-color : #cec;
+}

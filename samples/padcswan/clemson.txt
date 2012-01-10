@@ -1,0 +1,23 @@
+
+    <site  handle="Clemson" arch="x86" os="LINUX">
+        <grid  type="gt2" contact="osg-gw.clemson.edu/jobmanager-fork" scheduler="Fork" jobtype="auxillary"/>
+        <grid  type="gt2" contact="osg-gw.clemson.edu/jobmanager-condor" scheduler="unknown" jobtype="compute"/>
+        <head-fs>
+            <scratch>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://osg-gw.clemson.edu" mount-point="/common1/osg/data/engage/tmp/rynge"/>
+                    <internal-mount-point mount-point="/common1/osg/data/engage/tmp/rynge"/>
+                </shared>
+            </scratch>
+            <storage>
+                <shared>
+                    <file-server protocol="gridftp" url="gsiftp://osg-gw.clemson.edu" mount-point="/common1/osg/data/engage/tmp/rynge"/>
+                    <internal-mount-point mount-point="/common1/osg/data/engage/tmp/rynge"/>
+                </shared>
+            </storage>
+        </head-fs>
+        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+        <profile namespace="pegasus" key="style">glideinwms</profile>
+        <profile namespace="condor" key="+DESIRED_Sites">&quot;Clemson&quot;</profile>
+        <profile namespace="condor" key="x509userproxy">/tmp/x509up_u1031</profile>
+    </site>

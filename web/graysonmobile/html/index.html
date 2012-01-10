@@ -1,0 +1,19 @@
+{% include "graysonmobile/html/includes/base.html" %}
+<html>
+  {% include "graysonmobile/html/includes/head.html" %}
+  <body>
+    <div id='main' data-role='page' data-title='Grayson' data-add-back-btn="true">
+      {% include "graysonmobile/html/includes/header.html" %}
+      <div id='home' data-role='content'>
+	<h2>Grayson</h2>
+	<p> Use <a href='flows/'>Flows</a> to review workflows.</p>
+	<p> <a href='about/' data-rel='dialog' data-transition='pop' data-prefetch='true'>About</a> </p>
+      </div>
+      {% include "graysonmobile/html/includes/footer.html" %}
+    </div>
+  </body>
+</html>
+
+<!--
+   45x45: apple-touch-icon.png
+-->

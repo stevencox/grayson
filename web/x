@@ -1,0 +1,92 @@
+import json
+
+awesome = '''
+{
+   "id" : "ralph",
+   "data":{
+   },
+   "name" : "ID0000001",
+   "children" : [
+      {
+	 "id"  : " julia",
+         "data":{
+         },
+         "name": "ID0000002",
+         "children" : [
+            {
+	       "id" : "ruby",
+               "data":{
+               },
+               "name" : "ID0000003",
+               "children" : [
+               ]
+            }
+         ]
+      }
+   ]
+}
+'''
+
+
+awesome = '''
+{
+   "data":{
+   },
+   "name" : "ID0000001",
+   "children" : [
+      {
+         "data":{
+         },
+         "name": "ID0000002",
+         "children" : [
+            {
+               "data":{
+               },
+               "name" : "ID0000003",
+               "children" : [
+               ]
+            }
+         ]
+      }
+   ]
+}
+'''
+
+awesome = '''
+{
+    'data': {}, 
+    'name': 'ID0000001', 
+    'children' : [
+		  {'data': {}, 
+		   'name': 'ID0000002',
+		   'children': [{'data': {}, 'name': 'ID0000003', 'children': []}]}]}
+'''
+
+awesome = '''
+{
+    "data": {}, 
+    "name": "ID0000001", 
+    "children" : [
+		  {"data": {}, 
+		   "name": "ID0000002",
+		   "children": [{"data": {}, "name": "ID0000003", "children": []}]}]}
+'''
+
+p = json.loads (awesome)
+print "-- %s" % p
+s = json.dumps (p)
+print "-- %s" % s
+
+w = {
+"client" : "x",
+"workflow" : {
+    "data": {}, 
+    "name": "ID0000001", 
+    "children" : [
+		  {"data": {}, 
+		   "name": "ID0000002",
+		   "children": [{"data": {}, "name": "ID0000003", "children": []}]}]}
+}
+
+
+print "-- workflow %s" % json.dumps (w, True, 4)

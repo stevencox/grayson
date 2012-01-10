@@ -1,0 +1,175 @@
+#!/bin/bash
+#
+# CPUInfo.sh
+# Copyright 2009 Ryan McLean ryan1_00 !at_NoSPAM hotmail -com
+# GPL v2 or later
+ 
+# Functions #
+function getArch()
+{
+     case `uname -p` in
+        "i686")
+            eval "$1=x86";
+            ;;
+        *)
+            eval "$1='`uname -p`'";
+            ;;
+    esac
+}
+ 
+function getMake()
+{
+    # Who Makes it (AMD | INTEL)
+    if [ `grep -c -i vendor_id /proc/cpuinfo` -gt 0 ]; then
+        tmp=`grep -i vendor_id /proc/cpuinfo | cut -f2 -d":"`;
+    elif [ `grep -c -i vendor /proc/cpuinfo` -gt 0 ]; then
+        tmp=`grep -i vendor /proc/cpuinfo | cut -f2 -d":"`;
+    fi
+ 
+    tmp=`echo $tmp | sed 's/\n/ /g' | cut -f1 -d" "`;
+ 
+    if [ `echo $tmp | grep -c AMD` -eq 1 ]; then
+        eval "$1=AMD";
+    elif [ `echo $tmp | grep -c Intel` -eq 1 ]; then
+        eval "$1=Intel";
+    else
+        eval "$1=Unknown";
+    fi
+}
+ 
+function getModel()
+{
+    # What is is (Athlon | Pentium)
+    if [ `grep -c "model name" /proc/cpuinfo` -gt 0 ]; then
+        tmp=`grep -i "model name" /proc/cpuinfo | cut -f1,2 -d":"`;
+        eval "$1='`echo $tmp | sed 's/\n/ /g' | cut -f2 -d":" | sed 's/model name/ /g'`'";
+    elif [ `grep -c "family" /proc/cpuinfo` -gt 0 ]; then
+        tmp=`grep -i "family" /proc/cpuinfo | cut -f1,2 -d":"`;
+        eval "$1='`echo $tmp | sed 's/\n/ /g' | cut -f2 -d":" | sed 's/family/ /g'`'";
+    else
+        eval "$1=Unknown";
+    fi
+}
+ 
+function getCPU()
+{
+    if [ `grep -c "cpu cores" /proc/cpuinfo` -gt 0 ]; then
+        # Get number of cores (assumes that multiprocessor computers
+        # have same number of cores on each CPU)
+        tmp=`grep -i "cpu cores" /proc/cpuinfo | cut -f2 -d":" | sed 's/ //g'`;
+        tmp=`echo $tmp | sed 's/ //g'`;
+        eval "$2=`echo ${tmp:0:1}`";
+ 
+        # count number of Physical & logical CPUs
+        tmp=`grep -i "physical id" /proc/cpuinfo | cut -f2 -d":" | sed 's/ //g'`;
+        tmp=`echo $tmp | sed 's/ //g'`;
+ 
+        x=0;
+        while [ $x -lt ${#tmp} ]
+        do
+            curID=`echo ${tmp:$x:1}`;
+            tmp3[$curID]=`expr ${tmp3[$curID]} + 1`;
+            x=`expr $x + 1`;
+        done
+ 
+            eval "$1=`echo ${#tmp3[*]}`";
+ 
+    elif [ `grep -c "cpu number" /proc/cpuinfo` -gt 0 ]; then
+        # count number of Physical & logical CPUs
+        tmp=`grep -i "cpu number" /proc/cpuinfo | cut -f2 -d":" | sed 's/ //g'`;
+        tmp=`echo $tmp | sed 's/ //g'`;
+ 
+        x=0;
+        while [ $x -lt ${#tmp} ]
+        do
+            curID=`echo ${tmp:$x:1}`;
+            tmp2[$curID]=`expr ${tmp2[$curID]} + 1`;
+            x=`expr $x + 1`;
+        done
+ 
+        eval "$1=`echo ${#tmp2[*]}`";
+        eval "$2=1";
+    else
+        echo " Processor seems to be quite old guessing number.";
+        tmp=`grep processor /proc/cpuinfo | cut -f2 -d":" | sed 's/ //g'`;
+        tmp=`echo $tmp | sed 's/ //g'`;
+    if [ $ht == "true" ]; then
+            tmp=`expr ${#tmp} '%' 2`;
+            eval "$1=`echo $tmp`";
+        else
+            eval "$1=`echo ${#tmp}`";
+        fi
+        eval "$2=1";
+    fi
+}
+ 
+function getMHZ()
+{
+    eval "$1='`grep 'cpu MHz' /proc/cpuinfo | cut -f2 -d':' | cut -f1 -d'.'`'";
+}
+ 
+function getHT()
+{
+    if [ $CPUmak == "Intel" ]; then
+        if [ `grep flags /proc/cpuinfo | grep -c " ht "` -gt 0 ]; then
+            eval "$1=true";
+        else
+            eval "$1=false";
+        fi
+    elif [ $CPUmak == "AMD" ]; then
+        eval "$1=N/A";
+    else
+        eval "$1=Unknown";
+    fi
+}
+ 
+function getLogCPU()
+{
+    if [ $ht == "true"  ]; then
+        eval "$1=`expr $phyCPU '*' $cores '*' 2`";
+    else
+        eval "$1=`expr $phyCPU '*' $cores`";
+    fi
+}
+ 
+function output()
+{
+    echo "#######################################";
+    echo "#           CPU Information           #";
+    echo "#######################################";
+    echo "";
+    echo " CPU Architecture is: $arch";
+    echo " CPU Manufacturer is: $CPUmak";
+    echo " CPU Model is: $CPUmod";
+    echo " CPU Speed is: "$CPUSpeed"MHz";
+    echo " Number of physical CPUs: $phyCPU";
+    echo " Number of cores per CPU: $cores";
+    echo " Number of logical CPUs (cores & hyperthreading): $logCPU";
+    echo " Hyperthreading enabled (Intel only): $ht";
+    echo "";
+    echo "#######################################";
+}
+ 
+# Set Vars #
+ 
+arch="Unknown";
+CPUmak="Unknown";
+CPUmod="Unknown";
+CPUSpeed="Unknown";
+phyCPU=0;
+cores=0;
+logCPU=0;
+ht="Unknown";
+ 
+# Main #
+clear;
+getArch arch
+getMake CPUmak
+getModel CPUmod
+getMHZ CPUSpeed
+getHT ht CPUmak
+getCPU phyCPU cores ht
+getLogCPU logCPU phyCPU cores ht
+ 
+output arch CPUmak CPUmod CPUSpeed phyCPU cores logCPU ht
+

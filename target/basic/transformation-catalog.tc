@@ -1,0 +1,2 @@
+local        app::job1                target/basic/bin/sample             false   INTEL64::LINUX
+local        app::job2                target/basic/bin/sample             false   INTEL64::LINUX

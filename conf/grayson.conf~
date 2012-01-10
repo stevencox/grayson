@@ -1,0 +1,28 @@
+{
+    "debug"    	       	 : true,
+
+    "socketioListenPort" : 8080,
+
+    "urlPrefix"    : "/",
+
+    "var" : [ "..", "var" ],
+
+    "node"         : {
+        "logLevel" : 2,
+        "http" : null
+    },
+
+    "amqpSettings" : {
+	"host"     : "localhost",
+	"port"     : 5675,
+        "login"    : "guest",
+	"password" : "guest",
+	"vhost"    : "/"
+    },
+
+    "queueSettings" : {
+	"durable"     : false,
+	"autoDelete"  : false,
+	"exclusive"   : false
+    }
+}

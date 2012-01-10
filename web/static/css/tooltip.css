@@ -1,0 +1,57 @@
+
+.instanceSelector {
+     height           : 20px;
+     width            : 20px;
+     float            : left;
+     margin           : 0px;
+     border           : 1px solid;
+     border-color     : gray;
+     background-color : gray;
+ }
+.instanceSelector:hover {
+    opacity : 0.8;
+}
+.selectedItem {
+    opacity : 1;
+    border  : 1px solid #3f0;
+
+}
+.selectedItem {
+     border: 1px solid;
+    border-color : #F7FBFA;
+ }
+.instanceSelectorLabel {
+     top : 10px;
+     width : 290px;
+ }
+.instanceSelectorItemName {
+    float : right;
+ }
+/* tooltip styling */
+.tooltip {
+    /*
+     background:url(http://static.flowplayer.org/tools/img/tooltip/black_arrow_big.png);
+    */
+     background:url(../img/black_arrow_big.png);
+     display:none;
+     height:183px;
+     width : 100%;
+     padding-bottom : 10px;
+     padding-top : 25px;
+     padding-left : 25px;
+     padding-right : 5px;
+     width:340px;
+     font-size:11px;
+     color:#fff;
+ }
+
+/* a .label element inside tooltip */
+.tooltip .label {
+     color:yellow;
+     width:35px;
+ }
+.tooltip a {
+     color:#ad4;
+    font-size:11px;
+     font-weight:bold;
+ }

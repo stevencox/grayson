@@ -1,0 +1,50 @@
+<!DOCTYPE html>  
+<html>  
+  <head>  
+    <script src="js/jquery-1.4.2.min.js"></script>  
+    <script>  
+  
+        jQuery(window).ready(function(){  
+            jQuery("#btnInit").click(initiate_watchlocation);  
+            jQuery("#btnStop").click(stop_watchlocation);  
+        });  
+  
+        var watchProcess = null;  
+  
+        function initiate_watchlocation() {  
+        }  
+  
+        function stop_watchlocation() {  
+        }  
+  
+        function handle_errors(error)  
+        {  
+            switch(error.code)  
+            {  
+                case error.PERMISSION_DENIED: alert("user did not share geolocation data");  
+                break;  
+  
+                case error.POSITION_UNAVAILABLE: alert("could not detect current position");  
+                break;  
+  
+                case error.TIMEOUT: alert("retrieving position timedout");  
+                break;  
+  
+                default: alert("unknown error");  
+                break;  
+            }  
+        }  
+  
+        function handle_geolocation_query(position) {  
+        }  
+    </script>  
+  </head>  
+  <body>  
+    <div>  
+      <button id="btnInit" >Monitor my location</button>  
+  
+      <button id="btnStop" >Stop monitoring</button>  
+    </div>  
+    <div id=”info”></div>  
+  </body>  
+</html>  

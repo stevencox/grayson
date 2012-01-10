@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+# figure out where Pegasus is installed
+export PEGASUS_HOME=`which pegasus-plan | sed 's:/bin/pegasus-plan::'`
+if [ "x$PEGASUS_HOME" = "x" ]; then
+    echo "Unable to determine location of your Pegasus install"
+    echo "Please make sure pegasus-plan is in your path"
+    exit 1
+fi 
+if [ "x$GLOBUS_LOCATION" = "x" ]; then
+    echo "Please set GLOBUS_LOCATION to the location of your Pegasus install"
+    exit 1
+fi 
+
+set -x
+graysonc \
+    $* \
+    --namespace=gpmemd \
+    --version=1.0 \
+    --output=gridpmemd.dax \
+    --site
+
+# plan and submit the workflow
+pegasus-plan \
+    -D pegasus.user.properties=pegasusrc \
+    --sites TestCluster \
+    --force \
+    --dir work \
+    --output local \
+    --dax gridpmemd.dax \
+    --verbose \
+    --submit
+set +x

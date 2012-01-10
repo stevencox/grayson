@@ -1,0 +1,109 @@
+#!/usr/bin/env python
+
+
+import logging
+import getopt
+import json
+import os
+import sys
+import string
+import traceback
+from grayson.executor import Executor
+
+
+def execute (command, context=None):
+    print command
+    executor = Executor (context)
+    try:
+        executor.execute (command)
+    except ValueError, e:
+        pass
+    
+def startRabbit (config):
+    execute ("bin/sudo-grayson-rabbit.sh ${port}", config ["amqpSettings"])
+def stopRabbit (config):
+    execute ("sudo ps -ef | grep rabbitmq | grep -v grep | awk '{print $2}' | sudo xargs kill -9 ")
+
+def startCeleryd (config):
+    execute ("web/manage.py celeryd -l debug > var/logs/celeryd.log &")
+def stopCeleryd (config):
+    execute ("ps -ef | grep 'celeryd' | grep -v grep | awk '{print $2}' | sudo xargs kill -TERM")
+
+def startEvent (config):
+    execute ("node event/server.js > web/logs/event.log &", config ["amqpSettings"])
+def stopEvent (config):
+    execute ("ps -ef | grep 'node event/server.js' | grep -v grep | awk '{print $2}' | sudo xargs kill -9 ")
+
+def startWeb (config):
+    execute ("web/manage.py runserver 0.0.0.0:8000")
+def stopWeb (config):
+    execute ("ps -ef | grep 'manage.py runserver' | grep -v grep | awk '{print $2}' | sudo xargs kill -9 ")
+
+def readConfig (env):
+    homePath = os.path.dirname (os.path.dirname (os.path.realpath(__file__)))
+    configPath = os.path.join (homePath, "conf", "%s.conf" % env)
+    print "opening configuration: %s" % configPath
+    return json.loads (open (configPath).read ())
+
+# main #
+def main (argv):
+    environment = "grayson"
+    config = readConfig (environment)
+
+    try:
+        opts, args = getopt.getopt ( argv, "e:rc", [ "env=",
+                                                     "start",
+                                                     "stop",
+                                                     "start-rabbit",
+                                                     "stop-rabbit",
+                                                     "start-celeryd",
+                                                     "stop-celeryd",
+                                                     "start-event",
+                                                     "stop-event"
+                                                     ] )
+        for opt, arg in opts:
+            if opt in ("-e", "--env"):
+                environment = arg
+
+            elif opt in ("--start"):
+                startRabbit (config)
+                startCeleryd (config)
+                startEvent (config)
+                startWeb (config)
+
+            elif opt in ("--stop"):
+                stopRabbit (config)                
+                stopCeleryd (config)
+                stopEvent (config)
+                stopWeb (config)
+
+            elif opt in ("-r", "--start-rabbit"):
+                startRabbit (config)
+            elif opt in ("-r", "--stop-rabbit"):
+                stopRabbit (config)
+
+            elif opt in ("-r", "--start-celeryd"):
+                startCeleryd (config)
+            elif opt in ("-r", "--stop-celeryd"):
+                stopCeleryd (config)
+ 
+            elif opt in ("-r", "--start-event"):
+                startEvent (config)
+            elif opt in ("-r", "--stop-event"):
+                stopEvent (config)
+
+            else:
+                usage ()
+                sys.exit ()
+
+    except getopt.GetoptError, ex:
+        usage ()
+        formatted_lines = traceback.format_exc().splitlines()
+        print formatted_lines[-1]
+
+# main
+if __name__ == "__main__":
+    main (sys.argv[1:])
+
+
+

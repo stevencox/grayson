@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{{app.title}}</title>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/style.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/menu.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/graysondetail.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/tooltip.css"  />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}/js/datatable/media/css/demo_page.css"  />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}/js/datatable/media/css/demo_table_jui.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/jquery-ui/css/smoothness/jquery-ui-1.8.15.custom.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/uploadify/uploadify.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/jqplot/jquery.jqplot.min.js" />
+  </head>
+
+  <body>
+
+    <div id="header">
+      <div id="title">{{ app.title }}</div>
+      <div id="divider"></div>
+      <img id='ajax-loader' src="{{ STATIC_URL }}img/ajax-loader.gif"/>
+    </div>
+
+    <ul id="nav" >
+      <li><a href="#" >Start</a>
+	<ul class="subnav"> 
+	  <li><a href="#" id="run_menu">Run a Workflow...</a></li>
+	  <li><a href="#" id="connect_menu">Connect to a Workflow...</a></li>
+	</ul> 
+      </li> 
+    </ul> 
+
+    <div id="about">
+      <div id="aboutOne" class="aboutPanel" >
+	<div class="aboutHeader">Your Workflow</div>
+	<div class="aboutBody">
+	  Grayson is a platform for developing and sharing grid scale scientific workflows. The  tool chain has three components:
+	  <ul type="square" >
+	    <li><p class="infoSegmentHeader">Editor</p>
+	      <ul>
+		<li>yWorks yEd for <a href="http://www.yworks.com/en/products_yed_about.html" target="yEd">high quality graph drawing</a>.</li>
+		<li>Mature, <u>free, full featured</u> product..</li>
+		<li><u>Easy to use</u> and produces portable XML.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  <ul type="square">
+	    <li><p class="infoSegmentHeader">Compiler</p>
+	      <ul>
+		<li>Supports separate, <u>reusable components</u>.</li>
+		<li><u>Functional programming</u> for multilevel models.</li>
+		<li><u>Aspect oriented modeling</u> for selective reuse.</li>
+		<li>Supports granular, <u>hybrid job targeting</u>.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  <ul type="square">
+	    <li><p class="infoSegmentHeader">Debugger</p>
+	      <ul>
+		<li><u>Monitor</u> workflow execution progress.</li>
+		<li>Drill down to <u>steer hierarchical workflows</u>.</li>
+		<li>Provides a <u>dynamic, event driven</u> view.</li>
+		<li><u>Examine</u> output of each phase.</li>
+	      </ul>
+	    </li>
+	  </ul>
+	  Model, compile and debug in an environment built to scale.
+	</div>
+      </div>
+      <div id="aboutTwo" class="aboutPanel">
+	<div class="aboutHeader">Our Infrastructure</div>
+	<div class="aboutBody">
+	  A cloud based interface to the worlds most <u>scalable computation infrastructure</u> with <u>consulting services</u> to get your workflows running at scale.
+	  <br/><br/>
+	  RENCI manages infrastructure used by the Large Hadron Collider (LHC) for researchers:
+	  <ul>
+	    <li>Workflow Management   : <a href="http://pegasus.isi.edu/projects/pegasus" target="pegasuswms">Pegasus WMS</a>.</li>
+	    <li>Glidein Submission    : <a href="http://www.uscms.org/SoftwareComputing/Grid/WMS/glideinWMS/doc.prd/index.html" target="glideinwms">GlideinWMS</a>.</li>
+	    <li>Grid Scheduling       : <a href="http://www.cs.wisc.edu/condor/" target="glideinwms">Condor</a>.</li>
+	    <li>Grid Services         : <a href="http://www.globus.org/" target="glideinwms">Globus</a>.</li>
+	    <li>Engagement Consulting : <a href="http://www.renci.org/" target="glideinwms">RENCI</a>.</li>
+	  </ul>
+	</div>
+      </div>
+      <div id="aboutThree" class="aboutPanel">
+	<div class="aboutHeader">Get Started</div>
+	<div class="aboutBody">
+	  Try it! Download the Grayson SDK.
+	  <ul>
+	    <li>Several sample workflows to start with.</li>
+	  </ul>
+	</div>
+      </div>
+    </div>
+
+    <div id="workflowUpload" title="Upload Workflow">
+      <form id="workflowUploadForm" action='/api_run/' method='post' enctype="multipart/form-data">{% csrf_token %}
+	<p>Select a Grayson model archive to upload. For more information, see the documentation on packaging and running workflows.</p> 
+	<input id="file_upload" type="file" name="workflow" ></input>
+	<p id='upload_file_name'></p>
+      </form>
+      <p id='upload_file_status'></p>
+    </div>    
+    
+    <div id="status">Connecting...</div>
+    <div style='visibility:hidden' id="uploadOutput"></div>
+    <div id="jobOutputDialog"></div>
+    <div id="flowDialog" title="Connecto to an Existing Workflow">
+      <div id="flows"></div>
+    </div>
+    
+    <a href="#" class="detailpanel-btn-slide">Detail</a>
+    <div id="really" class="detailpanel">
+      <div id="detailTabs" > 
+	<ul id="tab-labels"> 
+	  <li><a href="#event_detail">Events</a></li>
+	  <li><a href="#network_detail">Network</a></li>
+	  <!--
+	  <li><a href="#compute_detail">Compute</a></li>
+	  -->
+	  <li><a href="#dax_detail">Pegasus DAX</a></li>
+	  <li><a href="#submit_detail">Condor Submit</a></li>
+	</ul> 
+	<div id="event_detail" class="detailTab">
+	  <table id="eventTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Target</th> 
+		<th>Type</th> 
+		<th>Time</th> 
+		<th>Status</th> 
+		<th>Workdir</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="eventList" > 
+	    </tbody> 
+	  </table>
+	</div>
+	<div id="network_detail" class="detailTab">
+	  <table id="networkTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Source</th> 
+		<th>Destination</th> 
+		<th>Protocol</th> 
+		<th>Status</th> 
+		<th>Size</th> 
+		<th>Time</th> 
+		<th>Downstream</th> 
+		<th>Upstream</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="networkEventList" > 
+	    </tbody> 
+	  </table>
+	</div>
+	<!--
+	<div id="compute_detail" class="detailTab">
+	  <div id="compute_graph" ></div>
+	</div>
+	-->
+	<div id="dax_detail">
+	</div>
+	<div id="submit_detail">
+	</div>
+      </div>
+    </div>
+
+  </body>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/tools/jquery.tools.tooltip-1.2.5.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui/js/jquery-ui-1.8.15.custom.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.form.js"></script>
+<!--
+  <script type="text/javascript" src="{{ STATIC_URL }}js/socket.io/socket.io.js"></script>
+-->
+  <script type="text/javascript" src="{{ STATIC_URL }}js/socket.io/0.8.4/socket.io.js"></script>
+
+
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/raphael-min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/scale.raphael.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/raphael.draggable.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/graffle.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/uploadify/swfobject.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/uploadify/jquery.uploadify.v2.1.4.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/datatable/media/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jquery.jqplot.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.barRenderer.min.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.categoryAxisRenderer.min.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.pointLabels.min.js"></script> 
+  <script type="text/javascript">
+    var graysonClientId = "{{ clientId }}";
+    var graysonSocketioListenPort = "{{ app.socketioListenPort }}";
+    var graysonURIPrefix = "{{ app.URL_PREFIX }}";
+    var graysonStaticDataURL = "{{ STATIC_URL }}";
+  </script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/graysondetail.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/grayson.js"></script>
+</html>
+
+<!--
+   Uploadify: http://www.uploadify.com/documentation/
+   Clipart: Nautilus: http://www.clker.com/clipart-nautilus.html 
+   Image converter: http://www.iaza.com/work/110824F/index9309154852.html?CURRENTFILE=/work/110824C/iaza19729744138000.png&LASTOPERATION=Saturation%20Decreased
+-->
+ 

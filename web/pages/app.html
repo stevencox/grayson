@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+  <head>
+
+    <title>{{app.title}}</title>
+    
+    {% load compress %}
+    {% compress css %}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/style.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/menu.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/graysondetail.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/tooltip.css"  />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/datatable/media/css/demo_page.css"  />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/datatable/media/css/demo_table_jui.css" />
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/jquery-ui/css/smoothness/jquery-ui-1.8.15.custom.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.css" />
+    {% endcompress %}
+    
+    {% if client_unit_test %}
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}js/qunit/qunit.css" media="screen" />
+    {% endif %}
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    
+  </head>
+  
+  <body>
+    
+    <div id="loginDialog">
+      <form id='login_form' method='post'>
+	{% csrf_token %}
+	<div id="login_title" class="title">{{ app.title }}</div>
+	<div id="login_kind"></div>
+	<div id="auth_cred">
+	  <div id='username_txt'>Username</div> <input type='text'     id='login_username' name='username' value='' size='35' class='cred'/><br/>
+	  <div id='password_txt'>Password</div> <input type='password' id='login_password' name='password' value='' size='35' class='cred'/><br/>
+	  <div id="login_button">Login</div>
+	</div>
+      </form>
+    </div>
+
+    <ul id="nav" >
+      <li><a href="#" id="title" class="title">{{ app.title }}</a> 
+	<ul class="subnav"> 
+	  <li><a href="#" id="run_menu">Run a Workflow</a></li>
+	  <li><a href="#" id="connect_menu">Connect to a Workflow</a></li>
+	  <li><a href="#" id="detail_menu">Detail View</a></li>
+	  <li><a href="#" id="gridauth_menu">Grid Authentication</a></li>
+	  <li><a href="#" id="login_menu">Login</a></li>
+	  {% if client_unit_test %}
+	  <li><a href="#" id="test_menu">Test</a></li>
+	  {% endif %}
+	</ul> 
+      </li> 
+    </ul>
+
+    <div id="modelName"></div>
+
+    <div id="appVersion">Private Alpha</div>
+
+    <div id="header">
+      <div id="divider"></div>
+      <img id='ajax-loader' src="{{ STATIC_URL }}img/ajax-loader.gif"/>
+    </div>
+
+    <iframe id='about'
+	    frameborder='0'
+	    name='about'
+	    height='100%'
+	    width='100%' 
+	    src='{{ STATIC_URL }}about.html'>
+    </iframe>
+
+    <div id="compilationMessages">
+      <div id="compilationMessagesHead">Compilation errors occurred building <span id="compileModelName"></span></div><br/>
+      <div id="compilationMessagesText"></div>
+    </div>
+
+    <div id="workflowUpload" title="Upload Workflow">
+      <form id="workflowUploadForm" action='api_run/' method='post' enctype="multipart/form-data">{% csrf_token %}
+	<p>Select a Grayson model archive to upload. For more information, see the documentation on packaging and running workflows.</p> 
+	<input id="file_upload" type="file" name="workflow" ></input>
+	<p id='upload_file_name'></p>
+	<input type="submit"  name="submitButton" value="Submit" />
+      </form>
+      <p id='upload_file_status'></p>
+    </div>    
+    
+    <div id="status">Connecting...</div>
+    <div style='visibility:hidden' id="uploadOutput"></div>
+    <div id="jobOutputDialog"></div>
+    <div id="flowDialog" title="Connecto to an Existing Workflow">
+      <div id="flows"></div>
+    </div>
+    
+    <div id="detail_view" class="detailpanel">
+      <div id="detailTabs" > 
+	<ul id="tab-labels"> 
+	  <li><a href="#event_detail">Events</a></li>
+	  <li><a href="#network_detail">Transfers</a></li>
+	  <!--
+	  <li><a href="#compute_detail">Compute</a></li>
+	  -->
+	  <li><a href="#dax_detail">Pegasus DAX</a></li>
+	  <li><a href="#submit_detail">Condor Submit</a></li>
+	  <li><a href="#monitor_detail">Monitor</a></li>
+	  <li><a href="#file_detail">Files</a></li>
+	</ul>
+	<div id="event_detail" class="detailTab">
+	  <table id="eventTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Target</th> 
+		<th>Type</th> 
+		<th>Time</th> 
+		<th>Status</th> 
+		<th>Workdir</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="eventList" > </tbody> 
+	  </table>
+	</div>
+	<div id="network_detail" class="detailTab">
+	  <table id="networkTable"> 
+	    <thead> 
+	      <tr> 
+		<th>Time</th> 
+		<th>Source</th> 
+		<th>Destination</th> 
+		<th>Protocol</th> 
+		<th>Status</th> 
+		<th>Size</th> 
+		<th>Time</th> 
+		<th>Downstream</th> 
+		<th>Upstream</th> 
+	      </tr> 
+	    </thead> 
+	    <tbody id="networkEventList" > </tbody> 
+	  </table>
+	</div>
+	<!--
+	<div id="compute_detail" class="detailTab">
+	  <div id="compute_graph" ></div>
+	</div>
+	-->
+	<div id="dax_detail">
+	</div>
+	<div id="submit_detail">
+	</div>
+	<div id="monitor_detail" class="detailTab">
+	  <textarea id="monitor_text" dir=''></textarea>
+	</div>
+	<div id="file_detail" class="detailTab">
+	  
+	  <div id="file_tree_path"></div>
+	  <div id="file_tree"></div>
+	  <div id="file_detail_file_name"></div>
+	  <textarea style='resize:vertical' id="file_detail_pane"></textarea>
+	</div>
+      </div>
+
+      <div id="detail_stats">
+	<div id="error_link">
+	  <div id="error_count">
+	    <span id="job_fail"></span>
+	    <span id="net_fail"></span>
+	  </div>
+	</div>
+      </div>
+
+    </div>
+
+
+  </body>
+
+  <!-- dynamic: cant compress -->
+  <script type="text/javascript">
+    var graysonConf = {
+	clientId           : "{{ clientId }}",
+	socketioListenPort : "{{ app.socketioListenPort }}",
+	uriPrefix          : "{{ app.URL_PREFIX }}",
+	staticDataURL      : "{{ STATIC_URL }}",
+	unitTest           : false
+    };
+  </script>
+
+
+  {% if client_unit_test %}
+  <script type="text/javascript">graysonConf.unitTest = true;</script>
+  {% endif %}
+
+  <!-- cause compression errors -->
+  <script type="text/javascript" src="{{ STATIC_URL }}js/socket.io/0.8.4/socket.io.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/raphael-min.js"></script>
+
+  {% compress js %}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/tools/jquery.tools.tooltip-1.2.5.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui/js/jquery-ui-1.8.15.custom.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jquery/jquery.form.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/scale.raphael.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/raphael.draggable.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/graffle.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/uploadify/swfobject.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/datatable/media/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jquery.jqplot.min.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.barRenderer.min.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.categoryAxisRenderer.min.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqplot/jqplot.pointLabels.min.js"></script> 
+  <script type="text/javascript" src="{{ STATIC_URL }}js/grayson.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/graysondetail.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/jqueryFileTree/jqueryFileTree.js"></script>
+  {% endcompress %}
+
+  {% if client_unit_test %}
+  <script type="text/javascript" src="{{ STATIC_URL }}js/qunit/qunit.js"></script>
+  <script type="text/javascript" src="{{ STATIC_URL }}js/test/graysontest.js"></script>
+  {% endif %}
+
+</html>
+
+ 

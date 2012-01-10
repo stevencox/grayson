@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+
+import logging
+import getopt
+import json
+import traceback
+import sys
+from grayson.net.amqp import GraysonAMQPReceiver
+from grayson.net.amqp import GraysonAMQPTransmitter
+
+# usage #
+def usage ():
+    logger = logging.getLogger ()
+    logger.setLevel (logging.INFO)
+    logging.info ("usage: grayson-amqp --send <message>")
+    logging.info ("  -s|--send       message to send")
+    logging.info ("  -r|--receive    receive a message")
+    logging.info ("  -q|--queue      queue name")
+
+    logging.info ("  -l|--loglevel   set logging level to [debug|info|warning|info|critical]")
+    logging.info ("  -h|--help       show this message")
+
+# main #
+def main (argv):
+    message = None
+    receive = False
+    queue = "test"
+    hostname = "127.0.0.1"
+    logLevel = "info"
+    port = 5672
+    try:
+        opts, args = getopt.getopt ( argv, "s:q:l:p:rh",
+                                     [ "send=",
+                                       "queue=",
+                                       "loglevel=",
+                                       "port=",
+                                       "receive",
+                                       "help"
+                                       ] )
+        for opt, arg in opts:
+            if opt in ("-s", "--send"):
+                message = arg
+            elif opt in ("-r", "--receive"):
+                receive = True
+            elif opt in ("-q", "--queue"):
+                queue = arg
+            elif opt in ("-l", "--loglevel"):
+                logLevel = arg
+            elif opt in ("-p", "--port"):
+                port = int (arg)
+            else:
+                print "=== %s %s" % (opt, arg)
+                usage ()
+                sys.exit ()
+                
+        if message:
+            broker = GraysonAMQPTransmitter (queue, hostname, port)
+            broker.send ([message])
+            print "   --(snd): [%s]" % message
+        if receive:
+            def handler (m):
+                print "   --(rcv): [%s]" % m
+            broker = GraysonAMQPReceiver (queue, hostname, port)
+            broker.receive (handler)
+
+
+    except getopt.GetoptError, ex:
+        usage ()
+        formatted_lines = traceback.format_exc().splitlines()
+        print formatted_lines[-1]
+
+# main
+if __name__ == "__main__":
+    main (sys.argv[1:])
+
+
+

@@ -1,0 +1,146 @@
+#detail_view {
+    display          : none;
+    height           : 330px;
+}
+.detailpanel {
+    background-color : #f8f8f8;
+    position         : absolute;
+    left             : 0px;
+    bottom           : 0px;
+    height           : 40%;
+    width            : 100%;
+    border           : 1px solid gray;
+    border-top       : 4px solid #e0e0e0;
+    z-index          : 1;
+}
+#eventTable {
+    width : 100%;
+    overflow : auto;
+}
+.detailpanel-btn-slide {
+    position         : absolute;
+    width            : 50px;
+    height           : 20px;
+    bottom           : 5px;
+    right            : 5px;
+    margin           : 0px;
+    padding          : 7px;
+    color            : #fff;
+    background-color : #555;
+    text-decoration  : none;
+    text-align       : center;
+    font-weight      : bold;
+    font-size        : 14px;
+    z-index          : 2;
+}
+.detailpanel-active {
+    position : absolute;
+    background-color : #ddd;
+}
+#detailTabs {
+    position : absolute;
+    top      : 0px;
+    left     : 0px;
+    width    : 100%;
+    height   : 100%;
+    margin   : 0px;
+    padding  : 0px;
+}
+.detailTab {
+    position : absolute;
+    left     : 0px;
+    margin   : 0px;
+    padding  : 0px;
+    width    : 98%;
+    height   : 73%;
+}
+
+.editorPane {
+    width       : 100%;
+    height      : 100%;
+}
+.linkToDax {
+    float           : right;
+    padding-right   : 5px;
+    text-decoration : underline;
+}
+.linkToCondor {
+    float           : right;
+    padding-right   : 5px;
+    text-decoration : underline;
+}    
+#compute_graph {
+    width : 100%;
+    height : 100%;
+}
+#log_detail {
+    overflow : auto;
+}
+#monitor_text {
+    overflow-y : auto;
+    width      : 100%;
+    height     : 100%;
+    font-family: Courier;
+}
+.failBorder {
+    border-top: 1px solid red;
+}
+#detail_stats {
+    position         : absolute;
+    bottom           : 0px;
+    height           : 20px;
+    width            : 100%;
+    background-color : #E0E0EE;
+}
+#error_count {
+    float       : right;
+    width       : 200px;
+    margin      : 3px 10px;
+    color       : red;
+    font-weight : bold;
+}
+#file_detail {
+    position : absolute;
+    height   : 90%;
+}
+#file_tree_path {
+    position : absolute;
+    height   : 15px;
+    padding  : 5px;
+    left     : 10px;
+    top      : 5px;
+    width    : 340px;
+    border     : 2px solid gray;
+    background-color: #ECECEC;
+}
+#file_tree {
+    position   : absolute;
+    overflow   : auto;
+    width      : 340px;
+    left       : 10px;
+    top        : 32px;
+    bottom     : 5px;
+    border     : 2px solid gray;
+}
+#file_detail_file_name {
+    position         : absolute;
+    overflow         : auto;
+    right            : 5px;
+    left             : 352px;
+    top              : 5px;
+    height           : 15px;
+    padding-left     : 20px;
+    padding          : 5px;
+    border           : 2px solid gray;
+    background-color : #ECECEC;
+}
+#file_detail_pane {
+    position : absolute;
+    overflow : auto;
+    bottom   : 5px;
+    right    : 5px;
+    border   : 2px solid gray;
+    top      : 30px;
+    left     : 350px;
+    padding  : 20px;
+}

@@ -1,0 +1,152 @@
+#!/usr/bin/env python
+
+import logging
+import getopt
+import json
+import os
+import sys
+import string
+import traceback
+from grayson.compiler.compiler import GraysonCompiler
+from grayson.compiler.dynamicmap import DynamicMapOperator
+from grayson.compiler.exception import GraysonCompilerException
+from grayson.common.util import GraysonUtil
+
+# usage #
+def usage ():
+    logger = logging.getLogger ()
+    logger.setLevel (logging.INFO)
+    logging.info ("usage: graysonc")
+    logging.info ("  -m|--model      a model file to compile")
+    logging.info ("  -o|--output     the name of the output DAX file")
+    logging.info ("  -n|--namespace  the namespace of the application")
+    logging.info ("  -v|--version    application version")
+    logging.info ("  -s|--sites      sites to execute at. valid only with --execute")
+    logging.info ("  -l|--loglevel   set logging level to [debug|info|warning|info|critical]")
+    logging.info ("  -p|--define     define a model property. eg: --define='name=value'")
+    logging.info ("  -d|--directory  output directory for generated artifacts")
+    logging.info ("  -e|--execute    execute the workflow")
+    logging.info ("  --modelpath     list of paths on which to search for models")
+    logging.info ("  --package       package all referenced models into an archive")
+    logging.info ("  --package-file  package a specific file")
+    logging.info ("  -h|--help       show this message")
+
+# main #
+def main (argv):
+    models = []
+    logLevel = "error"
+    output = sys.stdout
+    verbose = False
+    namespace = "app"
+    version = "1.0"
+    sites = "local"
+    execute = False
+    outputDirectory = "."
+    inputModelProperties = {}
+    modelPath = None
+    package = False
+    packagingAdditionalFiles = []
+
+    configuration = {}
+
+    try:
+        opts, args = getopt.getopt ( argv, "m:o:n:r:l:p:d:eshtc",
+                                     [ "model=",
+                                       "output=", 
+                                       "namespace=",
+                                       "version=",
+                                       "loglevel=",
+                                       "define=",
+                                       "directory=",
+                                       "modelpath=",
+                                       "package",
+                                       "package-file=",
+                                       "sites=",
+                                       
+                                       "configuration=",
+
+                                       "execute",
+                                       "help"
+                                       ] )
+        for opt, arg in opts:
+            if opt in ("-m", "--model"):
+                models.append (arg)
+            elif opt in ("-o", "--output"):
+                output = arg
+            elif opt in ("-n", "--namespace"):
+                namespace = arg
+            elif opt in ("-r", "--version"):
+                version = arg
+            elif opt in ("-v", "--verbose"):
+                verbose = True
+            elif opt in ("-s", "--sites"):
+                sites = arg
+
+            elif opt in ("--configuration"):
+                print arg
+                text = GraysonUtil.readFile (arg)
+                configuration = json.loads (text)
+
+
+            elif opt in ("-l", "--loglevel"):
+                logLevel = arg
+            elif opt in ("-p", "--define"):
+                (key, value) = string.split (arg, "=")
+                inputModelProperties [key] = value
+            elif opt in ("-d", "--directory"):
+                outputDirectory = arg
+            elif opt in ("--modelpath"):
+                modelPath = arg.split (os.pathsep)
+            elif opt in ("--package"):
+                package = True
+            elif opt in ("--package-file"):
+                packagingAdditionalFiles.append (arg)
+            elif opt in ("-e", "--execute"):
+                execute = True
+            elif opt in ("-h", "--help"):
+                usage ()
+                sys.exit ()
+            else:
+                usage ()
+                sys.exit ()
+
+        if execute and output == sys.stdout:
+            raise ValueError ("--execute is valid only when --output is also specified")        
+
+        if configuration:
+            dynamicMap = DynamicMapOperator ()
+            dynamicMap.execute (configuration)
+        elif len(models) == 0:
+            usage ()
+            sys.exit ()
+        else:
+            try:
+                GraysonCompiler.compile (models=models,
+                                         output=output,
+                                         modelPath=modelPath,
+                                         namespace=namespace,
+                                         version=version,
+                                         logLevel=logLevel,
+                                         appHome=None,
+                                         outputdir=outputDirectory,
+                                         modelProperties=inputModelProperties,
+                                         execute=execute,
+                                         sites=sites,
+                                         packaging=package,
+                                         packagingAdditionalFiles=packagingAdditionalFiles,
+                                         configuration=configuration)
+            except GraysonCompilerException as e:
+                logging.error (str (e.__str__ ()))
+                return 1
+
+    except getopt.GetoptError, ex:
+        usage ()
+        formatted_lines = traceback.format_exc().splitlines()
+        print formatted_lines[-1]
+
+# main
+if __name__ == "__main__":
+    main (sys.argv[1:])
+
+
+

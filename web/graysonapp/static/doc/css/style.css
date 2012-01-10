@@ -1,0 +1,82 @@
+body {
+    font-family : helvetica, arial, sans-serif;
+    font-size : 14px;
+}
+#main {
+    padding : 10px;
+}
+.title {
+    text-align  : center;
+    font-size   : 300%;
+    font-weight : bold;
+ }
+.warning {
+    text-align     : center;
+    font-size      : 120%;
+    color          : #b00000;
+    text-transform : uppercase;
+ }
+#browser {
+    float : center;
+    border : 1px solid black;
+    padding : 25px;
+    margin : 0px;
+    spacing : 0px;
+    /*
+    border-collapse:collapse;
+    */
+}
+#browser th {
+    padding : 10px;
+    border  : 1px solid #999;
+    background-color : #efefef;
+}
+
+.browserCell {
+    padding : 25px;
+    border  : 1px solid #999;
+    width   : 80px;
+ }
+.browserName {
+    background-color : #efefef;
+    border  : 1px solid #999;
+    padding : 10px;
+ }
+.yes {
+    background-color : green;
+ }
+.no  {
+    background-color : red;
+ }
+.na {
+    background-color : gray;
+ }
+    
+
+.toc {
+ }
+.section {
+    /* border      : 1px solid lightgray; */
+    padding     : 10px;
+    padding-top : 30px;
+ }
+.heading {
+    font-size     : 130%;
+    font-weight   : bold;
+    border-bottom : 2px solid black;
+ }
+.subheading {
+    padding-top  : 30px;
+    font-size     : 120%;
+    font-weight   : bold;
+ }
+.code {
+    font-family      : "Courier New";
+    margin           : 20px;
+    padding          : 10px;
+    background-color : #F0F0F0;
+ }
+.subsection {
+    padding-top  : 10px;
+    padding-left : 30px;
+ }
