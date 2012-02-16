@@ -29,5 +29,24 @@ It provides monitoring infrastructure consisting of:
 
 This allows workflow events to be dynamically rendered on the user interface.
 
+Installation
+  Grayson is very much alpha. These are preliminary install instructions.
 
- 
+  These have been tested on Fedora and CentOS 5.7
+
+  git clone git://github.com/stevencox/grayson.git
+  export GRAYSON_HOME=$PWD/grayson
+  source $GRAYSON_HOME/bin/setup.sh
+  grayson-install
+
+     This should leave you with these directories:
+        grayson
+        grayson-virtualenv
+        stack
+  cd grayson
+  
+  web/manage.py runserver 0.0.0.0:8000
+  sudo bin/grayson-rabbit.sh
+  web/manage.py celeryd -l debug
+  node event/server.js
+
