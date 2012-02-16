@@ -18,16 +18,16 @@ Execution Environment:
 
 The execution environment is a web application allowing upload and execution of packaged workflows.
 
-It Rend
+It reads GraphML workflows with embedded JSON annotations and renders them using the HTML5 Canvas API.                                                                                     
 
+It also compiles the workflow to a Pegasus WMS DAX and submits it for execution.
 
+It provides monitoring infrastructure consisting of:
+   - An AMQP message queue
+   - A distributed task queue - Celery
+   - Asynchronous event notification to the client via Node.js
 
-
-
-
-
-
-
+This allows workflow events to be dynamically rendered on the user interface.
 
 
  
