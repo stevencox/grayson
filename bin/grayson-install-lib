@@ -208,14 +208,6 @@ install_nodelibs () {
     npm install socket.io@0.7.7
     npm install amqp@0.0.2
 }
-install_nodelibs () {
-    cd $GRAYSON_HOME/event/
-    log "installing socket.io"
-    npm install $releases/npm/socket.io-0.8.4.tar.gz
-    npm install express@2.4.6
-    npm install amqp@0.0.2
-}
-
 install_java () {
     java_archive=jdk${java_version}.tar.gz
     cd $GRAYSON_STACK/java
