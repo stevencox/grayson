@@ -1,0 +1,33 @@
+
+Grayson is a toolchain for designing, executing, debugging and sharing scientific workflows. It consists of
+   - An editor, yEd by yWorks for creating workflow components
+   - A compiler for parsing and linking components into a workflow
+   - A visual debugger for executing and troubleshooting workflows
+
+Editor: 
+
+yEd is a desktop application and GraphML editor. It provides point and click, drag and drop and other familiar user interface metaphors. Graph nodes may be annotated and all artifacts are saved as XML.
+
+Compiler:
+
+The compiler is a python command line program which assembles GraphML models into an abstract syntax tree and emits a Pegasus DAX with all necessary catalogs.
+
+It also proivides a packager which assembles workflow artifacts into a compressed archive for submission to the execution environment.
+
+Execution Environment:
+
+The execution environment is a web application allowing upload and execution of packaged workflows.
+
+It Rend
+
+
+
+
+
+
+
+
+
+
+
+ 
