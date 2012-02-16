@@ -1,0 +1,434 @@
+
+# sudo yum -y install libcurl-devel gcc gcc-c++ autoconf automake \
+#                     python-devel openldap-devel openssl-devel   \
+#                     python-setuptools erlang rabbitmq sqlite-devel \
+#                     condor zlib zlib-devel gcc-c++
+# sudo easy_install virtualenv
+# virtualenv --no-site-packages mycoolproject -p python2.7
+# easy_install pycurl python-ldap django-celery pika
+# sudo rpm -vi ~/Downloads/rabbitmq-server-2.4.1-1.noarch.rpm
+# install_node
+# install_socketio
+
+# condor:
+# ensure hostname is set.
+# edit condor_config:
+#    HOSTALLOW_WRITE = (...), *.renci.org, 127.0.0.1
+
+# chkconfig rabbitmq-server on 
+# /sbin/service rabbitmq-server start
+
+
+# prerequisites:
+#  apt-get: libldap2-dev libsasl2-dev libssl-dev libcurl3-openssl-dev curl
+
+#export PEGASUS_HOME=$(dirname $(dirname $(which pegasus-plan)))
+releases='http://www.renci.org/~scox/bin'
+
+dirs="apache modwsgi erlang rabbitmq node pegasus java"
+if [ "$(uname -a | grep -c Darwin)" -eq 1 ]; then
+    export FQDN=0.0.0.0 #$(hostname)
+else
+    export FQDN=$(hostname -f)
+fi
+ensure_dirs_exist () {
+    for dir in $dirs; do
+	mkdir -p $GRAYSON_STACK/$dir
+    done
+}
+install_clean () {
+    cd $GRAYSON_STACK
+    for dir in $dirs; do
+	echo "deleting dir: $dir"
+	rm -rf $GRAYSON_STACK/$dir
+    done
+    ensure_dirs_exist
+}
+
+path_prepend () {
+    element=$1
+    if [ "$(echo $PATH | grep -c $element)" -eq "0" ]; then
+	export PATH=$element:$PATH
+    fi
+}
+ldpath_prepend () {
+    element=$1
+    if [ "$(echo $LD_LIBRARY_PATH | grep -c $element)" -eq "0" ]; then
+	export LD_LIBRARY_PATH=$element:$LD_LIBRARY_PATH
+    fi
+}
+log () {
+    echo $*
+}
+
+install_app () {
+    name=$1
+    version=$2
+    dir=$3$version
+    archive=$dir.tar.gz
+    src=$4/$archive
+    clean=$5
+    cd $GRAYSON_STACK/$name
+    wget -q $src
+    tar xzf $archive
+    cd $dir
+    ./configure --prefix=$GRAYSON_STACK/$name
+    make
+    make install
+}
+
+
+install_apache () {
+    log "installing apache"
+    apache_version=2.2.19
+    apache_archive=httpd-$apache_version.tar.gz
+    apache_src=$releases/$apache_archive
+    cd $GRAYSON_STACK/apache
+    wget -q $apache_src
+    tar xvzf $apache_archive
+    cd httpd-$apache_version
+    ./configure --prefix=$GRAYSON_STACK/apache
+    make
+    make install
+}
+setup_apache () {
+    export APACHE_HOME=$GRAYSON_STACK/apache
+    path_prepend $APACHE_HOME/bin
+}
+
+install_sqlite () {
+    cd $GRAYSON_STACK
+    sqlite_version=3070602
+    sqlite_archive=sqlite-autoconf-$sqlite_version.tar.gz
+    sqlite_src=http://www.sqlite.org/$sqlite_archive
+    cd $GRAYSON_STACK/sqlite
+    wget -q $sqlite_src
+    tar xvzf $sqlite_archive
+    cd sqlite-autoconf-$sqlite_version
+    ./configure --prefix=$GRAYSON_STACK/sqlite
+    make
+    make install
+}
+setup_sqlite () {
+    export SQLITE_HOME=$GRAYSON_STACK/sqlite
+    export PATH=$SQLITE_HOME/bin:$PATH
+    export LD_LIBRARY_PATH=$SQLITE_HOME/.libs:$LD_LIBRARY_PATH
+}
+
+install_modwsgi () {
+    modwsgi_version=3.3
+    modwsgi_archive=mod_wsgi-$modwsgi_version.tar.gz
+    modwsgi_src=$releases/$modwsgi_archive
+    cd $GRAYSON_STACK/modwsgi
+    wget -q $modwsgi_src
+    tar xzf $modwsgi_archive
+    cd mod_wsgi-$modwsgi_version
+    ./configure \
+	--with-python=$PYTHON_HOME/bin/python \
+	--with-apxs=$APACHE_HOME/bin/apxs
+    make
+    make install
+    set +x
+}
+
+install_erlang () {
+    erlang_version=R14B02
+    erlang_archive=otp_src_$erlang_version.tar.gz
+    erlang_src=http://www.erlang.org/download/$erlang_archive
+    cd $GRAYSON_STACK/erlang
+    wget -q --timestamping $erlang_src
+    tar xvzf $erlang_archive
+    cd otp_src_$erlang_version
+    ./configure --prefix=$GRAYSON_STACK/erlang
+    make
+    make install
+    return 0
+}
+setup_erlang () {
+    export ERLANG_HOME=$GRAYSON_STACK/erlang
+    path_prepend $ERLANG_HOME/bin
+}
+
+install_rabbitmq () {
+    rabbitmq_archive=rabbitmq-server-$rabbitmq_version.tar.gz
+    rabbitmq_src=http://www.rabbitmq.com/releases/rabbitmq-server/v2.4.1/$rabbitmq_archive
+    cd $GRAYSON_STACK/rabbitmq
+    wget -q $rabbitmq_src
+    tar xvzf $rabbitmq_archive
+    cd rabbitmq-server-$rabbitmq_version
+    make
+    export TARGET_DIR=$GRAYSON_STACK/rabbitmq
+    export SBIN_DIR=$GRAYSON_STACK/rabbitmq/sbin
+    export MAN_DIR=$GRAYSON_STACK/rabbitmq/man
+    make install_bin # install also builds documentation, requiring xmlto
+}
+setup_rabbitmq () {
+    rabbitmq_version=2.4.1
+    export RABBIT_HOME=$GRAYSON_STACK/rabbitmq/rabbitmq-server-$rabbitmq_version
+    path_prepend $RABBIT_HOME/scripts
+}
+#-----------------------------------------
+install_rabbitmq () {
+    cd $GRAYSON_STACK/rabbitmq
+    wget $releases/rabbitmq-server-generic-unix-2.6.0.tar.gz
+    tar xvzf rabbitmq-server-generic-unix-2.6.0.tar.gz
+    
+}
+setup_rabbitmq () {
+    rabbitmq_version=2.6.0
+    export RABBIT_HOME=$GRAYSON_STACK/rabbitmq/rabbitmq_server-$rabbitmq_version
+    path_prepend $RABBIT_HOME/sbin
+}
+
+install_node () {
+    node_version=v0.4.7
+    node_archive=node-$node_version.tar.gz
+    node_src=$releases/$node_archive
+    cd $GRAYSON_STACK/node
+    wget -q $node_src
+    tar xvzf $node_archive
+    cd node-$node_version
+    ./configure --prefix=$GRAYSON_STACK/node
+    make
+    make install
+    install_nodelibs
+}
+setup_node () {
+    export NODE_HOME=$GRAYSON_STACK/node
+    path_prepend $NODE_HOME/bin
+}
+install_nodelibs () {
+    setup_node
+    
+    cd $GRAYSON_STACK/node
+    curl $releases/node-install.sh | clean=no sh
+
+    cd $GRAYSON_HOME/event/
+    log "installing socket.io"
+    npm install socket.io@0.7.7
+    npm install amqp@0.0.2
+}
+install_nodelibs () {
+    cd $GRAYSON_HOME/event/
+    log "installing socket.io"
+    npm install $releases/npm/socket.io-0.8.4.tar.gz
+    npm install express@2.4.6
+    npm install amqp@0.0.2
+}
+
+install_java () {
+    java_archive=jdk${java_version}.tar.gz
+    cd $GRAYSON_STACK/java
+    wget -q $releases/$java_archive
+    tar xvzf $java_archive
+}
+setup_java () {
+    java_version=1.6.0_25
+    export JAVA_HOME=$GRAYSON_STACK/java/jdk${java_version}
+    path_prepend $JAVA_HOME/bin
+}
+install_pegasus () {
+    pegasus_arch=x86_rhel_5
+    if [ "$(uname -a | grep -c Darwin)" -eq 1 ]; then
+	pegasus_arch=x86_64_macos_10.5
+    fi
+    pegasus_archive=pegasus-binary-${pegasus_version}-${pegasus_arch}.tar.gz
+    cd $GRAYSON_STACK/pegasus
+    wget -q $releases/$pegasus_archive
+    tar xvzf $pegasus_archive    
+}
+setup_pegasus () {
+    pegasus_version=3.0.3
+    export PEGASUS_HOME=$GRAYSON_STACK/pegasus/pegasus-${pegasus_version}
+    path_prepend $PEGASUS_HOME/bin
+}
+
+setup_all () {
+    #set -x
+    setup_apache
+    #setup_modwsgi
+    setup_erlang
+    setup_rabbitmq
+    setup_node
+    #setup_java
+    #setup_pegasus
+}
+install_all () {
+    mkdir -p $GRAYSON_STACK &&
+    ensure_dirs_exist &&
+    if [ ! -f $GRAYSON_STACK/modwsgi/mod_wsgi-3.3/mod_wsgi.c ]; then
+	install_apache &&
+	install_modwsgi
+    else
+	echo mod_wsg is built.
+    fi &&
+    if [ ! -x $GRAYSON_STACK/erlang/bin/erlc ]; then
+	install_erlang
+    else
+	echo erlang is built.
+    fi &&
+    if [ ! -x $GRAYSON_STACK/rabbitmq/rabbitmq_server-2.6.0/sbin/rabbitmq-server ]; then
+	install_rabbitmq
+    else
+	echo rabbitmq is built
+    fi &&
+    if [ ! -x $GRAYSON_STACK/node/bin/node ]; then
+	install_node
+    else
+	echo "node (v8) is built"
+    fi &&
+    if [ ! -f $GRAYSON_HOME/event/node_modules/express/node_modules/connect/package.json ]; then
+	install_nodelibs 
+    else
+	echo node libs are installed
+   fi
+}
+install_all_clean () {
+    rm -rf $GRAYSON_STACK
+    mkdir -p $GRAYSON_STACK
+    cd $GRAYSON_STACK/..
+    time install_clean > grayson-install.log 2>&1
+    time install_all >> grayson-install.log 2>&1
+}
+
+grayson-create-virtualenv () {
+    curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+    #echo "Creating virtual env: $GRAYSON_VENV"
+    python virtualenv.py $GRAYSON_VENV
+    source $GRAYSON_VENV/bin/activate
+}
+grayson-activate () {
+    cd $GRAYSON_VENV
+    source bin/activate
+}
+grayson-install-m2crypto () {
+    set +e
+    pip install m2crypto==0.21.1
+    set -e    
+    cd build/m2crypto/
+    chmod u+x fedora_setup.sh
+    ./fedora_setup.sh build
+    ./fedora_setup.sh install
+}
+grayson-install-libs () {
+    grayson-install-m2crypto
+    pip install Django django-celery python-ldap pika python-graph-core==1.8.0 django_compressor==1.0.1 epydoc yolk
+    yolk -y
+    pip freeze > requirements.txt
+}
+grayson-write-requirements () { 
+    cat <<EOF
+Django==1.3.1
+amqplib==1.0.2
+anyjson==0.3.1
+celery==2.4.6
+django-appconf==0.4.1
+django-celery==2.4.2
+django-compressor==1.0.1
+django-picklefield==0.1.9
+epydoc==3.0.1
+kombu==2.1.0
+pika==0.9.5
+python-dateutil==1.5
+python-graph-core==1.8.0
+python-ldap==2.4.7
+wsgiref==0.1.2
+yolk==0.4.3
+EOF
+}
+grayson-install-frozen () {
+    grayson-install-m2crypto
+    grayson-write-requirements > requirements.txt
+    pip install -r requirements.txt
+}
+grayson-install-django-app () {
+    svn co https://renci-ci.svn.sourceforge.net/svnroot/renci-ci/trunk/grayson grayson
+    cd grayson
+    mkdir -p var/logs
+    chmod 777 var/logs
+    cp conf/dev.conf conf/grayson.conf
+    python web/manage.py syncdb
+}
+
+grayson-usage () {
+    if [ $# -gt 0 ]; then
+	echo $*
+    else
+	echo "usage: grayson-install [ --clean ] [ --current | --frozen ]"
+    fi
+}
+                                                                                                                                
+getarg () {                                                                                                                                             
+    echo $1 | sed s,.*=,,                                                                                                                               
+}                          
+
+grayson-install-initialize () {
+    if [ -z "$GRAYSON_HOME" ]; then
+	grayson-usage "GRAYSON_HOME must be set"
+	return 1
+    fi
+    
+    curdir=$PWD
+    mkdir -p $GRAYSON_HOME/../stack
+    cd $GRAYSON_HOME/../stack
+    export GRAYSON_STACK=$PWD
+    cd $curdir
+    
+    GRAYSON_VENV=$GRAYSON_HOME/../grayson-virtualenv
+    curdir=$PWD
+    mkdir -p $GRAYSON_VENV
+    cd $GRAYSON_VENV
+    export GRAYSON_VENV=$PWD
+    cd $curdir
+}
+
+grayson-install-main () {
+
+	grayson-install-initialize
+
+	local clean=
+	local current=
+	local frozen=
+	local app=
+	for arg in $*; do
+	    case $arg in
+		--clean)     clean=true;;
+		--current)   current=true;;
+		--frozen)    frozen=true;;
+		--module\=*) module=$( getarg $arg );;
+		#--stack\=*) GRAYSON_STACK=$( getarg $arg );;
+            esac
+	done
+
+	if [ ! -d "$GRAYSON_VENV" ]; then
+	    grayson-usage
+	fi
+
+	if [ "x$clean" == "xtrue" ]; then
+	    rm -rf $GRAYSON_VENV
+	    mkdir -p $GRAYSON_VENV
+	    # rm -rf $GRAYSON_STACK
+	    # mkdir -p $GRAYSON_STACK
+	fi
+
+	if [ "x$current" == "xtrue" ]; then
+	    grayson-create-virtualenv 
+	    grayson-activate
+	    grayson-install-libs
+	elif [ "x$frozen" == "xtrue" ]; then
+	    rm -rf $GRAYSON_VENV
+	    mkdir -p $GRAYSON_VENV
+	    grayson-create-virtualenv 
+	    grayson-activate
+	    grayson-install-frozen
+	fi
+
+	if [ ! -z "$module" ]; then
+	    install_$module
+	else
+	    install_all
+	fi
+	
+    }
+
+setup_all

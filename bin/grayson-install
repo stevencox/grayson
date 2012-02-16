@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+#set -x
+
+source $GRAYSON_HOME/bin/grayson-install-lib
+grayson-install-main $* | tee grayson-install.log
