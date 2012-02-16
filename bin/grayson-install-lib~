@@ -1,5 +1,4 @@
 
-
 # sudo yum -y install libcurl-devel gcc gcc-c++ autoconf automake \
 #                     python-devel openldap-devel openssl-devel   \
 #                     python-setuptools erlang rabbitmq sqlite-devel \
@@ -292,5 +291,144 @@ install_all_clean () {
     time install_all >> grayson-install.log 2>&1
 }
 
-setup_all	
+grayson-create-virtualenv () {
+    curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+    #echo "Creating virtual env: $GRAYSON_VENV"
+    python virtualenv.py $GRAYSON_VENV
+    source $GRAYSON_VENV/bin/activate
+}
+grayson-activate () {
+    cd $GRAYSON_VENV
+    source bin/activate
+}
+grayson-install-m2crypto () {
+    set +e
+    pip install m2crypto==0.21.1
+    set -e    
+    cd build/m2crypto/
+    chmod u+x fedora_setup.sh
+    ./fedora_setup.sh build
+    ./fedora_setup.sh install
+}
+grayson-install-libs () {
+    grayson-install-m2crypto
+    pip install Django django-celery python-ldap pika python-graph-core==1.8.0 django_compressor==1.0.1 epydoc yolk
+    yolk -y
+    pip freeze > requirements.txt
+}
+grayson-write-requirements () { 
+    cat <<EOF
+Django==1.3.1
+amqplib==1.0.2
+anyjson==0.3.1
+celery==2.4.6
+django-appconf==0.4.1
+django-celery==2.4.2
+django-compressor==1.0.1
+django-picklefield==0.1.9
+epydoc==3.0.1
+kombu==2.1.0
+pika==0.9.5
+python-dateutil==1.5
+python-graph-core==1.8.0
+python-ldap==2.4.7
+wsgiref==0.1.2
+yolk==0.4.3
+EOF
+}
+grayson-install-frozen () {
+    grayson-install-m2crypto
+    grayson-write-requirements > requirements.txt
+    pip install -r requirements.txt
+}
+grayson-install-django-app () {
+    svn co https://renci-ci.svn.sourceforge.net/svnroot/renci-ci/trunk/grayson grayson
+    cd grayson
+    mkdir -p var/logs
+    chmod 777 var/logs
+    cp conf/dev.conf conf/grayson.conf
+    python web/manage.py syncdb
+}
 
+grayson-usage () {
+    if [ $# -gt 0 ]; then
+	echo $*
+    else
+	echo "usage: grayson-install [ --clean ] [ --current | --frozen ]"
+    fi
+}
+                                                                                                                                
+getarg () {                                                                                                                                             
+    echo $1 | sed s,.*=,,                                                                                                                               
+}                          
+
+grayson-install-initialize () {
+    if [ -z "$GRAYSON_HOME" ]; then
+	grayson-usage "GRAYSON_HOME must be set"
+	return 1
+    fi
+    
+    curdir=$PWD
+    mkdir -p $GRAYSON_HOME/../stack
+    cd $GRAYSON_HOME/../stack
+    export GRAYSON_STACK=$PWD
+    cd $curdir
+    
+    GRAYSON_VENV=$GRAYSON_HOME/../grayson-virtualenv
+    curdir=$PWD
+    mkdir -p $GRAYSON_VENV
+    cd $GRAYSON_VENV
+    export GRAYSON_VENV=$PWD
+    cd $curdir
+}
+
+grayson-install-main () {
+
+	grayson-install-initialize
+
+	local clean=
+	local current=
+	local frozen=
+	local app=
+	for arg in $*; do
+	    case $arg in
+		--clean)     clean=true;;
+		--current)   current=true;;
+		--frozen)    frozen=true;;
+		--module\=*) module=$( getarg $arg );;
+		#--stack\=*) GRAYSON_STACK=$( getarg $arg );;
+            esac
+	done
+
+	if [ ! -d "$GRAYSON_VENV" ]; then
+	    grayson-usage
+	fi
+
+	if [ "x$clean" == "xtrue" ]; then
+	    rm -rf $GRAYSON_VENV
+	    mkdir -p $GRAYSON_VENV
+	    # rm -rf $GRAYSON_STACK
+	    # mkdir -p $GRAYSON_STACK
+	fi
+
+	if [ "x$current" == "xtrue" ]; then
+	    grayson-create-virtualenv 
+	    grayson-activate
+	    grayson-install-libs
+	elif [ "x$frozen" == "xtrue" ]; then
+	    rm -rf $GRAYSON_VENV
+	    mkdir -p $GRAYSON_VENV
+	    grayson-create-virtualenv 
+	    grayson-activate
+	    grayson-install-frozen
+	fi
+
+	if [ ! -z "$module" ]; then
+	    install_$module
+	else
+	    install_all
+	fi
+	
+    }
+
+setup_all
