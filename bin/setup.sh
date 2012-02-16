@@ -13,7 +13,7 @@ else
     source $GRAYSON_HOME/bin/grayson-install-lib   
     grayson-install-initialize
     if [ -f $GRAYSON_VENV/bin/activate ]; then
-	$GRAYSON_VENV/bin/activate
+	source $GRAYSON_VENV/bin/activate
     fi
 fi
 
