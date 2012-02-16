@@ -37,14 +37,19 @@ Installation
   git clone git://github.com/stevencox/grayson.git
   export GRAYSON_HOME=$PWD/grayson
   source $GRAYSON_HOME/bin/setup.sh
-  grayson-install
+  grayson-install --clean --frozen
 
      This should leave you with these directories:
         grayson
         grayson-virtualenv
         stack
+           httpd
+           modwsgi
+           rabbitmq
+           erlang
+
   cd grayson
-  
+  cp conf/dev.conf conf/grayson.conf  
   web/manage.py runserver 0.0.0.0:8000
   sudo bin/grayson-rabbit.sh
   web/manage.py celeryd -l debug
