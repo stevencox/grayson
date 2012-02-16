@@ -12,6 +12,8 @@ else
     #. $GRAYSON_HOME/bin/environment.sh    
     source $GRAYSON_HOME/bin/grayson-install-lib   
     grayson-install-initialize
-    $GRAYSON_VENV/bin/activate
+    if [ -f $GRAYSON_VENV/bin/activate ]; then
+	$GRAYSON_VENV/bin/activate
+    fi
 fi
 
