@@ -286,7 +286,7 @@ install_all_clean () {
 grayson-create-virtualenv () {
     curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
     #echo "Creating virtual env: $GRAYSON_VENV"
-    python virtualenv.py $GRAYSON_VENV
+    python virtualenv.py $VIRTUALENV_ARGS $GRAYSON_VENV
     source $GRAYSON_VENV/bin/activate
 }
 grayson-activate () {
@@ -390,6 +390,7 @@ grayson-install-main () {
 		--current)   current=true;;
 		--frozen)    frozen=true;;
 		--module\=*) module=$( getarg $arg );;
+		--python\=*) VIRTUALENV_ARGS="-p $( getarg $arg )";;
 		#--stack\=*) GRAYSON_STACK=$( getarg $arg );;
             esac
 	done
