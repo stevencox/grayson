@@ -457,7 +457,7 @@ jobs:
       usedfile: <namd.tar.gz>
       usedfile: <out-0.tar.gz>
          profile: namespace:<globus> key:<queue> value:<dirac_reg>
-         profile: namespace:<globus> key:<xcount> value:<8:tesla>
+         profile: namespace:<globus> key:<xcount> value:<8:fermi>
          profile: namespace:<globus> key:<maxWallTime> value:<240>
          profile: namespace:<globus> key:<jobType> value:<mpi>
          profile: namespace:<globus> key:<host_xcount> value:<1>
