@@ -1,5 +1,0 @@
-alanin.coor, coordinates file (output)
-alanin.vel, velocity file (output)
-alanin.xsc, system config file (output)
-alanin.log, output from the namd run
-alanin.out, stdout and stderr from the job
