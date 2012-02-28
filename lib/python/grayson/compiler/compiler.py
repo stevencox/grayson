@@ -1023,6 +1023,8 @@ class GraysonCompiler:
                 config = os.path.join (self.getOutputDir (), "%s.grayconf" % operator.getLabel ())
                 GraysonUtil.writeFile (config, json.dumps (configuration, indent=4 ))
 
+                ld_library_path = os.environ ["LD_LIBRARY_PATH"] if "LD_LIBRARY_PATH" in os.environ else ""
+
                 jobType = {
                     "type"     : "job",
                     "args"     : "--configuration=%s " % config,
@@ -1031,7 +1033,7 @@ class GraysonCompiler:
                             "PYTHONPATH"      : os.environ ['PYTHONPATH'],
                             "GRAYSON_HOME"    : os.environ ['GRAYSON_HOME'],
                             "PATH"            : os.environ ['PATH'],
-                            "LD_LIBRARY_PATH" : os.environ ['LD_LIBRARY_PATH'],
+                            "LD_LIBRARY_PATH" : ld_library_path,
                             "GLOBUS_LOCATION" : os.environ ['GLOBUS_LOCATION'],
                             "CONDOR_HOME"     : os.environ ['CONDOR_HOME']
                             }
