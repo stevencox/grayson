@@ -14,4 +14,4 @@ else
 	source $GRAYSON_VENV/bin/activate
     fi
 fi
-
+cd $GRAYSON_HOME
