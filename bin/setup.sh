@@ -9,9 +9,7 @@ else
     if [ -z "$installdir" ]; then
 	export installdir=$GRAYSON_HOME/stack
     fi
-    #. $GRAYSON_HOME/bin/environment.sh    
-    source $GRAYSON_HOME/bin/grayson-install-lib   
-    grayson-install-initialize
+    source $GRAYSON_HOME/bin/grayson-install-lib
     if [ -f $GRAYSON_VENV/bin/activate ]; then
 	source $GRAYSON_VENV/bin/activate
     fi

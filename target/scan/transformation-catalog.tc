@@ -1,4 +1,0 @@
-local        scan-uber::prepare                target/scan/bin/prepare.sh             STAGEABLE   INTEL64::LINUX
-local        scan-uber::reduce                target/scan/bin/reduce.sh             STAGEABLE   INTEL64::LINUX
-local        scan-uber::map                file:///home/scox/dev/grayson/bin/graysonc             STAGEABLE   INTEL64::LINUX
-local        scan-uber::map                file:///home/scox/dev/grayson/bin/graysonc             STAGEABLE   INTEL64::LINUX

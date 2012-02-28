@@ -1,3 +1,0 @@
-data/input1 file://target/basic/data/input1 pool="local"
-job1.out file://target/basic/job1.out pool="local"
-job2.out file://target/basic/job2.out pool="local"

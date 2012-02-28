@@ -1,3 +1,0 @@
-alpha.dax file://target/alpha/alpha.dax pool="local"
-input.txt file://target/alpha/input.txt pool="local"
-one.out file://target/alpha/one.out pool="local"

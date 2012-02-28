@@ -1,6 +1,0 @@
-blackdiamond.dax file://target/blackdiamond/blackdiamond.dax pool="local"
-f.a file://target/blackdiamond/f.a pool="local"
-f.b1 file://target/blackdiamond/f.b1 pool="local"
-f.b2 file://target/blackdiamond/f.b2 pool="local"
-f.c1 file://target/blackdiamond/f.c1 pool="local"
-f.c2 file://target/blackdiamond/f.c2 pool="local"

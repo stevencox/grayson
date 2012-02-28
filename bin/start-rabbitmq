@@ -1,21 +1,19 @@
 #!/bin/bash
 
-set -x
+#set -x
 
 export GRAYSON_HOME=$(dirname $(dirname $0))
-if [ "$GRAYSON_HOME" == "." ]; then
-    export GRAYSON_HOME=$(pwd)
-fi
-export installdir=$GRAYSON_HOME/stack
-. $GRAYSON_HOME/bin/environment.sh
+echo "Setting Grayson Home: $GRAYSON_HOME"
+export installdir=$GRAYSON_HOME/../stack
+. $GRAYSON_HOME/bin/setup.sh
 
-echo $PATH
-pwd
-which rabbitmq-server
+echo "PATH: $PATH"
+echo "Current Directory: $PWD"
+echo "Using RabbitMQ at: $(which rabbitmq-server)"
 
-#grayson_start_rabbit
-
+set -x
 RABBITMQ_NODE_PORT=$1 rabbitmq-server -detached
+set +x
 
 netstat -tulpn | grep beam
 

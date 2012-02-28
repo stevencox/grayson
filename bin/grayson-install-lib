@@ -1,28 +1,3 @@
-
-# sudo yum -y install libcurl-devel gcc gcc-c++ autoconf automake \
-#                     python-devel openldap-devel openssl-devel   \
-#                     python-setuptools erlang rabbitmq sqlite-devel \
-#                     condor zlib zlib-devel gcc-c++
-# sudo easy_install virtualenv
-# virtualenv --no-site-packages mycoolproject -p python2.7
-# easy_install pycurl python-ldap django-celery pika
-# sudo rpm -vi ~/Downloads/rabbitmq-server-2.4.1-1.noarch.rpm
-# install_node
-# install_socketio
-
-# condor:
-# ensure hostname is set.
-# edit condor_config:
-#    HOSTALLOW_WRITE = (...), *.renci.org, 127.0.0.1
-
-# chkconfig rabbitmq-server on 
-# /sbin/service rabbitmq-server start
-
-
-# prerequisites:
-#  apt-get: libldap2-dev libsasl2-dev libssl-dev libcurl3-openssl-dev curl
-
-#export PEGASUS_HOME=$(dirname $(dirname $(which pegasus-plan)))
 releases='http://www.renci.org/~scox/bin'
 
 dirs="apache modwsgi erlang rabbitmq node pegasus java"
@@ -148,38 +123,16 @@ setup_erlang () {
     export ERLANG_HOME=$GRAYSON_STACK/erlang
     path_prepend $ERLANG_HOME/bin
 }
-
-install_rabbitmq () {
-    rabbitmq_archive=rabbitmq-server-$rabbitmq_version.tar.gz
-    rabbitmq_src=http://www.rabbitmq.com/releases/rabbitmq-server/v2.4.1/$rabbitmq_archive
-    cd $GRAYSON_STACK/rabbitmq
-    wget -q $rabbitmq_src
-    tar xvzf $rabbitmq_archive
-    cd rabbitmq-server-$rabbitmq_version
-    make
-    export TARGET_DIR=$GRAYSON_STACK/rabbitmq
-    export SBIN_DIR=$GRAYSON_STACK/rabbitmq/sbin
-    export MAN_DIR=$GRAYSON_STACK/rabbitmq/man
-    make install_bin # install also builds documentation, requiring xmlto
-}
-setup_rabbitmq () {
-    rabbitmq_version=2.4.1
-    export RABBIT_HOME=$GRAYSON_STACK/rabbitmq/rabbitmq-server-$rabbitmq_version
-    path_prepend $RABBIT_HOME/scripts
-}
-#-----------------------------------------
 install_rabbitmq () {
     cd $GRAYSON_STACK/rabbitmq
-    wget $releases/rabbitmq-server-generic-unix-2.6.0.tar.gz
-    tar xvzf rabbitmq-server-generic-unix-2.6.0.tar.gz
-    
+    wget $releases/rabbitmq-server-generic-unix-${rabbitmq_version}.tar.gz
+    tar xvzf rabbitmq-server-generic-unix-${rabbitmq_version}.tar.gz    
 }
 setup_rabbitmq () {
     rabbitmq_version=2.6.0
     export RABBIT_HOME=$GRAYSON_STACK/rabbitmq/rabbitmq_server-$rabbitmq_version
     path_prepend $RABBIT_HOME/sbin
 }
-
 install_node () {
     node_version=v0.4.7
     node_archive=node-$node_version.tar.gz
@@ -391,7 +344,6 @@ grayson-install-main () {
 		--frozen)    frozen=true;;
 		--module\=*) module=$( getarg $arg );;
 		--python\=*) VIRTUALENV_ARGS="-p $( getarg $arg )";;
-		#--stack\=*) GRAYSON_STACK=$( getarg $arg );;
             esac
 	done
 
@@ -402,8 +354,6 @@ grayson-install-main () {
 	if [ "x$clean" == "xtrue" ]; then
 	    rm -rf $GRAYSON_VENV
 	    mkdir -p $GRAYSON_VENV
-	    # rm -rf $GRAYSON_STACK
-	    # mkdir -p $GRAYSON_STACK
 	fi
 
 	if [ "x$current" == "xtrue" ]; then
@@ -426,4 +376,5 @@ grayson-install-main () {
 	
     }
 
+grayson-install-initialize
 setup_all

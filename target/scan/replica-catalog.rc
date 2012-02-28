@@ -1,4 +1,0 @@
-fasta-chunks.tar.gz file://target/scan/fasta-chunks.tar.gz pool="local"
-fasta.txt file://target/scan/input/fasta.txt pool="local"
-scan-flow.dax file:///home/scox/dev/grayson/target/scan/scan-flow.dax pool="local"
-scan-uber.dax file://target/scan/scan-uber.dax pool="local"
