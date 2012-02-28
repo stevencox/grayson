@@ -1,7 +1,0 @@
-class OperatorRegistry (object):
-    def __init__(self):
-        self.map = {}
-    def getOperator (
-class Opertor (object):
-
-    def 

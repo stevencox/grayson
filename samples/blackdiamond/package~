@@ -1,2 +1,0 @@
-
-graysonc --package --model model/blackdiamond-local-context.graphml --package-file f.a --package-file bin
