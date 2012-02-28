@@ -1,3 +1,4 @@
+
 releases='http://www.renci.org/~scox/bin'
 
 dirs="apache modwsgi erlang rabbitmq node pegasus java"
@@ -249,8 +250,8 @@ grayson-activate () {
 grayson-install-m2crypto () {
     set +e
     pip install m2crypto==0.21.1
-    set -e    
-    cd build/m2crypto/
+    set -e
+    cd $GRAYSON_VENV/build/m2crypto/
     chmod u+x fedora_setup.sh
     ./fedora_setup.sh build
     ./fedora_setup.sh install
@@ -321,12 +322,15 @@ grayson-install-initialize () {
     export GRAYSON_STACK=$PWD
     cd $curdir
     
-    GRAYSON_VENV=$GRAYSON_HOME/../grayson-virtualenv
+    GRAYSON_VENV=$GRAYSON_HOME/venv
     curdir=$PWD
     mkdir -p $GRAYSON_VENV
     cd $GRAYSON_VENV
     export GRAYSON_VENV=$PWD
     cd $curdir
+
+    mkdir -p $GRAYSON_HOME/var/logs
+    
 }
 
 grayson-install-main () {
