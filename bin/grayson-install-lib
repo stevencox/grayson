@@ -258,7 +258,7 @@ grayson-install-m2crypto () {
 }
 grayson-install-libs () {
     grayson-install-m2crypto
-    pip install Django django-celery python-ldap pika python-graph-core==1.8.0 django_compressor==1.0.1 epydoc yolk
+    pip install Django django-celery python-ldap pika python-graph-core==1.8.0 django_compressor==1.0.1 epydoc yolk coverage pylint
     yolk -y
     pip freeze > requirements.txt
 }
@@ -281,6 +281,8 @@ python-dateutil==1.5
 python-graph-core==1.8.0
 python-ldap==2.3.13
 wsgiref==0.1.2
+coverage==3.5.1
+pylint==0.25.1
 yolk==0.4.3
 EOF
 }

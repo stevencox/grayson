@@ -12,8 +12,6 @@ from pika import BasicProperties
 import pika.log
 import socket
 
-#pika.log.setup(level=pika.log.INFO)
-
 logger = logging.getLogger (__name__)
 
 class GraysonAMQP(object):
@@ -33,7 +31,7 @@ class GraysonAMQP(object):
                                              self.on_connected)
 
     def setQueue (self, name):
-        self.queue = name
+        self.queue = str (name)
 
     def setQueueDeclaredCallback (self, queueDeclaredCallback):
         self.queueDeclaredCallback = queueDeclaredCallback

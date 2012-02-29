@@ -8,8 +8,6 @@ logger = logging.getLogger (__name__)
 
 class GraysonUtil (object):
     
-    WORKFLOW_QUEUE = 'workflow'
-
     @staticmethod
     def form_workdir_path (unpackDir, username, workflowId, runId=""):
         return os.path.join (unpackDir, "work", username, "pegasus", workflowId, runId)

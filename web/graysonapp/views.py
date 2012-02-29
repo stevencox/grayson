@@ -106,8 +106,19 @@ def api_run (request):
             contentFile = ContentFile (workflow.read ())
             logger.debug ("saving filename: %s", file_name)
             archivePath = default_storage.save (file_name, contentFile)
-            logger.debug ("executing workflow..")
-            ExecuteWorkflow.delay (user, file_name, archivePath, amqpPort=settings.BROKER_PORT)
+            logger.debug ("""executing workflow - 
+       user        : %s
+       archive     : %s
+       archivePath : %s
+       amqpPort    : %s
+       amqpQName   : %s
+""", user, file_name, archivePath, settings.BROKER_PORT, settings.WORKFLOW_QUEUE_NAME)
+
+            ExecuteWorkflow.delay (user        = user,
+                                   archive     = file_name,
+                                   archivePath = archivePath,
+                                   amqpPort    = settings.BROKER_PORT,
+                                   amqpQName   = settings.WORKFLOW_QUEUE_NAME)
             logger.debug ("execute called..")
     except Exception as e:
         logger.error ("Exception occurred during api_run()")
@@ -202,6 +213,7 @@ def get_flow_events (request):
                    workdir         = workdirPath,
                    logRelPath      = settings.GRAYSONWEB_WORKFLOW_ROOT,
                    amqpPort        = settings.BROKER_PORT,
+                   amqpQName       = settings.WORKFLOW_QUEUE_NAME,
                    eventBufferSize = settings.EVENT_BUFFER_SIZE)
     logger.debug ("launched workflow monitor")
     return ViewUtil.get_json_response ({ "status" : "ok" })

@@ -13,6 +13,7 @@ MANAGERS = ADMINS
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 nodeConf = json.loads (open ( os.path.join ( os.path.dirname (SITE_ROOT), "conf", "grayson.conf" )).read ())
+WORKFLOW_QUEUE_NAME = nodeConf ["queueSettings"]["QName"]
 URL_PREFIX = nodeConf ["urlPrefix"]
 BROKER_PORT = nodeConf["amqpSettings"]["port"]
 SOCKET_IO_PORT = nodeConf ["socketioListenPort"]

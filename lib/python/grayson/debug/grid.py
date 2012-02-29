@@ -75,7 +75,7 @@ class GridWorkflowMonitor (object):
     STATUS_SUCCEEDED = "succeeded"
     STATUS_FAILED = "failed"
 
-    def __init__(self, workflowId, username, workdir, logRelPath=".", amqpPort=None, eventBufferSize=0):
+    def __init__(self, workflowId, username, workdir, logRelPath=".", amqpPort=None, amqpQName=None, eventBufferSize=0):
         logger.debug ("gridworkflowmonitor:init")
         self.workflow = GridWorkflow (workdir)
         self.tracker = {}
@@ -83,7 +83,7 @@ class GridWorkflowMonitor (object):
         self.username = username
         self.monitorRunning = False
 
-        self.eventStream = EventStream (amqpPort, logRelPath, eventBufferSize)
+        self.eventStream = EventStream (amqpPort, amqpQName, logRelPath, eventBufferSize)
 
         self.transferBytesPattern = re.compile ('Stats: ([0-9]+(.[0-9]+)?)')
         self.transferDurationPattern = re.compile ('in ([0-9]+(.[0-9]+)?) seconds')

@@ -11,8 +11,9 @@ logger = logging.getLogger (__name__)
 
 class EventStream (object):
 
-    def __init__(self, port, logRelPath=".", eventBufferSize=0):
+    def __init__(self, port, qName, logRelPath=".", eventBufferSize=0):
         self.port = port
+        self.qName = qName
         self.count = 0
         self.eventBufferSize = eventBufferSize
         self.eventBuffer = []
@@ -52,7 +53,7 @@ class EventStream (object):
                                        username = event ['clientId'])
 
     def transmit (self, event):
-        amqp = GraysonAMQPTransmitter (GraysonUtil.WORKFLOW_QUEUE, port=self.port)
+        amqp = GraysonAMQPTransmitter (self.qName, port=self.port)
         text = json.dumps (event, indent=4)
         amqp.send ([ text ])
         self.count += 1

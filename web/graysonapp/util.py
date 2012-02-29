@@ -42,7 +42,7 @@ class GraysonWebUtil:
                              file_name)
     @staticmethod
     def publish (event):
-        amqp = GraysonAMQPTransmitter (GraysonWebConst.WORKFLOW_QUEUE)
+        amqp = GraysonAMQPTransmitter (settings.WORKFLOW_QUEUE_NAME) #GraysonWebConst.WORKFLOW_QUEUE)
         text = json.dumps (event)
         amqp.send ([ text ])
 

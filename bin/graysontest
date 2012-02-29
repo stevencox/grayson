@@ -634,7 +634,6 @@ class GraysonCompilerTests (GraysonTestCase):
 _____________E_R_R_O_R______________________________________\n%s\n_____________E_R_R_O_R______________________________________
 """ % baseline
             self.output (error)
-
             raise e
 
     def tearDown (self):
