@@ -70,8 +70,8 @@ class PegasusWMS (WorkflowManagementSystem):
     ''' Get Pegasus specific arguments '''
     def getExecuteArguments (self, sites, workflow=None, other=[]):
         result = None
-        #args = ["-Dpegasus.user.properties=${outputDir}/${pegasusProperties}",
-        args = ["--conf=${outputDir}/${pegasusProperties}",
+        args = ["-Dpegasus.user.properties=${outputDir}/${pegasusProperties}",
+        #args = ["--conf=${outputDir}/${pegasusProperties}",
                 "--sites ${sites}",
                 #"--dir ${outputDir}/work",
                 "--force",

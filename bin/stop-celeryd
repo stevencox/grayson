@@ -1,3 +1,8 @@
 #!/bin/bash
 
-kill -9 $( ps -ef | grep celeryd | grep -v grep | awk '{ print $2 }' )
+ids=$( ps -ef | grep celeryd | grep -v grep | awk '{ print $2 }' )
+echo $ids
+kill -9 $ids
+
+
+
