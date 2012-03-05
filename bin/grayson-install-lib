@@ -242,6 +242,7 @@ grayson-create-virtualenv () {
     #echo "Creating virtual env: $GRAYSON_VENV"
     python virtualenv.py $VIRTUALENV_ARGS $GRAYSON_VENV
     source $GRAYSON_VENV/bin/activate
+    rm virtualenv.py*
 }
 grayson-activate () {
     cd $GRAYSON_VENV
@@ -324,14 +325,13 @@ grayson-install-initialize () {
     export GRAYSON_STACK=$PWD
     cd $curdir
     
-    GRAYSON_VENV=$GRAYSON_HOME/venv
+    export GRAYSON_VENV=$GRAYSON_HOME/venv
     curdir=$PWD
     mkdir -p $GRAYSON_VENV
-    cd $GRAYSON_VENV
-    export GRAYSON_VENV=$PWD
-    cd $curdir
+#    cd $GRAYSON_VENV
+#    cd $curdir
 
-    mkdir -p $GRAYSON_HOME/var/logs
+    mkdir -p $GRAYSON_HOME/../var/logs
     
 }
 
