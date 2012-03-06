@@ -137,11 +137,11 @@ Grayson is in early alpha. It has been tested with Pegasus 3.0.1.
 
 Some things are clear:
 
-   1. Add support for, and move all samples to Pegasus 4.0.x
-   2. Move to using Pegasus STAMPEDE for event detection 
-   3. Use the SQLAlchemy STAMPEDE API provided by Pegasus
-   4. Modify event notification to scope events to the selected subworkflow - not the whole thing.
-   5. A non-graphical approach is needed at least as an option.
+   * Add support for, and move all samples to Pegasus 4.0.x
+   * Move to using Pegasus STAMPEDE for event detection 
+   * Use the SQLAlchemy STAMPEDE API provided by Pegasus
+   * Modify event notification to scope events to the selected subworkflow - not the whole thing.
+   * A non-graphical approach is needed at least as an option.
 
 
 Build Environment
@@ -149,10 +149,10 @@ Build Environment
 
 Grayson's built at the [RENCI continuous integration system](continuousintegration.wordpress.com).
 
-[Automated Build](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/)
-[API Docs](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/javadoc/)
-[Coverage Report](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/507/cobertura/)
-[Static Analysis](https://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/ws/pylint.html)
+* [Automated Build](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/)
+* [API Docs](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/javadoc/)
+* [Coverage Report](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/507/cobertura/)
+* [Static Analysis](https://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/ws/pylint.html)
 
 Automated unit test output can be seen in the build log. Tests currently focus on Pegasus DAX generation. PhantomJS is also used to test the user interface.
 
