@@ -378,7 +378,7 @@ dependencies:"""
 """dax name: <scan-uber>
 files:
    file: <fasta-chunks.tar.gz>
-      pfn: <file://target/scan/fasta-chunks.tar.gz>
+      pfn: <file://target/scan/work/outputs/fasta-chunks.tar.gz>
    file: <fasta.txt>
       pfn: <file://target/scan/input/fasta.txt>
    file: <full-sifs.txt>
