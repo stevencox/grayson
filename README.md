@@ -37,6 +37,14 @@ This allows workflow events to be dynamically rendered on the user interface.
 Installation
 ============
 
+Prerequisits:
+-------------
+
+   1. Pegasus 3.0.1
+   2. Condor 7.7.5+
+   3. Globus
+   4. Python 2.7
+
 Overview:
 ---------
 
@@ -117,11 +125,28 @@ As root,
      /etc/init.d/grayson-celeryd
      /etc/init.d/grayson-event
 
-Modify firewall settings appropriately to allow access to both httpd and node. The default port for node is 8001 and can be set in <installdir>/grayson.conf.
+Modify firewall settings appropriately to allow access to both httpd and node. The default port for node is 8080 and can be set in <installdir>/grayson.conf.
+
+Grayson is at https://<host.domain.name>/grayson
 
 
+Next Steps
+==========
+
+Grayson is in early alpha. It has been tested with Pegasus 3.0.1.
+
+Some things are clear:
+
+   1. Add support for, and move all samples to Pegasus 4.0.x
+   2. Move to using Pegasus STAMPEDE for event detection 
+   3. Use the SQLAlchemy STAMPEDE API provided by Pegasus
+   4. Modify event notification to scope events to the selected subworkflow - not the whole thing.
+   5. A non-graphical approach is needed at least as an option.
 
 
+   
+
+    
 
 
 
