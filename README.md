@@ -117,6 +117,7 @@ As root,
      /etc/init.d/grayson-celeryd
      /etc/init.d/grayson-event
 
+Modify firewall settings appropriately to allow access to both httpd and node. The default port for node is 8001 and can be set in <installdir>/grayson.conf.
 
 
 
