@@ -30,7 +30,7 @@ def application(environ, start_response):
     return _application(environ, start_response)
 
 
-'''
+''' prod
    WSGIDaemonProcess engage-submit3.renci.org user=scox group=renci processes=2 threads=25
    WSGIProcessGroup engage-submit3.renci.org
    WSGISocketPrefix run/wsgi
@@ -45,4 +45,23 @@ def application(environ, start_response):
    </Directory>
 
    LogLevel info
+'''
+
+''' dev
+LoadModule wsgi_module modules/mod_wsgi.so
+   WSGIDaemonProcess engage-submit3.renci.org user=glideinwms group=glideinwms processes=2 threads=25
+   WSGIProcessGroup engage-submit3.renci.org
+   WSGISocketPrefix run/wsgi
+   WSGIScriptAlias /grayson-dev /opt/grayson-dev/current/web/apache/django.wsgi
+   Alias /grayson-dev/static/ /opt/grayson-dev/current/web/graysonapp/static/
+   <Directory /opt/grayson-dev/current/web/graysonapp/static/>
+      Order deny,allow
+      Allow from all
+   </Directory>
+   LogLevel debug
+
+   <Location /grayson-dev>
+      Order deny,allow
+      Allow from all
+   </Location>
 '''

@@ -1,3 +1,5 @@
+GRAYSON
+=======
 
 Grayson is a toolchain for designing, executing, debugging and sharing scientific workflows. It consists of
    - An editor, yEd by yWorks for creating workflow components
@@ -5,16 +7,19 @@ Grayson is a toolchain for designing, executing, debugging and sharing scientifi
    - A visual debugger for executing and troubleshooting workflows
 
 Editor: 
+-------
 
 yEd is a desktop application and GraphML editor. It provides point and click, drag and drop and other familiar user interface metaphors. Graph nodes may be annotated and all artifacts are saved as XML.
 
 Compiler:
+---------
 
 The compiler is a python command line program which assembles GraphML models into an abstract syntax tree and emits a Pegasus DAX with all necessary catalogs.
 
 It also proivides a packager which assembles workflow artifacts into a compressed archive for submission to the execution environment.
 
 Execution Environment:
+----------------------
 
 The execution environment is a web application allowing upload and execution of packaged workflows.
 
@@ -30,28 +35,59 @@ It provides monitoring infrastructure consisting of:
 This allows workflow events to be dynamically rendered on the user interface.
 
 Installation
+============
+
+Overview:
+---------
+
   Grayson is very much alpha. These are preliminary install instructions.
 
   These have been tested on Fedora and CentOS 5.7
 
-  git clone git://github.com/stevencox/grayson.git
-  export GRAYSON_HOME=$PWD/grayson
-  source $GRAYSON_HOME/bin/setup.sh
-  grayson-install --clean --frozen
+>  git clone git://github.com/stevencox/grayson.git
+>  export GRAYSON_HOME=$PWD/grayson
+>  source $GRAYSON_HOME/bin/setup.sh
+>  grayson-install --clean --frozen --python=$(which python2.7)
 
      This should leave you with these directories:
         grayson
-        grayson-virtualenv
+        |---event
+        |---graysonapp
+        |---web
+        |---venv
+        |---var 
         stack
-           httpd
-           modwsgi
-           rabbitmq
-           erlang
+        |---httpd
+        |---modwsgi
+        |---rabbitmq
+        |---erlang
 
-  cd grayson
-  cp conf/dev.conf conf/grayson.conf  
-  web/manage.py runserver 0.0.0.0:8000
-  sudo bin/grayson-rabbit.sh
-  web/manage.py celeryd -l debug
-  node event/server.js
+Development Environment:
+------------------------
+
+>  cd grayson
+>  cp conf/dev.conf conf/grayson.conf  
+>  web/manage.py runserver 0.0.0.0:8000
+>  sudo bin/grayson-rabbit.sh
+>  web/manage.py celeryd -l debug
+>  node event/server.js
+
+Production Instance:
+--------------------
+ 
+Install mod_wsgi in your apache instance.
+
+Add this to the apache config:
+
+   LoadModule wsgi_module modules/mod_wsgi.so
+   WSGIDaemonProcess host.domain.name user=<user> group=<user> processes=2 threads=25
+   WSGIProcessGroup host.domain.name
+   WSGISocketPrefix run/wsgi
+   WSGIScriptAlias /grayson /opt/grayson/current/web/apache/django.wsgi
+   Alias /grayson/static/ <installdir>/web/graysonapp/static/
+   <Directory <installdir>/web/graysonapp/static/>
+      Order deny,allow
+      Allow from all
+   </Directory>
+   LogLevel info
 

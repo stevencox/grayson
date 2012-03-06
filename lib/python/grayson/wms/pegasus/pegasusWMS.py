@@ -33,7 +33,6 @@ from Pegasus.DAX3 import Transformation
 
 # local #
 from grayson.compiler.abstractsyntax import ASTProfile
-#from grayson.compiler.compiler import CompilerPlugin
 from grayson.executor import Executor
 from grayson.log import LogManager
 from grayson.common.util import GraysonUtil
@@ -70,15 +69,25 @@ class PegasusWMS (WorkflowManagementSystem):
     ''' Get Pegasus specific arguments '''
     def getExecuteArguments (self, sites, workflow=None, other=[]):
         result = None
+
+        pegasusHome = GraysonUtil.getPegasusHome ()
         args = ["-Dpegasus.user.properties=${outputDir}/${pegasusProperties}",
-        #args = ["--conf=${outputDir}/${pegasusProperties}",
                 "--sites ${sites}",
-                #"--dir ${outputDir}/work",
                 "--force",
                 "--verbose",
                 "--verbose",
                 "--verbose",
                 "--output local"]
+        if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1: 
+            args = ["--conf=${outputDir}/${pegasusProperties}",
+                    "--sites ${sites}",
+                    "--dir ${outputDir}/work",
+                    "--force",
+                    "--verbose",
+                    "--verbose",
+                    "--verbose",
+                    "--output local"]
+
         for arg in other:
             args.append (arg)
         template = Template (" ".join (args))
@@ -355,9 +364,7 @@ class SiteCatalogXML(object):
         """
 
     def configureLocal (self):
-        pegasusLocation = os.getenv ("PEGASUS_HOME")
-        if not pegasusLocation:
-            raise ValueError ("PEGASUS_HOME must be defined")
+        pegasusLocation = GraysonUtil.getPegasusHome ()
 
         globusLocation = os.getenv ("GLOBUS_LOCATION")
         if not globusLocation:

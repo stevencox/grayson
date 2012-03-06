@@ -15,6 +15,13 @@ class GraysonUtil (object):
         return os.path.join (unpackDir, "work", username, "pegasus", workflowId, runId)
     
     @staticmethod
+    def getPegasusHome ():
+        pegasusLocation = unicode (os.getenv ("PEGASUS_HOME"))
+        if not pegasusLocation:
+            raise ValueError ("PEGASUS_HOME must be defined")
+        return pegasusLocation
+
+    @staticmethod
     def containsAny (string, items):
         result = False
         for item in items:

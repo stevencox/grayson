@@ -1,6 +1,7 @@
 
 // get https if this is prod
-if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
+if (graysonConf.uriPrefix == '/grayson' && ! graysonConf.unitTest) {
+//if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
     if (location.href.indexOf("https://") == -1 && location.href.indexOf ("http://") > -1) {
 	location.href = location.href.replace("http://", "https://");
     }
