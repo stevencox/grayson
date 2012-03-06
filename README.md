@@ -2,9 +2,9 @@ GRAYSON
 =======
 
 Grayson is a toolchain for designing, executing, debugging and sharing scientific workflows. It consists of
-   - An editor, yEd by yWorks for creating workflow components
-   - A compiler for parsing and linking components into a workflow
-   - A visual debugger for executing and troubleshooting workflows
+   1. An editor, yEd by yWorks, for creating visual workflow components
+   2. A compiler for parsing and linking components into a workflow
+   3. A visual debugger for executing and troubleshooting workflows
 
 Editor: 
 -------
