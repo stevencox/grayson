@@ -147,7 +147,7 @@ Some things are clear:
 Build Environment
 =================
 
-Grayson's built at the [RENCI continuous integration system](continuousintegration.wordpress.com).
+Grayson's built at the [RENCI continuous integration system](http://continuousintegration.wordpress.com).
 
 * [Automated Build](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/)
 * [API Docs](http://ci-dev.renci.org/hudson/view/RCI/job/rci-grayson/javadoc/)
