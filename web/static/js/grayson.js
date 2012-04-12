@@ -1,6 +1,7 @@
 
 // get https if this is prod
-if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
+if (graysonConf.uriPrefix == '/grayson' && ! graysonConf.unitTest) {
+//if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
     if (location.href.indexOf("https://") == -1 && location.href.indexOf ("http://") > -1) {
 	location.href = location.href.replace("http://", "https://");
     }
@@ -700,7 +701,7 @@ GraysonView.prototype.showFlowSelector = function (node) {
 		effect   : 'fade'
 	 });
 	var css = {
-	    top  : node.geom.y - tip.height () + dom.parent().position ().top,
+	    top  : node.geom.y - ( tip.height () * 0.7 ), //- tip.height () + dom.parent().position ().top - 20,
 	    left : node.geom.x - (tip.width () / 2)  + (node.geom.width / 2)
         };
 	//console.log (css);

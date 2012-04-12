@@ -61,7 +61,7 @@ $( document ).delegate( "#main", "pageshow", function() {
 	$('#back').hide ();
 	$('#home').hide ();
     });
-$( document ).delegate( "#flows", "pageshow", function() {
+$( document ).delegate( "#flows", "pagecreate", function() {
 	$('#back').show ();
 	$('#home').show ();
     });

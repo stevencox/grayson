@@ -3,7 +3,7 @@
 set -e
 set +x
 
-mode=alpha
+mode=$1
 shift
 
 output_dax=alpha.dax

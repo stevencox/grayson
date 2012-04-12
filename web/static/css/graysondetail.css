@@ -144,3 +144,7 @@
     left     : 350px;
     padding  : 20px;
 }
+
+.handle {
+    display : none;
+}

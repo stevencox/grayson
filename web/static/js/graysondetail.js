@@ -48,8 +48,8 @@ function GraysonDetail (grayson) {
     $("#detailTabs").tabs ({	    
 	    show: function (event, ui) {
 		if (ui.panel.id == 'compute_detail') {
-    		    //$("#compute_graph").html ("");
-		    //grayson.detailView.graphCompute ();
+    		    $("#compute_graph").html ("");
+		    grayson.view.detailView.graphCompute ();
 		}
 	    }
 	});
@@ -62,12 +62,10 @@ function GraysonDetail (grayson) {
 	    }
 	});
 
-    /*
     $("#compute_detail").resize (function () {
-	    //$("#compute_graph").html ("");
-	    //grayson.detailView.graphCompute ();
+	    $("#compute_graph").html ("");
+	    grayson.view.detailView.graphCompute ();
 	});
-    */
 
     $(window).resize (function() {
 	    var height = $("#detail_view").height ();
@@ -96,20 +94,22 @@ function GraysonDetail (grayson) {
 };
 GraysonDetail.prototype.updateFileTree = function () {
     var dir = $('#file_detail').attr ('dir');
-    var maxDirLen = 55;
-    var txt = dir.length > maxDirLen ? dir.substring ((dir.length - maxDirLen), dir.length - 1) : dir;
-    $('#file_tree_path').html (txt);
     if (dir) {
-	var treeConfiguration = {
-	    root: dir + '/',
-	    script: 'dirlist/',
-	    expandSpeed: 200,
-	    collapseSpeed: 200,
-	    afterexpand : function () {
-		grayson.view.detailView.popDirQ ();
-	    }
-	};
-	$('#file_tree').fileTree (treeConfiguration, this.getFileText);
+	var maxDirLen = 55;
+	var txt = dir.length > maxDirLen ? dir.substring ((dir.length - maxDirLen), dir.length - 1) : dir;
+	$('#file_tree_path').html (txt);
+	if (dir) {
+	    var treeConfiguration = {
+		root: dir + '/',
+		script: 'dirlist/',
+		expandSpeed: 200,
+		collapseSpeed: 200,
+		afterexpand : function () {
+		    grayson.view.detailView.popDirQ ();
+		}
+	    };
+	    $('#file_tree').fileTree (treeConfiguration, this.getFileText);
+	}
     }
 };
 
@@ -150,10 +150,12 @@ GraysonDetail.prototype.getFileText = function (file) {
 };
 GraysonDetail.prototype.updateMonitor = function () {
     var dir = $('#monitor_detail').attr ('dir');
-    grayson.api.get (grayson.api.localizeURI ('get_flow_status?path=' + dir), function (text) {
-	    //text = [ '<pre>', text, '</pre>' ].join ('');
-	    $('#monitor_text').html (text);
-	});
+    if (dir) {
+	grayson.api.get (grayson.api.localizeURI ('get_flow_status?path=' + dir), function (text) {
+		//text = [ '<pre>', text, '</pre>' ].join ('');
+		$('#monitor_text').html (text);
+	    });
+    }
 };
 GraysonDetail.prototype.toggle = function () {
     var height = Math.min ( $("#detail_view").height (), 500);
@@ -195,7 +197,11 @@ GraysonDetail.prototype.initialize = function (e) {
 	this.networkTable.fnClearTable ();
     }
     $("#dax_detail").html ('');
+    $("#dax_detail_handle").hide ();
     $("#submit_detail").html ('');
+    $("#submit_detail_handle").hide ();
+    $("#file_detail_handle").hide ();
+    $("#monitor_detail_handle").hide ();
     $("#detailTabs").tabs ('select', "#event_detail");
     $("#monitor_text").html ('');
     this.monitorReady = false;
@@ -256,7 +262,9 @@ GraysonDetail.prototype.processGenericEvent = function (event, html) {
 	if (! this.monitorReady) {
 	    if (event.logdir.match ('[0-9]{8}T[0-9]{6}\-[0-9]{4}$') != null) {
 		$('#monitor_detail').attr ('dir', event.logdir);
+		$('#monitor_detail_handle').show ();
 		$('#file_detail').attr ('dir', event.logdir);
+		$('#file_detail_handle').show ();
 		this.updateMonitor ();
 		this.monitorReady = true;
 	    }
@@ -422,6 +430,7 @@ GraysonDetail.prototype.renderCondor = function (text) {
 		 '</textarea>',
 		 '<button id="save_submit_detail">Save</button><p>(Not Implemented)</p>' ].join ("");
     $("#submit_detail").html (html);
+    $("#submit_detail_handle").show ();
     $("#detailTabs").tabs ('select', "#submit_detail");
     $("#save_submit_detail").click (function (event) {
 	    grayson.log_info ("saving " + $("#submit_detail_text").html ());
@@ -449,6 +458,7 @@ GraysonDetail.prototype.renderDax = function (text) {
 		 '</textarea>',
 		 '<button id="save_dax_detail" >Save</button>' ].join ('');
     $("#dax_detail").html (html);
+    $("#dax_detail_handle").show ();
     $("#detailTabs").tabs ('select', "#dax_detail");
     $("#save_dax_detail").click (function (event) {
 	    grayson.log_info ("saving " + $("#dax_detail_text").html ());
@@ -481,8 +491,36 @@ GraysonDetail.prototype.getPattern = function (path) {
     }
     return pattern;
 };
-
 GraysonDetail.prototype.graphCompute = function () {
+    var r = Raphael("compute_graph"),
+    pie = r.piechart(320, 240, 100, [55, 20, 13, 32, 5, 1, 2, 10], { legend: ["%%.%% - Enterprise Users", "IE Users"],
+								     legendpos: "west",
+								     href: ["javascript:grayson.view.detailView.go('http://raphaeljs.com')", 
+									    /* "http://g.raphaeljs.com" */]});    
+    r.text(320, 100, "Interactive Pie Chart").attr({ font: "20px sans-serif" });
+    pie.hover(function () {
+	    this.sector.stop();
+	    this.sector.scale(1.1, 1.1, this.cx, this.cy);
+	    
+	    if (this.label) {
+		this.label[0].stop();
+		this.label[0].attr({ r: 7.5 });
+		this.label[1].attr({ "font-weight": 800 });
+	    }
+	}, function () {
+	    this.sector.animate({ transform: 's1 1 ' + this.cx + ' ' + this.cy }, 500, "bounce");
+	    
+	    if (this.label) {
+		this.label[0].animate({ r: 5 }, 500, "bounce");
+		this.label[1].attr({ "font-weight": 400 });
+	    }
+	});
+};
+
+GraysonDetail.prototype.go = function (u) {
+    window.open (u);  
+};
+GraysonDetail.prototype.graphCompute0 = function () {
 
     // For horizontal bar charts, x an y values must will be "flipped"
     // from their vertical bar counterpart.

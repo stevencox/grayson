@@ -79,6 +79,7 @@ class PegasusWMS (WorkflowManagementSystem):
                 "--verbose",
                 "--output local"]
         if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1: 
+            logger.info ("--------------- using pegasus 3.1/4.0 for pegasus_home: %s", pegasusHome)
             args = ["--conf=${outputDir}/${pegasusProperties}",
                     "--sites ${sites}",
                     "--dir ${outputDir}/work",
