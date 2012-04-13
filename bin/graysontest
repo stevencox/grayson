@@ -63,9 +63,9 @@ jobs:
 transformations:
 executables:
    executable: <one> namespace: <alpha>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/alpha/bin/sample>
+      pfn: <file://target/alpha/bin/alpha.sh>
    executable: <two> namespace: <alpha>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/alpha/bin/sample>
+      pfn: <file://target/alpha/bin/alpha.sh>
 dependencies:
    dependency: <1n3>
       parent: parent=><one> edge_label=><None>"""
