@@ -174,6 +174,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 		if element == "graphml":
 			x = 0
 		elif element == "node":
+
 			self.nodeId = "%s%s" % (self.idPrefix, attrs.get ("id"))
 		elif element == "data":
 			key = attrs.get ("key")
@@ -195,9 +196,11 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 				self.nodeType = self.nodeType + unicode(chars)
 		elif parent == "y:NodeLabel":
 			self.label = unicode(chars)
+
         def endElement (self, element):
                 self.elements = self.elements[1:]
                 if element == "node":
+
 			node = self.graph.addNode (self.nodeId, self.label, self.nodeType)
 			label = node.getLabel ()
 			if label == "properties" or label == "Properties":

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
-  <!--Created by yFiles for Java 2.8-->
+  <!--Created by yFiles for Java 2.9-->
   <key for="graphml" id="d0" yfiles.type="resources"/>
   <key for="port" id="d1" yfiles.type="portgraphics"/>
   <key for="port" id="d2" yfiles.type="portgeometry"/>
@@ -22,7 +22,7 @@
           <y:Geometry height="109.99999999999955" width="558.2816242514969" x="-2630.006356232846" y="-2207.9918257235518"/>
           <y:Fill color="#F3FBF0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="118.94140625" x="219.6701090007482" y="41.359375">Scan Uber</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.271484375" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="106.34375" x="225.9689371257482" y="41.364257812499545">Scan Uber</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
             <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
@@ -31,74 +31,154 @@
       </data>
     </node>
     <node id="n1">
-      <data key="d5"><![CDATA[{ "type" : "file" } ]]></data>
-      <data key="d6">
-        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="37.0" width="134.42667315139397" x="-2418.0788806827945" y="-1896.9918257235522"/>
-          <y:Fill color="#E6F79B" transparent="false"/>
-          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="65.21333657569676" y="16.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="119.37109375" x="7.527789700696758" y="9.515625">fasta-chunks.tar.gz</y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n2">
-      <data key="d5"><![CDATA[{
-  "type" : "job",
-  "args" : "fasta.txt fasta-chunks.tar.gz ${appHome}/work/outputs"
-}]]></data>
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="42.0" width="124.05862399624766" x="-2412.894856105222" y="-1968.9918257235522"/>
-          <y:Fill color="#280D4E" transparent="false"/>
-          <y:BorderStyle color="#808080" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="57.390625" x="33.33399949812383" y="12.015625">prepare</y:NodeLabel>
-          <y:Shape type="ellipse"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n3">
-      <data key="d5"><![CDATA[{
-   "type" : "job",
-   "args" : "${appHome}/work/outputs"
-}]]></data>
-      <data key="d6">
-        <y:ShapeNode>
-          <y:Geometry height="42.0" width="124.05862399624766" x="-2412.894856105222" y="-1646.7153280276998"/>
-          <y:Fill color="#3C2063" transparent="false"/>
-          <y:BorderStyle color="#808080" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="50.44140625" x="36.80860887312383" y="12.015625">reduce</y:NodeLabel>
-          <y:Shape type="ellipse"/>
-        </y:ShapeNode>
-      </data>
-    </node>
-    <node id="n4">
-      <data key="d5"><![CDATA[{     "type" : "file",    "site" : "local" } ]]></data>
+      <data key="d5"><![CDATA[{ "type" : "file"  } ]]></data>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
           <y:Geometry height="37.0" width="124.05862399624789" x="-2412.894856105222" y="-1574.7153280276998"/>
           <y:Fill color="#E6F79B" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="60.02931199812383" y="16.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="67.216796875" x="28.42091356062383" y="9.515625">full-sifs.txt</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="69.98828125" x="27.03517137312383" y="9.5185546875">full-sifs.txt</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n2">
+      <data key="d5"><![CDATA[{
+   "type" : "job"
+}]]></data>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="42.0" width="124.05862399624766" x="-2412.894856105222" y="-1507.7153280276998"/>
+          <y:Fill color="#3C2063" transparent="false"/>
+          <y:BorderStyle color="#808080" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="37.322265625" x="43.36817918562383" y="12.0185546875">score</y:NodeLabel>
+          <y:Shape type="ellipse"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n3">
+      <data key="d5"><![CDATA[{ "type" : "file" } ]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="37.0" width="166.0586239962479" x="-2249.69472257652" y="-1427.7153280276998"/>
+          <y:Fill color="#E6F79B" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="81.02931199812383" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="81.28515625" x="42.38673387312383" y="9.5185546875">adjacency.txt</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n4">
+      <data key="d5"><![CDATA[{ "type" : "file" } ]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="37.0" width="141.4529363633767" x="-2421.5920122887865" y="-1427.7153280276998"/>
+          <y:Fill color="#E6F79B" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="68.72646818168823" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="62.189453125" x="39.63174161918823" y="9.5185546875">matrix.txt</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
     <node id="n5">
+      <data key="d5"><![CDATA[{  "type" : "file" } ]]></data>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="42.0" width="558.2816242514971" x="-2630.0063562328464" y="-2087.991825723552"/>
+          <y:Geometry height="37.0" width="156.0586239962479" x="-2608.0949896339243" y="-1427.7153280276998"/>
+          <y:Fill color="#E6F79B" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="76.02931199812383" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="76.41015625" x="39.82423387312383" y="9.5185546875">database.txt</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n6">
+      <data key="d5"><![CDATA[{
+     "type"         : "file",
+     "site"          : "local",
+     "urlPrefix" : "file://${appHome}/bin"
+ } ]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="37.0" width="124.05862399624789" x="-2258.8362321089744" y="-1505.2153280276998"/>
+          <y:Fill color="#E6F79B" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="60.02931199812383" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="46.38671875" x="38.83595262312383" y="9.5185546875">score.x</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n7">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="42.0" width="193.38022985071143" x="-2645.4165954883883" y="-1507.7153280276998"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" bottomInset="2" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" leftInset="2" modelName="internal" modelPosition="c" rightInset="2" textColor="#000000" topInset="2" visible="true" width="4.0" x="277.14081212574865" y="19.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="202.609375" x="177.83612462574865" y="12.015625">Models the overall Scan pipeline.</y:NodeLabel>
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="33.962890625" leftInset="10" modelName="internal" modelPosition="b" rightInset="10" textColor="#000000" topInset="10" visible="true" width="193.38022985071143" x="0.0" y="4.037109375">Analyze aggregate results</y:NodeLabel>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="94.69011492535583" y="19.0"/>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n6">
+    <node id="n8">
+      <data key="d5"><![CDATA[{ "type" : "file" } ]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="37.0" width="134.42667315139397" x="-2418.0788806827936" y="-1896.9918257235522"/>
+          <y:Fill color="#E6F79B" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="65.21333657569699" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="118.814453125" x="7.806110013196758" y="9.5185546875">fasta-chunks.tar.gz</y:NodeLabel>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n9">
+      <data key="d5"><![CDATA[{
+  "type" : "job",
+  "args" : "fasta.txt fasta-chunks.tar.gz ${appHome}/work/outputs"
+}]]></data>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="42.0" width="124.05862399624766" x="-2412.894856105221" y="-1968.9918257235522"/>
+          <y:Fill color="#280D4E" transparent="false"/>
+          <y:BorderStyle color="#808080" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="51.9296875" x="36.06446824812383" y="12.0185546875">prepare</y:NodeLabel>
+          <y:Shape type="ellipse"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n10">
+      <data key="d5"><![CDATA[{
+   "type" : "job",
+   "args" : "${appHome}/work/outputs"
+}]]></data>
+      <data key="d6">
+        <y:ShapeNode>
+          <y:Geometry height="42.0" width="124.05862399624766" x="-2412.894856105221" y="-1646.7153280276998"/>
+          <y:Fill color="#3C2063" transparent="false"/>
+          <y:BorderStyle color="#808080" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="45.736328125" x="39.16114793562383" y="12.0185546875">reduce</y:NodeLabel>
+          <y:Shape type="ellipse"/>
+        </y:ShapeNode>
+      </data>
+    </node>
+    <node id="n11">
+      <data key="d6">
+        <y:GenericNode configuration="ShinyPlateNodeWithShadow">
+          <y:Geometry height="42.0" width="558.2816242514971" x="-2630.0063562328455" y="-2087.991825723552"/>
+          <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
+          <y:BorderStyle hasColor="false" type="line" width="1.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" bottomInset="2" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" leftInset="2" modelName="internal" modelPosition="c" rightInset="2" textColor="#000000" topInset="2" visible="true" width="4.0" x="277.14081212574865" y="19.0"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="194.892578125" x="181.69452306324865" y="12.0185546875">Models the overall Scan pipeline.</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
+    <node id="n12">
       <data key="d5"><![CDATA[ {
    "type"     : "map",
    "style"    : "dynamic",
@@ -108,48 +188,48 @@
 }]]></data>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="67.1382488479262" width="74.05862399624766" x="-2387.8948561052216" y="-1829.9918257235522"/>
+          <y:Geometry height="67.1382488479262" width="74.05862399624766" x="-2387.8948561052207" y="-1829.9918257235522"/>
           <y:Fill color="#277028" transparent="false"/>
           <y:BorderStyle color="#808080" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="33.19140625" x="20.43360887312383" y="24.584749423963103">map</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="30.642578125" x="21.70802293562383" y="24.587679111463103">map</y:NodeLabel>
           <y:Shape type="ellipse"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n7">
+    <node id="n13">
       <data key="d5"><![CDATA[{ "type" : "workflow" 
 }]]></data>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="56.13824884792621" width="105.02003720669427" x="-2403.375562710445" y="-1732.853576875626"/>
+          <y:Geometry height="56.13824884792621" width="105.02003720669427" x="-2403.3755627104442" y="-1732.853576875626"/>
           <y:Fill color="#FFFF99" transparent="false"/>
           <y:BorderStyle color="#808080" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#1F2C6C" visible="true" width="68.541015625" x="18.239510790847362" y="19.084749423963103">scan-flow</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#1F2C6C" visible="true" width="66.666015625" x="19.177010790847362" y="19.087679111463103">scan-flow</y:NodeLabel>
           <y:Shape type="ellipse"/>
         </y:ShapeNode>
       </data>
     </node>
-    <node id="n8">
+    <node id="n14">
       <data key="d5"><![CDATA[{
    "type" : "file"
 } ]]></data>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="37.0" width="134.42667315139397" x="-2418.0788806827954" y="-2035.9918257235522"/>
+          <y:Geometry height="37.0" width="134.42667315139397" x="-2418.0788806827945" y="-2035.9918257235522"/>
           <y:Fill color="#E6F79B" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="65.21333657569676" y="16.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="54.21484375" x="40.10591470069676" y="9.515625">fasta.txt</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="65.21333657569699" y="16.5"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="52.404296875" x="41.01118813819676" y="9.5185546875">fasta.txt</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n9">
+    <node id="n15">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="80.13911166192474" width="193.38022985071143" x="-2626.7557925611563" y="-1837.78995898347"/>
+          <y:Geometry height="80.13911166192474" width="193.38022985071143" x="-2626.7557925611554" y="-1837.78995898347"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.90625" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="193.38022985071143" x="0.0" y="9.116430830962372">The map operator:
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.888671875" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="193.38022985071143" x="0.0" y="9.125219893462372">The map operator:
 Instantiates scan-flow once
 per element of the tar.</y:NodeLabel>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="94.69011492535583" y="38.06955583096237"/>
@@ -159,13 +239,13 @@ per element of the tar.</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n10">
+    <node id="n16">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="80.13911166192474" width="203.7229779423144" x="-2268.355525503751" y="-1988.0613815545146"/>
+          <y:Geometry height="80.13911166192474" width="203.7229779423144" x="-2268.35552550375" y="-1988.0613815545146"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.90625" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="203.7229779423144" x="0.0" y="9.116430830962372">Prepare splits the input file 
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.888671875" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="203.7229779423144" x="0.0" y="9.125219893462372">Prepare splits the input file 
 into separate files
 archived in a single tar.</y:NodeLabel>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="99.86148897115709" y="38.06955583096237"/>
@@ -175,13 +255,13 @@ archived in a single tar.</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n11">
+    <node id="n17">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="58.569555830962145" width="196.63079352240175" x="-2630.006356232846" y="-2035.9918257235522"/>
+          <y:Geometry height="58.569555830962145" width="196.63079352240175" x="-2630.006356232845" y="-2035.9918257235522"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="33.96875" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="196.63079352240175" x="0.0" y="12.300402915481072">FASTA formatted input file.</y:NodeLabel>
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="33.962890625" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="196.63079352240175" x="0.0" y="12.303332602981072">FASTA formatted input file.</y:NodeLabel>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="96.31539676120065" y="27.284777915481072"/>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
@@ -189,13 +269,13 @@ archived in a single tar.</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n12">
+    <node id="n18">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="80.13911166192474" width="203.7229779423144" x="-2268.355525503751" y="-1744.8540082826253"/>
+          <y:Geometry height="80.13911166192474" width="203.7229779423144" x="-2268.35552550375" y="-1744.8540082826253"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.90625" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="207.822265625" x="-2.049643841342913" y="9.116430830962372">This workflow is executed once
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.888671875" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="203.7229779423144" x="0.0" y="9.125219893462372">This workflow is executed once
 per fragment of the input 
 FASTA data.</y:NodeLabel>
           <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="99.86148897115709" y="38.06955583096237"/>
@@ -205,28 +285,123 @@ FASTA data.</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
-    <node id="n13">
+    <node id="n19">
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="127.28987502070345" width="193.38022985071143" x="-2626.7557925611563" y="-1689.3602655380514"/>
+          <y:Geometry height="67.1382488479262" width="193.38022985071143" x="-2626.755792561155" y="-1659.284452451663"/>
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.90625" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="193.38022985071143" x="0.0" y="32.69181251035161">The reduce job collects 
+          <y:NodeLabel alignment="left" autoSizePolicy="node_width" bottomInset="10" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="61.888671875" leftInset="10" modelName="internal" modelPosition="c" rightInset="10" textColor="#000000" topInset="10" visible="true" width="193.38022985071143" x="0.0" y="2.6247884864631033">The reduce job collects 
 output files and assembles
 the full-sifs.txt final result.</y:NodeLabel>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="94.69011492535583" y="61.64493751035161"/>
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="4.0" x="94.69011492535583" y="31.569124423963103"/>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
     </node>
-    <edge id="e0" source="n2" target="n1">
+    <edge id="e0" source="n1" target="n2">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-32.00006559147323" y="13.005130956675202">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e1" source="n2" target="n5">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-72.4449779323104" y="-4.219511593123116">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e2" source="n2" target="n4">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-32.00006559147323" y="17.000004003550202">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e3" source="n2" target="n3">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="25.337857671522215" y="42.04933678442649">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e4" source="n6" target="n2">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-17.0071305464744" y="-31.999995996449798">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e5" source="n9" target="n8">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="-2350.8655441070982" y="-1917.9545753395275"/>
-            <y:Point x="-2350.865544107098" y="-1917.9545753395275"/>
+            <y:Point x="-2350.8655441070973" y="-1917.9545753395275"/>
+            <y:Point x="-2350.865544107097" y="-1917.9545753395275"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -234,17 +409,7 @@ the full-sifs.txt final result.</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e1" source="n3" target="n4">
-      <data key="d10">
-        <y:PolyLineEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="line" width="1.0"/>
-          <y:Arrows source="none" target="standard"/>
-          <y:BendStyle smoothed="false"/>
-        </y:PolyLineEdge>
-      </data>
-    </edge>
-    <edge id="e2" source="n7" target="n3">
+    <edge id="e6" source="n13" target="n10">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="3.360238036960091E-13" ty="0.0"/>
@@ -254,12 +419,12 @@ the full-sifs.txt final result.</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e3" source="n8" target="n2">
+    <edge id="e7" source="n14" target="n9">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="-2350.8655441070987" y="-1987.4545753395278"/>
-            <y:Point x="-2350.8655441070982" y="-1987.4545753395278"/>
+            <y:Point x="-2350.865544107098" y="-1987.4545753395278"/>
+            <y:Point x="-2350.8655441070973" y="-1987.4545753395278"/>
           </y:Path>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
@@ -267,7 +432,7 @@ the full-sifs.txt final result.</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e4" source="n1" target="n6">
+    <edge id="e8" source="n8" target="n12">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
@@ -277,12 +442,31 @@ the full-sifs.txt final result.</y:NodeLabel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e5" source="n6" target="n7">
+    <edge id="e9" source="n12" target="n13">
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="-23.833710296679783"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e10" source="n10" target="n1">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-32.000065591472776" y="13.000004003550202">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>

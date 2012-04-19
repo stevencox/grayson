@@ -63,6 +63,11 @@ class PegasusWMS (WorkflowManagementSystem):
         return PegasusWorkflowModel (namespace)
     def enableShellExecution (self, enabled=True):
         return self.pegasusProperties.enableShellExecution (enabled)
+    def isShellExecutionEnabled (self):
+        return self.pegasusProperties.isShellExecutionEnabled ()
+
+        if self.isShellExecutionEnabled ():
+            installed = "false"
     def enableSymlinkTransfers (self, enabled=True):
         self.pegasusProperties.enableSymlinkTransfers (enabled)
 
@@ -163,6 +168,8 @@ class PegasusProperties:
     SITE_CATALOG="sites.xml"
     TRANSFORMATION_CATALOG="transformation-catalog.tc"
     
+    CODE_GENERATOR_EQUALS_SHELL = "pegasus.code.generator = Shell"
+
     def __init__(self):
         self.symlinkTransfers = False
         self.text = """
@@ -189,7 +196,9 @@ ${pegasusCodeGenerator}
         self.symlinkTransfers = enabled
         
     def enableShellExecution (self, enabled=True):
-        self.pegasusCodeGenerator="pegasus.code.generator = Shell"
+        self.pegasusCodeGenerator = self.CODE_GENERATOR_EQUALS_SHELL
+    def isShellExecutionEnabled (self):
+        return self.pegasusCodeGenerator == self.CODE_GENERATOR_EQUALS_SHELL
 
     def generateProperties (self, siteFile="sites.xml", configDir="."):
 
@@ -527,6 +536,7 @@ class PegasusWorkflowModel (WorkflowModel):
 	
     def addExecutable (self, jobId, name, path, version="4.0", exe_os="linux", exe_arch="x86", site="local", installed="true"):
         e_exe = self.getExecutable (name)
+        
         if not e_exe:
             e_exe = Executable (
                 namespace=self.namespace, 

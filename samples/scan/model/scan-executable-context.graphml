@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
-  <!--Created by yFiles for Java 2.8-->
+  <!--Created by yFiles for Java 2.9-->
   <key for="graphml" id="d0" yfiles.type="resources"/>
   <key for="port" id="d1" yfiles.type="portgraphics"/>
   <key for="port" id="d2" yfiles.type="portgeometry"/>
@@ -22,7 +22,7 @@
           <y:Geometry height="107.0" width="626.8975306325719" x="195.89801587301577" y="-220.0"/>
           <y:Fill color="#F3FBF0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.5546875" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="179.52734375" x="223.68509344128597" y="39.72265625">Scan Executables</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.271484375" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="179.52734375" x="223.68509344128597" y="39.8642578125">Scan Executables</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
             <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="false"/>
@@ -40,9 +40,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="57.80000000000007" y="10.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="66.28515625" x="26.657421875000068" y="2.93359375">prepare.sh</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="66.28515625" x="26.657421875000068" y="3.0185546875">prepare.sh</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -58,9 +58,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="57.799999999999955" y="10.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="60.7890625" x="29.405468749999955" y="2.93359375">reduce.sh</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="60.7890625" x="29.405468749999955" y="3.0185546875">reduce.sh</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -73,9 +73,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="57.80000000000007" y="10.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="63.630859375" x="27.984570312500068" y="2.93359375">iprscan.sh</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="63.630859375" x="27.984570312500068" y="3.0185546875">iprscan.sh</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -87,11 +87,11 @@
 }]]></data>
       <data key="d6">
         <y:GenericNode configuration="BevelNodeWithShadow">
-          <y:Geometry height="193.22014925373134" width="50.800396825397" x="352.089583546394" y="-105.23507462686567"/>
+          <y:Geometry height="243.205223880597" width="50.800396825397" x="352.089583546394" y="-105.23507462686567"/>
           <y:Fill color="#F3FBF0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="23.4001984126985" y="94.61007462686567"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="31.08203125" x="9.8591827876985" y="87.54366837686567">local</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="23.4001984126985" y="119.6026119402985"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="31.08203125" x="9.8591827876985" y="112.62116662779852">local</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
@@ -103,9 +103,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="57.80000000000007" y="10.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.818359375" x="21.890820312500068" y="2.93359375">assemble.sh</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.818359375" x="21.890820312500068" y="3.0185546875">assemble.sh</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -117,11 +117,11 @@
 }]]></data>
       <data key="d6">
         <y:GenericNode configuration="BevelNodeWithShadow">
-          <y:Geometry height="163.97014925373134" width="50.800396825397" x="615.8035820068125" y="-83.0"/>
+          <y:Geometry height="220.97014925373134" width="50.800396825397" x="615.8035820068125" y="-83.0"/>
           <y:Fill color="#F3FBF0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="23.4001984126985" y="79.98507462686567"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="30.115234375" x="10.3425812251985" y="72.91866837686567">path</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="23.4001984126985" y="108.48507462686567"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="30.115234375" x="10.3425812251985" y="101.50362931436567">path</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
@@ -129,11 +129,11 @@
       <data key="d4"/>
       <data key="d6">
         <y:GenericNode configuration="ShinyPlateNodeWithShadow">
-          <y:Geometry height="163.97014925373134" width="605.7507936507939" x="217.04475285479384" y="110.97014925373134"/>
+          <y:Geometry height="163.97014925373134" width="605.7507936507939" x="217.04475285479384" y="164.97014925373134"/>
           <y:Fill color="#F3FBF0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="node_width" configuration="CroppingLabel" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="605.7507936507939" x="0.0" y="79.98507462686567"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="11" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="146.505859375" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="546.845703125" x="29.452545262896933" y="8.732144939365696">Scan uses 
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="11" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="144.79248046875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="546.845703125" x="29.452545262896933" y="9.588834392490696">Scan uses 
 
 * prepare: Slices an input file into separate inputs in a tar file.
 
@@ -152,10 +152,27 @@
         </y:GenericNode>
       </data>
     </node>
+    <node id="n8">
+      <data key="d4"/>
+      <data key="d5"><![CDATA[{ "type" : "executable" }
+]]></data>
+      <data key="d6">
+        <y:GenericNode configuration="com.yworks.flowchart.predefinedProcess">
+          <y:Geometry height="24.0" width="119.60000000000014" x="449.54678118930167" y="100.94029850746267"/>
+          <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
+          <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="57.80000000000007" y="10.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="52.591796875" x="33.50410156250007" y="3.0185546875">score.sh</y:NodeLabel>
+          <y:StyleProperties>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
+          </y:StyleProperties>
+        </y:GenericNode>
+      </data>
+    </node>
     <edge id="e0" source="n4" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="25.365311751118156" sy="33.62499999999998" tx="-53.24584373954559" ty="1.222408898673308">
+          <y:Path sx="25.42428054090749" sy="8.632462686567166" tx="-53.24584373954559" ty="1.222408898673308">
             <y:Point x="429.47801557998343" y="25.0"/>
           </y:Path>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
@@ -167,7 +184,7 @@
     <edge id="e1" source="n4" target="n1">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="4.007889876118156" sy="77.59514925373132" tx="0.0" ty="0.0">
+          <y:Path sx="2.010218040907489" sy="52.60261194029849" tx="0.0" ty="0.0">
             <y:Point x="445.4222265122562" y="68.97014925373132"/>
             <y:Point x="445.4222265122562" y="68.97014925373134"/>
           </y:Path>
@@ -180,7 +197,7 @@
     <edge id="e2" source="n4" target="n3">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="-7.242110123881844" sy="-62.91609589041102" tx="0.0" ty="0.0"/>
+          <y:Path sx="-7.242110123881844" sy="-79.19217144702121" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -190,7 +207,7 @@
     <edge id="e3" source="n4" target="n5">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="25.443436751118156" sy="-16.889925373134318" tx="-53.206781239545535" ty="-2.514925373134332">
+          <y:Path sx="25.42428054090749" sy="-41.88246268656715" tx="-53.206781239545535" ty="-2.514925373134332">
             <y:Point x="429.53660932998343" y="-25.514925373134318"/>
             <y:Point x="429.53660932998343" y="-25.514925373134332"/>
           </y:Path>
@@ -203,7 +220,7 @@
     <edge id="e4" source="n6" target="n3">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="3.208923135464147" sy="-69.98507462686567" tx="59.81396484375" ty="0.0"/>
+          <y:Path sx="3.208923135464147" sy="-94.31358363833482" tx="59.81396484375" ty="0.0"/>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -213,7 +230,7 @@
     <edge id="e5" source="n6" target="n5">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="2.208923135464147" sy="-21.985074626865668" tx="0.0" ty="0.0"/>
+          <y:Path sx="9.296219580489037" sy="-50.48507462686567" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -223,7 +240,7 @@
     <edge id="e6" source="n6" target="n2">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="2.5438914156997043" sy="26.014925373134332" tx="0.0" ty="0.0"/>
+          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>
@@ -233,9 +250,47 @@
     <edge id="e7" source="n6" target="n1">
       <data key="d10">
         <y:PolyLineEdge>
-          <y:Path sx="4.208923135464147" sy="69.98507462686567" tx="59.81396484375" ty="0.0"/>
+          <y:Path sx="8.296219580489037" sy="41.48507462686567" tx="59.81396484375" ty="0.0"/>
           <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e8" source="n4" target="n8">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="-12.989781959092511" sy="96.57276119402984" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="24.84954533132759" y="27.999998519669703">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e9" source="n6" target="n8">
+      <data key="d9"/>
+      <data key="d10">
+        <y:PolyLineEdge>
+          <y:Path sx="5.296219580489037" sy="85.455223880597" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#C0C0C0" type="dashed" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:EdgeLabel alignment="center" distance="2.0" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#000000" visible="true" width="4.0" x="-28.819374066005366" y="-32.0000014803303">
+            <y:LabelModel>
+              <y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/>
+            </y:LabelModel>
+            <y:ModelParameter>
+              <y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/>
+            </y:ModelParameter>
+          </y:EdgeLabel>
           <y:BendStyle smoothed="false"/>
         </y:PolyLineEdge>
       </data>

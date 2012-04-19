@@ -557,6 +557,9 @@ class GraysonCompiler:
         if urlPrefix:
             path = "%s/%s" % (urlPrefix, source.getLabel ())
 
+        if self.getWorkflowManagementSystem().isShellExecutionEnabled ():
+            installed = "true"
+
         exe = self.workflowModel.addExecutable (jobId = job.getId (),
                                                 name = jobLabel,
                                                 path = path,
@@ -1579,6 +1582,7 @@ class GraysonCompiler:
             executableType = {
                 "type" : "executable",
                 "path" : "%s/bin/%s" % (path, label)
+                #"installed" : "true" #(required for shell mode)
                 }
             executableElement = self.ast_addNode (id       = '%s_exe' % targetJob.getId (),
                                                   label    = '%s.sh'  % targetJob.getLabel (),

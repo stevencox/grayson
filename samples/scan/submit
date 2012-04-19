@@ -9,7 +9,7 @@ shift
 output_dax=scan-uber.dax
 output_dir=$(pwd)/daxen-$mode
 
-#rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
+rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
 
 set -x
 graysonc                                                                    \

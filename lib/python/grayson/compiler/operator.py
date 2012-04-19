@@ -118,6 +118,11 @@ class DynamicMapOperator (Operator):
                                       B = masterRC,
                                       outputName = masterRC)
 
+        go = """
+cp $PEGASUS_HOME/bin/pegasus-plan /tmp
+"""
+        os.system (go)
+
 class OperatorContext (object):
     def __init__(self, compiler):
         self.compiler = compiler
