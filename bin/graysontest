@@ -423,7 +423,7 @@ executables:
    executable: <reduce> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/scan/bin/reduce.sh>
    executable: <map> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://.*/grayson/bin/graysonc>
+      pfn: <file://.*/bin/graysonc>
 dependencies:
    dependency: <1n10>
       parent: parent=><scan-flow.dax> edge_label=><None>
