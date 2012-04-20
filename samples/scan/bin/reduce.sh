@@ -15,8 +15,11 @@ outputdir=$1
 output=full-sifs.txt
 
 echo > $output
-for output in $outputdir/sif*; do
-    echo sif-chunk: >> $output
+for sif in $outputdir/sif*; do
+    echo "-------------------------------" >> $output
+    echo sif-chunk:[$sif]                  >> $output
+    cat $sif                               >> $output 
+    echo "-------------------------------" >> $output
 done
 
 exit 0

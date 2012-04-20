@@ -406,11 +406,11 @@ jobs:
    job: <map>, id: <1n12.synth> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>
       usedfile: <fasta-chunks.tar.gz>
-         profile: namespace:<env> key:<PYTHONPATH> value:</home/scox/dev/grayson/lib/python:/home/scox/dev/grayson/lib/python:>
-         profile: namespace:<env> key:<GRAYSON_HOME> value:</home/scox/dev/grayson>
+         profile: namespace:<env> key:<PYTHONPATH> value:<.*/grayson/lib/python:.*/grayson/lib/python:>
+         profile: namespace:<env> key:<GRAYSON_HOME> value:<.*/grayson>
          profile: namespace:<env> key:<GLOBUS_LOCATION> value:</usr>
          profile: namespace:<env> key:<CONDOR_HOME> value:</usr>
-         profile: namespace:<env> key:<PATH> value:</home/scox/dev/grayson/venv/bin:/home/scox/dev/grayson/bin:/home/scox/app/pegasus-3.0.3/bin:/home/scox/dev/grayson/venv/bin:/home/scox/dev/stack/node/bin:/home/scox/dev/stack/rabbitmq/rabbitmq_server-2.6.0/sbin:/home/scox/dev/stack/erlang/bin:/home/scox/dev/stack/apache/bin:/home/scox/dev/grayson/bin:/home/scox/app/pegasus-3.0.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/scox/.local/bin:/home/scox/bin>
+         profile: namespace:<env> key:<PATH> value:<.*/grayson/venv/bin:.*/grayson/bin:/home/scox/app/pegasus-3.0.3/bin:.*/grayson/venv/bin:.*/stack/node/bin:.*/stack/rabbitmq/rabbitmq_server-2.6.0/sbin:.*/stack/erlang/bin:.*/stack/apache/bin:.*/grayson/bin:/home/scox/app/pegasus-3.0.3/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/scox/.local/bin:/home/scox/bin>
          profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<x>
    dax-job: <scan-flow.dax>
       usedfile: <fasta-chunks.tar.gz>
@@ -423,7 +423,7 @@ executables:
    executable: <reduce> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/scan/bin/reduce.sh>
    executable: <map> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file:///home/scox/dev/grayson/bin/graysonc>
+      pfn: <file://.*/grayson/bin/graysonc>
 dependencies:
    dependency: <1n10>
       parent: parent=><scan-flow.dax> edge_label=><None>
