@@ -33,7 +33,7 @@ class DynamicMapOperator (Operator):
 
         self.subdax = """
    <dax id='${namespace}gid${c}' file='${outputname}' >
-      <argument>--force</argument>
+      <argument>--force --sites ${sites}</argument>
    </dax>"""
 
     def validate (self, context):
@@ -92,7 +92,7 @@ class DynamicMapOperator (Operator):
                                              output          = output,
                                              modelPath       = modelPath.split (os.pathsep),
                                              namespace       = namespace,
-                                             version         = version,
+                                             version         = None, #version,
                                              logLevel        = "debug",
                                              modelProperties = definitions,
                                              outputdir       = tmpOutputDir,
@@ -109,6 +109,7 @@ class DynamicMapOperator (Operator):
             template = Template (self.subdax)
             flowContext ['c'] = c
             flowContext ['outputname'] = outputname
+            flowContext ['sites'] = sites
             text.append (template.substitute (flowContext))
 
             replicaCatalogName = "replica-catalog.rc"
@@ -136,13 +137,11 @@ class DynamicMapOperator (Operator):
         logger.debug ("++++++: %s", masterCat)
         logger.debug ("<<<<<<: %s", other)
 
-
         master = GraysonUtil.readFile (masterCat)
         masterLines = master.split ('\n')
 
         for line in masterLines:
             logger.debug ("  __ _ _ _ _ _ _____: %s", line)
-
 
         sub    = GraysonUtil.readFile (other)
         subLines = sub.split ('\n')

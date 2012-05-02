@@ -27,10 +27,19 @@ from grayson.compiler.cycle import CycleDetector
 from grayson.compiler.operator import OperatorRegistry
 from grayson.compiler.operator import DynamicMapOperator
 from grayson.executor import Executor
+
+
 from grayson.graphml import Edge
 from grayson.graphml import Graph
 from grayson.graphml import GraphMLParser
 from grayson.graphml import Node
+'''
+from grayson.jsonparser import Edge
+from grayson.jsonparser import Graph
+from grayson.jsonparser import JSONParser
+from grayson.jsonparser import Node
+'''
+
 from grayson.log import LogManager
 from grayson.packager import GraysonPackager
 from grayson.common.util import GraysonUtil
@@ -154,6 +163,10 @@ class GraysonCompiler:
         self.CONTEXT_MODEL = "context"
         self.MODEL_SUFFIX = "graphml"
         self.CONTEXT_MODEL_TAG = "-context.graphml"
+        '''
+        self.MODEL_SUFFIX = "json"
+        self.CONTEXT_MODEL_TAG = "-context.json"
+        '''
         
         self.EXECUTION_MODE = "execution-mode"
         self.EXECUTION_MODE__SHELL = "shell"
@@ -321,6 +334,7 @@ class GraysonCompiler:
 
         if len (final_models) > 0:
             parser = GraphMLParser ()
+            #parser = JSONParser ()
             self.compilerId = final_models [0]
             self.graph = parser.parseMultiple (final_models,
                                                path=self.compilerContext.modelPath,
@@ -1020,7 +1034,7 @@ class GraysonCompiler:
                         'index'     : index,
                         'namespace' : element.getLabel (),
                         'version'   : '1.0',
-                        'flow'      : '%s.graphml' % element.getLabel (),
+                        'flow'      : '%s.%s' % (element.getLabel (), self.MODEL_SUFFIX)
                         }
                     }
                 config = os.path.join (self.getOutputDir (), "%s.grayconf" % operator.getLabel ())
@@ -1084,7 +1098,10 @@ class GraysonCompiler:
                 originalArgs = ' '.join (args) if isinstance (args, list) else args if args else ''
                 typeObj = {
                     "type" : "dax",
-                    "args" : "%s --basename %s" % (originalArgs, element.getLabel ())
+                    "args" : ''.join ([
+                            "%s --basename %s" % (originalArgs, element.getLabel ()),
+                            "   --sites %s" % self.getSites ()
+                            ])
                     }
                 dax = self.graft (old = element,
                                   new = self.ast_addNode (id      = element.getId (),
@@ -2027,7 +2044,7 @@ class GraysonCompiler:
         logger.debug ("myid: %s %s", self.compilerId, self.getSites ())
 
         outputArchive = os.path.basename (self.compilerId)
-        outputArchive = outputArchive.replace (".graphml", ".grayson")
+        outputArchive = outputArchive.replace (self.MODEL_SUFFIX, "grayson")
         outputArchive = os.path.join (self.getOutputDir (), outputArchive)
 
         contextualizedMap = self.getContextualizedModels ()
@@ -2087,8 +2104,8 @@ class GraysonCompiler:
         else:
             raise GraysonCompilerException ("%s is not a correctly formatted grayson archive.")
 
-        baseModelName = os.path.basename (archive).replace (".grayson", ".graphml")
-        match = re.search (".*(_[0-9]+).graphml", baseModelName)
+        baseModelName = os.path.basename (archive).replace ("grayson", self.MODEL_SUFFIX)
+        match = re.search (".*(_[0-9]+)%s" % self.MODEL_SUFFIX, baseModelName)
         if match:
             baseModelName = baseModelName.replace (match.group (1), "")
             logger.debug ("grayson:base-model-name: %s", baseModelName)

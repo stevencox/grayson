@@ -33,7 +33,7 @@ class DynamicMapOperator (Operator):
 
         self.subdax = """
 <dax id='${namespace}_$c' file='$outputname' >
-   <argument>--force</argument>
+   <argument>--force --sites $sites</argument>
 </dax>"""
 
 
@@ -99,6 +99,7 @@ class DynamicMapOperator (Operator):
             replicaText.append ('%s file://%s/%s pool="local"'  %s (outputname, outputDir, outputname))
             template = Template (self.subdax)
             flowContext ["c"] = c
+            flowContext ["sites"] = sites
             text.append (template.substitute (flowContext))
             c += 1
 
@@ -118,10 +119,6 @@ class DynamicMapOperator (Operator):
                                       B = masterRC,
                                       outputName = masterRC)
 
-        go = """
-cp $PEGASUS_HOME/bin/pegasus-plan /tmp
-"""
-        os.system (go)
 
 class OperatorContext (object):
     def __init__(self, compiler):

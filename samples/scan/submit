@@ -12,6 +12,7 @@ output_dir=$(pwd)/daxen-$mode
 rm -rf $output_dir *.dax *.xml *.rc *.tc *.log *.properties
 
 set -x
+#    --model=$GRAYSON_HOME/samples/scan/model/$mode-context.graphml      \
 graysonc                                                                    \
     --model=$GRAYSON_HOME/samples/scan/model/$mode-context.graphml      \
     --modelpath="$GRAYSON_HOME/samples:model"                               \

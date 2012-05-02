@@ -30,6 +30,7 @@ from Pegasus.DAX3 import Transformation
 import Pegasus.DAX3
 
 logger = logging.getLogger (__name__)
+broken = False
 
 ''' Basic test case '''
 class GraysonTestCase (unittest.TestCase):
@@ -556,7 +557,7 @@ class GraysonCompilerTests (GraysonTestCase):
         GraysonCompiler.compile (models = models,
                                  modelPath = modelPath,
                                  outputdir = outputPath,
-#                                 logLevel = "debug",
+                                 logLevel = "debug",
                                  modelProperties = inputProperties,
                                  output=models[0].replace (".graphml", ".dax"),
                                  packaging = True)
@@ -576,14 +577,16 @@ class GraysonCompilerTests (GraysonTestCase):
         models[0] = modelName
         GraysonCompiler.compile (models = models,
                                  outputdir = outputPath,
-                                 output=models[0].replace (".grayson", ".dax"))
-        
+                                 output=models[0].replace (".grayson", ".dax"),
+                                 toLogFile="%s/%s" % (outputPath, "log.txt") )
+                                 
         if "verify" in test_case:
             verification = test_case ["verify"]
             for filename in verification:
                 output_workflow = os.path.join (outputPath, filename)
                 baseline = verification [filename]
                 self.verify_compiler_output (output_workflow, baseline.rstrip ())
+
                 
     def bufferlog (self, buffer, text):
         self.output (text)
@@ -646,7 +649,9 @@ class GraysonCompilerTests (GraysonTestCase):
 """
                 self.output (matched)
             else:
+                broken = True
                 raise ValueError ('Expected Baseline Output: \n[%s] \nReceived Actual Output: \n[%s]' % (baseline, actual))
+
         except Exception as e:
             error = """
 _____________E_R_R_O_R______________________________________\n%s\n_____________E_R_R_O_R______________________________________
@@ -796,6 +801,8 @@ if __name__ == '__main__':
                     name = ("%s" % t).split (' ')[0]
                     output = open ("TEST-%s.xml" % name, "w")
                     runner = xmlrunner.XMLTestRunner (output).run (t)
+                    if broken:
+                        break
                 finally:
                     if output:
                         output.close ()

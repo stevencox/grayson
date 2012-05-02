@@ -25,6 +25,7 @@ class ASTElement:
         self.daxNode = None
         properties = self.parseProperties ()
         if properties:
+#            print "----------------------------- setting props"
             self.setProperties (properties)
             
     def parseProperties (self):
@@ -35,6 +36,7 @@ class ASTElement:
             try:
                 text = string.replace (text, "\n", " ")
                 properties = json.loads (text)
+                logger.debug ("properties %s", properties)
             except:
                 message = "ERROR:ast:parse-json: node(id=%s, label=%s, json=%s)" % (id, self.node.getLabel (), text)
                 logger.error (message)
@@ -50,6 +52,9 @@ class ASTElement:
         logger.debug ("ast:setprop: (%s,%s)=>%s", self.getId(), self.getLabel (), properties)
         if not properties:
             properties = {}
+#        print "------------ %s" % unicode (properties)
+#        print "------------ %s" % type(properties)
+#        print "------------ %s" % json.loads (unicode (properties.replace ("'", '"')))
         self.properties = properties
         self.properties ["id"] = self.node.getId ()
             
