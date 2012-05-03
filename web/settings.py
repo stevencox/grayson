@@ -3,6 +3,9 @@
 import os
 import sys
 import json
+import socket
+from grayson.net.amqp import AMQPSettings
+from grayson.net.amqp import AMQPQueue
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
@@ -13,9 +16,17 @@ MANAGERS = ADMINS
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 nodeConf = json.loads (open ( os.path.join ( os.path.dirname (SITE_ROOT), "conf", "grayson.conf" )).read ())
-WORKFLOW_QUEUE_NAME = nodeConf ["queueSettings"]["QName"]
+
+amqpQueue = AMQPQueue (name = str(nodeConf ["amqpSettings"]["queue"]["name"]))
+AMQP_SETTINGS = AMQPSettings (port     = nodeConf["amqpSettings"]["port"],
+                              hostname = socket.getfqdn (),
+                              vhost    = nodeConf["amqpSettings"]["vhost"],
+                              queue    = amqpQueue)
+
+#WORKFLOW_QUEUE_NAME = nodeConf ["queueSettings"]["QName"]
 URL_PREFIX = nodeConf ["urlPrefix"]
-BROKER_PORT = nodeConf["amqpSettings"]["port"]
+BROKER_PORT = AMQP_SETTINGS.port #nodeConf["amqpSettings"]["port"]
+BROKER_VHOST = AMQP_SETTINGS.vhost #nodeConf["amqpSettings"]["vhost"]
 SOCKET_IO_PORT = nodeConf ["socketioListenPort"]
 DATA_ROOT = os.path.join (SITE_ROOT, os.path.sep.join (nodeConf ["var"]))
 
@@ -170,6 +181,7 @@ import djcelery
 #CELERY_DISABLE_RATE_LIMITS = False
 #CELERY_ALWAYS_EAGER = True
 #BROKER_PORT = 40966
+BROKER_VHOST = AMQP_SETTINGS.vhost #nodeConf ["amqpSettings"]["vhost"]
 djcelery.setup_loader()
 
 if MONGO:
@@ -281,7 +293,7 @@ LOGGING = {
         # ===================================
         'grayson.net.amqp' : {
             'handlers' : [ 'console', 'fileHandler' ],
-            'level'    : 'ERROR'
+            'level'    : 'DEBUG'
         },
         'grayson.debug.event' : {
             'handlers' : [ 'console', 'fileHandler' ],

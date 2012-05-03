@@ -43,7 +43,7 @@ LOCK_EXPIRE = 60 * 5 # Lock expires in 5 minutes
 class WorkflowMonitor (Task):
     name = "workflow.monitor"
 
-    def run (self, username, workflowId, workdir, logRelPath=".", amqpPort=None, amqpQName=None, eventBufferSize=0, **kwargs):
+    def run (self, username, workflowId, workdir, logRelPath=".", amqpSettings=None, eventBufferSize=0, **kwargs):
         logger = self.get_logger (**kwargs)
 
         # The cache key is the task name and the MD5 digest of the workdir.
@@ -60,7 +60,7 @@ class WorkflowMonitor (Task):
         if acquire_lock ():
             try:
                 # Read and emit events so far, then loop continually until the workflow completes.
-                monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpPort, amqpQName, eventBufferSize)
+                monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
                 monitor.execute ()
             finally:
                 release_lock()
@@ -69,16 +69,16 @@ class WorkflowMonitor (Task):
                 "Workflow %s is already being monitored by another worker. Emit events so far." % (
                     workdir))
             # Read and emit events so far, then exit.
-            monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpPort, amqpQName)
+            monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings)
             monitor.execute (loop=False)
 
 @task()
-def MonitorWorkflow (workflowId, username, workdir, amqpPort=None, amqpQName=None):
-    monitor = GridWorkflowMonitor (workflowId, username, workdir, amqpPort, amqpQName)
+def MonitorWorkflow (workflowId, username, workdir, amqpSettings=None):
+    monitor = GridWorkflowMonitor (workflowId, username, workdir, amqpSettings)
     monitor.execute (loop=False)
 
 @task()
-def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpPort=None, amqpQName=None):
+def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=None):
     try:
         try:
             basename = os.path.basename (archive)
@@ -90,7 +90,7 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpPort=None, 
             os.system (chmodCommand)
 
             log_file = os.path.join (unpack_dir, "log.txt")
-            executionMonitor = WorkflowMonitorCompilerPlugin (user.username, unpack_dir, logRelPath, amqpPort, amqpQName)
+            executionMonitor = WorkflowMonitorCompilerPlugin (user.username, unpack_dir, logRelPath, amqpSettings)
 
             logger.debug ("""
    =======================================================================================
@@ -99,13 +99,13 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpPort=None, 
    ==   user.username: (%s)
    ==   outputDir    : (%s)
    ==   logFile      : (%s)
-   ==   amqp.port    : (%s)
+   ==   amqp         : (%s)
    =======================================================================================""",
                           archivePath,
                           user.username,
                           unpack_dir,
                           log_file,
-                          amqpPort)
+                          amqpSettings)
             GraysonCompiler.compile (models    = [ archivePath ],
                                      outputdir = unpack_dir,
                                      toLogFile = log_file,
@@ -114,7 +114,7 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpPort=None, 
                                      plugin    = executionMonitor)
         except ValueError, e:
             traceback.print_exc ()
-            eventStream = EventStream (amqpPort, amqpQName)
+            eventStream = EventStream (amqpSettings.port, amqpSettings.queue.name)
             eventStream.sendCompilationMessagesEvent (username = user.username,
                                                       flowId   = archive,
                                                       log      = log_file)
@@ -123,13 +123,13 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpPort=None, 
    =======================================================================================
    ==  C O M P I L E (%s)
    =======================================================================================
-   ==   user.username: (%s)
-   ==     archivePath: (%s)
-   ==   amqp.port    : (%s)
+   ==   user.username : (%s)
+   ==     archivePath : (%s)
+   ==        amqp     : (%s)
    =======================================================================================""",
                       archive,
                       user.username,
                       archivePath,
-                      amqpPort)
+                      amqpSettings)
     except:
         traceback.print_exc ()

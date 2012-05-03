@@ -7,7 +7,7 @@ echo "====================================="
 set -e
 set -x
 
-version=0.0.8
+version=0.0.9
 
 tar cvzf grayson-sdk-$version.tar.gz bin lib/python lib/python/grayson samples \
     --exclude=.svn                                                 \

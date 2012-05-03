@@ -170,8 +170,10 @@
   <script type="text/javascript">graysonConf.unitTest = true;</script>
   {% endif %}
 
-  <!-- cause compression errors -->
+  <!-- cause compression errors 
   <script type="text/javascript" src="{{ STATIC_URL }}js/socket.io/0.8.4/socket.io.js"></script>
+-->
+  <script type="text/javascript" src="{{ STATIC_URL }}js/socket.io/0.9.6/socket.io.js"></script>
   <script type="text/javascript" src="{{ STATIC_URL }}js/raphael/raphael-min-2.0.1.js"></script>
 
   {% compress js %}

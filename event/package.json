@@ -1,20 +1,21 @@
 {
-  "author": "Steven Cox",
-  "name": "event",
-  "description": "Grayson event subsystem",
-  "version": "0.0.0",
+  "author"      : "Steven Cox",
+  "name"        : "grayson-event",
+  "description" : "Grayson event subsystem",
+  "version"     : "0.0.1",
   "repository": {
-    "type": "git",
-    "url": "git://github.com/stevencox/grayson.git"
+    "type" : "git",
+    "url"  : "git://github.com/stevencox/grayson.git"
   },
   "engines": {
-    "node": "~0.4.7"
+    "node" : "~0.4.7"
   },
   "dependencies": {
       "amqp"      : "0.0.2",
       "express"   : "2.5.9",
       "socket.io" : "0.9.6",
-      "ws" : "0.4.14 --ws:native"
+      "ws"        : "0.4.14 --ws:native"
   },
-  "devDependencies": {}
+  "devDependencies" : {
+  }
 }

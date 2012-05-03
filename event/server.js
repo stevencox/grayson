@@ -54,15 +54,21 @@ sys.puts ("  - connected to AMQP message queue at port: " + configuration.amqpSe
 var connection = amqp.createConnection (configuration.amqpSettings);
 
 var queueName = "workflow";
+/*
 if (configuration.queueSettings.QName) {
     queueName = configuration.queueSettings.QName;
+}
+*/
+if (configuration.amqpSettings.queue.name) {
+    queueName = configuration.amqpSettings.queue.name;
 }
 sys.puts ("Queue Name: " + queueName);
 
 connection.addListener ('ready', function () {
 	log_debug ("Connected to " + connection.serverProperties.product);
 	var exchange = connection.exchange ("");
-	var queue = connection.queue (queueName, configuration.queueSettings);
+//	var queue = connection.queue (queueName, configuration.queueSettings);
+	var queue = connection.queue (queueName, configuration.amqpSettings.queue);
 	queue.bind (exchange, '#');
 	queue.subscribe (queueName, function (message) {
 		try {

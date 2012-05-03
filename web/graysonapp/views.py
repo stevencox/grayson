@@ -107,18 +107,16 @@ def api_run (request):
             logger.debug ("saving filename: %s", file_name)
             archivePath = default_storage.save (file_name, contentFile)
             logger.debug ("""executing workflow - 
-       user        : %s
-       archive     : %s
-       archivePath : %s
-       amqpPort    : %s
-       amqpQName   : %s
-""", user, file_name, archivePath, settings.BROKER_PORT, settings.WORKFLOW_QUEUE_NAME)
+       user         : %s
+       archive      : %s
+       archivePath  : %s
+       amqpSettings : %s
+""", user, file_name, archivePath, settings.amqpSettings)
 
-            ExecuteWorkflow.delay (user        = user,
-                                   archive     = file_name,
-                                   archivePath = archivePath,
-                                   amqpPort    = settings.BROKER_PORT,
-                                   amqpQName   = settings.WORKFLOW_QUEUE_NAME)
+            ExecuteWorkflow.delay (user         = user,
+                                   archive      = file_name,
+                                   archivePath  = archivePath,
+                                   amqpSettings = settings.amqpSettings)
             logger.debug ("execute called..")
     except Exception as e:
         logger.error ("Exception occurred during api_run()")
@@ -207,13 +205,13 @@ def get_flow_events (request):
     workdirPath = ViewUtil.form_workflow_path (user, workdirPath)
     logger.debug ("launching monitor: user: %s, workdir: %s, workflowId: %s, runId: %s",
                   user.username, workdirPath, workflowId, runId)
+    logger.debug ("amqpsettings: %s", settings.AMQP_SETTINGS)
     monitor = WorkflowMonitor ()
     monitor.delay (username        = user.username, # used to route messages to a specific client 
                    workflowId      = workflowId,
                    workdir         = workdirPath,
                    logRelPath      = settings.GRAYSONWEB_WORKFLOW_ROOT,
-                   amqpPort        = settings.BROKER_PORT,
-                   amqpQName       = settings.WORKFLOW_QUEUE_NAME,
+                   amqpSettings    = settings.AMQP_SETTINGS,
                    eventBufferSize = settings.EVENT_BUFFER_SIZE)
     logger.debug ("launched workflow monitor")
     return ViewUtil.get_json_response ({ "status" : "ok" })

@@ -12,7 +12,8 @@ echo "Current Directory: $PWD"
 echo "Using RabbitMQ at: $(which rabbitmq-server)"
 
 set -x
-RABBITMQ_NODE_PORT=$1 rabbitmq-server -detached
+PORT=$(grep port $GRAYSON_HOME/conf/grayson.conf | grep 56 | sed -e "s,.*:,," -e "s/,//" -e "s, ,,g") 
+RABBITMQ_NODE_PORT=$PORT rabbitmq-server -detached
 set +x
 
 netstat -tulpn | grep beam
@@ -47,3 +48,8 @@ netstat -tulpn | grep beam
 #
 #
 #
+
+# Creating vhost:
+# rabbitmqctl add_vhost /grayson-dev
+# rabbitmqctl set_permissions -p /grayson-dev guest '.*' '.*' '.*'
+
