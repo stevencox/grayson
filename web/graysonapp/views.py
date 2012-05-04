@@ -111,12 +111,12 @@ def api_run (request):
        archive      : %s
        archivePath  : %s
        amqpSettings : %s
-""", user, file_name, archivePath, settings.amqpSettings)
+""", user, file_name, archivePath, settings.AMQP_SETTINGS)
 
             ExecuteWorkflow.delay (user         = user,
                                    archive      = file_name,
                                    archivePath  = archivePath,
-                                   amqpSettings = settings.amqpSettings)
+                                   amqpSettings = settings.AMQP_SETTINGS)
             logger.debug ("execute called..")
     except Exception as e:
         logger.error ("Exception occurred during api_run()")
