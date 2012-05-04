@@ -12,10 +12,11 @@ from pika import BasicProperties
 import pika.log
 import socket
 
-import pika.log
-pika.log.setup(pika.log.DEBUG, color=True)
-
 logger = logging.getLogger (__name__)
+
+def pika_debug ():
+    import pika.log
+    pika.log.setup(pika.log.DEBUG, color=True)
 
 class AMQPQueue (object):
     def __init__(self, name = "default", passive=False, durable=False, exclusive=False, auto_delete=False):

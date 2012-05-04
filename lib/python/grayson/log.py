@@ -31,12 +31,12 @@ class LogManager:
             if os.path.exists (logFile):
                 try:
                     os.remove (logFile)
-                    handler = logging.handlers.RotatingFileHandler (logFile,
-                                                                    maxBytes=10000000,
-                                                                    backupCount=3)
-                    self.fileHandler = handler
                 except OSError as e:
                     logging.error ("unable to remove %s", logFile)
+            handler = logging.handlers.RotatingFileHandler (logFile,
+                                                            maxBytes=10000000,
+                                                            backupCount=3)
+            self.fileHandler = handler
 
         root_logger = logging.getLogger ()
         root_logger.setLevel (level)

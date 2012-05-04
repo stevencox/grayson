@@ -82,9 +82,10 @@ class GridWorkflowMonitor (object):
         self.workflowId = workflowId
         self.username = username
         self.monitorRunning = False
-
-        self.eventStream = EventStream (amqpSettings, logRelPath, eventBufferSize)
-
+        logger.debug ("gridworkflowmonitor:amqpsettings: %s", amqpSettings)
+        self.eventStream = EventStream (amqpSettings    = amqpSettings,
+                                        logRelPath      = logRelPath,
+                                        eventBufferSize = eventBufferSize)
         self.transferBytesPattern = re.compile ('Stats: ([0-9]+(.[0-9]+)?)')
         self.transferDurationPattern = re.compile ('in ([0-9]+(.[0-9]+)?) seconds')
         self.transferRateUpPattern = re.compile ('Rate: ([0-9]+(.[0-9]+) [A-Za-z]+/s)')

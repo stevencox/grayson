@@ -2105,7 +2105,7 @@ class GraysonCompiler:
             raise GraysonCompilerException ("%s is not a correctly formatted grayson archive.")
 
         baseModelName = os.path.basename (archive).replace ("grayson", self.MODEL_SUFFIX)
-        match = re.search (".*(_[0-9]+)%s" % self.MODEL_SUFFIX, baseModelName)
+        match = re.search (".*(_[0-9]+).%s" % self.MODEL_SUFFIX, baseModelName)
         if match:
             baseModelName = baseModelName.replace (match.group (1), "")
             logger.debug ("grayson:base-model-name: %s", baseModelName)

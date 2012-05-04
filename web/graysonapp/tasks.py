@@ -79,20 +79,20 @@ def MonitorWorkflow (workflowId, username, workdir, amqpSettings=None):
 
 @task()
 def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=None):
+    logger.info ("executeworkflow:amqpsettings: %s", amqpSettings)
     try:
-        try:
-            basename = os.path.basename (archive)
-            unpack_dir = GraysonWebUtil.form_workflow_path (user, GraysonWebConst.UNPACK_EXT % basename)
+        basename = os.path.basename (archive)
+        unpack_dir = GraysonWebUtil.form_workflow_path (user, GraysonWebConst.UNPACK_EXT % basename)
 
-            # If we don't open up permissions, using x509userproxy doesn't work. i.e. users can't run as themselves and write files here, for example.
-            chmodCommand = "chmod -R 777 %s" % unpack_dir
-            logger.debug ("setting output directory permissions: %s" % chmodCommand)
-            os.system (chmodCommand)
+        # If we don't open up permissions, using x509userproxy doesn't work. i.e. users can't run as themselves and write files here, for example.
+        chmodCommand = "chmod -R 777 %s" % unpack_dir
+        logger.debug ("setting output directory permissions: %s" % chmodCommand)
+        os.system (chmodCommand)
+        
+        log_file = os.path.join (unpack_dir, "log.txt")
+        executionMonitor = WorkflowMonitorCompilerPlugin (user.username, unpack_dir, logRelPath, amqpSettings)
 
-            log_file = os.path.join (unpack_dir, "log.txt")
-            executionMonitor = WorkflowMonitorCompilerPlugin (user.username, unpack_dir, logRelPath, amqpSettings)
-
-            logger.debug ("""
+        logger.debug ("""
    =======================================================================================
    ==  C O M P I L E (%s)
    =======================================================================================
@@ -101,35 +101,29 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=No
    ==   logFile      : (%s)
    ==   amqp         : (%s)
    =======================================================================================""",
-                          archivePath,
-                          user.username,
-                          unpack_dir,
-                          log_file,
-                          amqpSettings)
-            GraysonCompiler.compile (models    = [ archivePath ],
-                                     outputdir = unpack_dir,
-                                     toLogFile = log_file,
-                                     execute   = True,
-                                     logLevel  = "debug",
-                                     plugin    = executionMonitor)
-        except ValueError, e:
-            traceback.print_exc ()
-            eventStream = EventStream (amqpSettings.port, amqpSettings.queue.name)
-            eventStream.sendCompilationMessagesEvent (username = user.username,
-                                                      flowId   = archive,
-                                                      log      = log_file)
-
-        logger.debug ("""
-   =======================================================================================
-   ==  C O M P I L E (%s)
-   =======================================================================================
-   ==   user.username : (%s)
-   ==     archivePath : (%s)
-   ==        amqp     : (%s)
-   =======================================================================================""",
-                      archive,
-                      user.username,
                       archivePath,
+                      user.username,
+                      unpack_dir,
+                      log_file,
                       amqpSettings)
+        GraysonCompiler.compile (models    = [ archivePath ],
+                                 outputdir = unpack_dir,
+                                 logDir    = unpack_dir,
+                                 toLogFile = "log.txt",
+                                 execute   = True,
+                                 logLevel  = "debug",
+                                 plugin    = executionMonitor)
+    except ValueError, e:
+        traceback.print_exc ()
+        '''
+        exc_type, exc_value, exc_traceback = sys.exc_info ()
+        log = open (log_file, "a")
+        traceback.print_tb (exc_traceback, limit=None, file=log)
+        log.close ()
+        '''
+        eventStream = EventStream (amqpSettings)
+        eventStream.sendCompilationMessagesEvent (username = user.username,
+                                                  flowId   = archive,
+                                                  log      = log_file)
     except:
         traceback.print_exc ()

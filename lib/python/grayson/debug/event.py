@@ -12,14 +12,17 @@ logger = logging.getLogger (__name__)
 class EventStream (object):
 
     def __init__(self, amqpSettings, logRelPath=".", eventBufferSize=0):
+        logger.info ("eventstream:amqpsettings: %s", amqpSettings)
         self.amqpSettings = amqpSettings
         self.count = 0
         self.eventBufferSize = eventBufferSize
         self.eventBuffer = []
         self.logRelPath = logRelPath
+        if (isinstance (amqpSettings, int)):
+            raise ValueError ("badness")
 
     def publish (self, event, aux={}):        
-        logger.debug ("publishing: %s on port %s", event, self.amqpSettings)
+        logger.debug ("publishing: %s with amqp settings %s", event, self.amqpSettings)
         event = self.normalize (event)
         for key in aux:
             event [key] = aux [key]

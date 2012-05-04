@@ -29,9 +29,10 @@ class WorkflowMonitorCompilerPlugin (object):
     def __init__(self, username, graphPrefix, logRelPath=".", amqpSettings=None):
         self.username = username
         self.graphPathPrefix = graphPrefix
-        self.eventStream = EventStream (amqpSettings)
+        self.eventStream = EventStream (amqpSettings, logRelPath)
         self.amqpSettings = amqpSettings
         self.logRelPath = logRelPath
+        logger.debug ("workflowmonitorcompilerplugin:amqpsettings: %s", amqpSettings)
 
     def notifyShellEvent (self, line, outputWorkflowPath):
         logger.info ("|| %s", line)
@@ -43,7 +44,11 @@ class WorkflowMonitorCompilerPlugin (object):
             workDir = line [ line.rfind (workdirMarker) + len (workdirMarker) : ]
             workDir = workDir.rstrip ()
             logger.info ("starting grid monitor workflowId: %s, username: %s, workDir: %s", outputWorkflowPath, self.username, workDir)
-            gridMonitor = GridWorkflowMonitor (outputWorkflowPath, self.username, workDir, self.logRelPath, self.amqpSettings);
+            gridMonitor = GridWorkflowMonitor (workflowId   = outputWorkflowPath,
+                                               username     = self.username,
+                                               workdir      = workDir,
+                                               logRelPath   = self.logRelPath,
+                                               amqpSettings = self.amqpSettings)
             gridMonitor.execute ()
         elif "Executing JOB" in line:
             jobid = StrUtil.between (line, "::", ":")
