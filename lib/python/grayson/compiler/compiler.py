@@ -667,9 +667,21 @@ class GraysonCompiler:
         file = self.workflowModel.addFile (fileName, fileURL, site)
         fileElement.setDaxNode (file)
         jobContext.inFiles [fileElement.getLabel ()] = (fileElement, arg)
+
+
+
+        '''
         self.getReplicaCatalog().addEntry (fileName,
                                            self.getFileURL (fileElement, site),
                                            site)
+                                           '''
+
+#        targetEdges = fileElement.getTargetEdges (self.graph)
+#        if len (targetEdges) == 0:
+        self.getReplicaCatalog().addEntry (fileName,
+                                           self.getFileURL (fileElement, site),
+                                           site)
+
 
     def formWorkflowName (self, element):
         return "%s.dax" % element.getLabel ()

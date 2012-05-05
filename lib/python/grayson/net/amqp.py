@@ -14,7 +14,7 @@ import socket
 
 logger = logging.getLogger (__name__)
 
-def pika_debug ():
+def enable_verbose_pika_debug ():
     import pika.log
     pika.log.setup(pika.log.DEBUG, color=True)
 
