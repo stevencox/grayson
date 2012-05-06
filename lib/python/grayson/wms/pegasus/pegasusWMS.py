@@ -84,7 +84,6 @@ class PegasusWMS (WorkflowManagementSystem):
                 "--verbose",
                 "--output local"]
         if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1:  
-
            args = ["--conf=${outputDir}/${pegasusProperties}",
                     "--sites ${sites}",
                     "--dir ${outputDir}/work",
