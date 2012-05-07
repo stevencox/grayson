@@ -120,6 +120,8 @@ class CompilerContext (object):
         self.seenPointcuts = {}
         self.syntheticIds = {}
 
+        self.generatedFile = {}
+
     def getWorkflowManagementSystem (self):
         return self.workflowManagementSystem
     
@@ -641,7 +643,11 @@ class GraysonCompiler:
                                            self.getFileURL (fileElement),
                                            self.ATTR_LOCAL)
                                            '''
-        
+
+        logger.debug ('--zzz: file (register generated): %s', fileElement.getLabel ())
+        self.ctx().generatedFile [fileElement.getLabel ()] = True
+        self.getReplicaCatalog().removeEntry (fileName)
+
     def addInputFile (self, jobContext, fileElement, edge):
         """ Add an input file to the job context. """
         job = jobContext.getJob ()
@@ -667,9 +673,19 @@ class GraysonCompiler:
         file = self.workflowModel.addFile (fileName, fileURL, site)
         fileElement.setDaxNode (file)
         jobContext.inFiles [fileElement.getLabel ()] = (fileElement, arg)
+        '''
         self.getReplicaCatalog().addEntry (fileName,
                                            self.getFileURL (fileElement, site),
                                            site)
+                                           '''
+        ''' Ensure we add only files that are inputs to the workflow rather
+            than intermeidate (generated) files'''
+        targetEdges = fileElement.getTargetEdges (self.graph)
+        isWorkflowInput = not fileName in self.ctx().generatedFile
+        if len (targetEdges) == 0 and isWorkflowInput:
+            self.getReplicaCatalog().addEntry (fileName,
+                                               self.getFileURL (fileElement, site),
+                                               site)
 
     def formWorkflowName (self, element):
         return "%s.dax" % element.getLabel ()

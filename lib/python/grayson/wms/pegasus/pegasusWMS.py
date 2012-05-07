@@ -84,7 +84,6 @@ class PegasusWMS (WorkflowManagementSystem):
                 "--verbose",
                 "--output local"]
         if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1: 
-            logger.info ("--------------- using pegasus 3.1/4.0 for pegasus_home: %s", pegasusHome)
             args = ["--conf=${outputDir}/${pegasusProperties}",
                     "--sites ${sites}",
                     "--dir ${outputDir}/work",
@@ -292,8 +291,19 @@ class PegasusFileRC (object):
                 }
             entryText = template.substitute (context)
             self.entries [fileName] = entryText
+
+    def dump (self):
+        keys = sorted (self.entries.keys ())
+        for k in keys:
+            logger.debug ("zzz: RC: %s", k)
         
+    def removeEntry (self, fileName):
+        if fileName in self.entries:
+            logger.debug ("zzz: DELETING filename: %s", fileName)
+            del self.entries [fileName]
+            
     def generateRC (self):
+        logger.debug ("wms:pegasus:replica-catalog:generateRC")
         values = []
         for key in self.entries:
             values.append (self.entries [key])
