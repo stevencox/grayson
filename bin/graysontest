@@ -415,7 +415,7 @@ jobs:
          profile: namespace:<env> key:<GLOBUS_LOCATION> value:<.*>
          profile: namespace:<env> key:<CONDOR_HOME> value:<.*>
          profile: namespace:<env> key:<PATH> value:<.*
-         profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<x>
+         profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<.*>
    dax-job: <scan-flow.dax>
       usedfile: <fasta-chunks.tar.gz>
 transformations:
