@@ -674,19 +674,20 @@ class GraysonCompiler:
         fileElement.setDaxNode (file)
         jobContext.inFiles [fileElement.getLabel ()] = (fileElement, arg)
         '''
+                                           '''
         self.getReplicaCatalog().addEntry (fileName,
                                            self.getFileURL (fileElement, site),
                                            site)
-                                           '''
+
         ''' Ensure we add only files that are inputs to the workflow rather
-            than intermeidate (generated) files'''
+            than intermeidate (generated) files
         targetEdges = fileElement.getTargetEdges (self.graph)
         isWorkflowInput = not fileName in self.ctx().generatedFile
         if len (targetEdges) == 0 and isWorkflowInput:
             self.getReplicaCatalog().addEntry (fileName,
                                                self.getFileURL (fileElement, site),
                                                site)
-
+                                               '''
     def formWorkflowName (self, element):
         return "%s.dax" % element.getLabel ()
 
@@ -785,7 +786,6 @@ class GraysonCompiler:
                 raise ValueError ("An empty synthetic graph was passed: Verify that map operators evaluate to non empty graphs in this environment for %s" % text)
 
         compiler.parse (self.contextModels, graph)
-
         compiler.compilerId = workflowName  #element.getLabel () #workflowName
         self.executeCompiler (compiler, element.getLabel (), workflowName)
         self.workflowCompiler [element.getId ()] = compiler
@@ -1149,6 +1149,7 @@ class GraysonCompiler:
                                                         syntheticLabel,
                                                         syntheticType,
                                                         originEdges)
+
             logger.debug ("add-synth-node: (%s) added to synthgraph of operator (%s)", syntheticNode.getLabel (), operator.getLabel ())
             workflowName = "%s.%s" % (syntheticNode.getLabel (), self.DAX)
             workflowName = self.replaceMapVariables (workflowName, input_context)
@@ -1260,6 +1261,12 @@ class GraysonCompiler:
                                 ''' add the results of the map operator execution into the graph '''
                                 self.graph.addExistingNode (node)
                                 self.ast_mapNode (node)
+
+                                ''' delta 
+                                syntheticElement = self.getElement (node.getId ())
+                                syntheticElement.set (self.ATTR_ARGS, self.getExecuteArguments ())
+                                '''                                
+
                                 targetEdges = self.ast_getMapTargets (operator)
                                 for edge in targetEdges:
                                     if not type(edge) == unicode and not type(edge) == str:
@@ -2165,6 +2172,7 @@ class GraysonCompiler:
             os.makedirs (outputdir)
         if not appHome:
             appHome = os.getcwd ()
+        logger.debug ("apphome: %s", appHome)
 
         ''' initialize logging '''
         logManager = LogManager.getInstance (logLevel, logDir, toFile=toLogFile)
@@ -2197,8 +2205,9 @@ class GraysonCompiler:
             compiler.appHome = unpackdir
             compiler.getWorkflowManagementSystem().getSiteCatalog().configureLocal ()
             local = compiler.getWorkflowManagementSystem().getSiteCatalog().getEntry ("local")
-            local ["scratchFileServerMountPoint"] = compiler.appHome
-            local ["storageFileServerMountPoint"] = compiler.appHome
+            local ["scratchFileServerMountPoint"] = "%s/work/outputs" % compiler.appHome
+            local ["storageFileServerMountPoint"] = "%s/work/outputs" % compiler.appHome
+            local ["scratchInternalMountPoint"]   = "%s/work/outputs" % compiler.appHome
 
             models.remove (modelName)
             models.insert (0, newName)

@@ -50,7 +50,7 @@ class PegasusWMS (WorkflowManagementSystem):
         self.transformationCatalog = PegasusTC ()
         self.replicaCatalog = PegasusFileRC ()
     def setOutputDir (self, outputDir):
-        self.outputDir = outputDir
+        self.outputDir = os.path.abspath (outputDir)
     def getOutputDir (self):
         return self.outputDir
     def getSiteCatalog (self):
@@ -86,11 +86,12 @@ class PegasusWMS (WorkflowManagementSystem):
         if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1: 
             args = ["--conf=${outputDir}/${pegasusProperties}",
                     "--sites ${sites}",
-                    "--dir ${outputDir}/work",
+                    #"--relative-dir ${outputDir}/work",
                     "--force",
                     "--verbose",
                     "--verbose",
                     "--verbose",
+                    "--nocleanup",
                     "--output local"]
 
         for arg in other:
@@ -109,7 +110,7 @@ class PegasusWMS (WorkflowManagementSystem):
 
     ''' Execute workflow the Pegasus way. '''
     def executeWorkflow (self, sites, workflowName, compilerPlugin=None):
-        additionalArgs = [ " --dax ${outputDax} --submit" ]
+        #additionalArgs = [ " --dax ${outputDax} --submit" ]
         additionalArgs = [ " --dir ${outputDir}/work --dax ${outputDax} --submit" ]
         arguments = self.getExecuteArguments (sites=sites,
                                               workflow=workflowName,

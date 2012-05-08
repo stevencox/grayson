@@ -379,13 +379,13 @@ dependencies:"""
 """dax name: <scan-uber>
 files:
    file: <full-sifs.txt>
-      pfn: <file://target/scan/full-sifs.txt>
+      pfn: <file://target/scan/work/outputs/full-sifs.txt>
    file: <database.txt>
-      pfn: <file://target/scan/database.txt>
+      pfn: <file://target/scan/work/outputs/database.txt>
    file: <matrix.txt>
-      pfn: <file://target/scan/matrix.txt>
+      pfn: <file://target/scan/work/outputs/matrix.txt>
    file: <adjacency.txt>
-      pfn: <file://target/scan/adjacency.txt>
+      pfn: <file://target/scan/work/outputs/adjacency.txt>
    file: <score.x>
       pfn: <file://target/scan/bin/score.x>
    file: <fasta-chunks.tar.gz>
@@ -411,8 +411,8 @@ jobs:
          profile: namespace:<env> key:<GRAYSON_HOME> value:<.*>
          profile: namespace:<env> key:<GLOBUS_LOCATION> value:<.*>
          profile: namespace:<env> key:<CONDOR_HOME> value:<.*>
-         profile: namespace:<env> key:<PATH> value:<.*>
-         profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<.*>
+         profile: namespace:<env> key:<PATH> value:<.*
+         profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<x>
    dax-job: <scan-flow.dax>
       usedfile: <fasta-chunks.tar.gz>
 transformations:
@@ -694,6 +694,7 @@ class GraysonScanTest (GraysonCompilerTests):
         self.do_test_model (test_name)
         config = os.path.join (self.outputDir, test_name, "map.grayconf")
         generatedObj = json.loads (GraysonUtil.readFile (config))
+        '''
         expectedObj = {
             "outputName": "scan-flow", 
             "modelPath": "target/scan:target/scan:", 
@@ -709,6 +710,26 @@ class GraysonScanTest (GraysonCompilerTests):
             "graysonHome": "/home/scox/dev/grayson", 
             "appHome": "target/scan", 
             "outputDir": "target/scan", 
+            "contextModels": "scan-test-core-context.graphml:scan-executable-context.graphml", 
+            "sites": "local"
+            }
+            '''
+        expectedObj = {
+            "outputName": "scan-flow", 
+            "modelPath": "target/scan:target/scan:", 
+            "operator": {
+                "index": "chunk", 
+                "version": "1.0", 
+                "variable": "file", 
+                "input": "fasta-chunks.tar.gz", 
+                "flow": "scan-flow.graphml", 
+                "namespace": "scan-flow", 
+                "type": "dynamicMap", 
+                "method": "tar"
+                },
+            "graysonHome": "/home/scox/dev/grayson", 
+            "appHome": "target/scan", 
+            "outputDir": "/home/scox/dev/grayson/target/scan", 
             "contextModels": "scan-test-core-context.graphml:scan-executable-context.graphml", 
             "sites": "local"
             }

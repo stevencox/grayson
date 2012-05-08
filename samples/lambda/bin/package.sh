@@ -3,6 +3,7 @@
 set -e
 set -x
 
+echo "PWD======== ${PWD}"
 lambda_log () {
     echo "   --(lambda-package) $*"
 }

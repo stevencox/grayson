@@ -46,6 +46,7 @@ def main (argv):
     modelPath = None
     package = False
     packagingAdditionalFiles = []
+    appHome = None
 
     configuration = {}
 
@@ -59,6 +60,7 @@ def main (argv):
                                        "define=",
                                        "directory=",
                                        "modelpath=",
+                                       "apphome=",
                                        "package",
                                        "package-file=",
                                        "sites=",
@@ -97,6 +99,8 @@ def main (argv):
                 outputDirectory = arg
             elif opt in ("--modelpath"):
                 modelPath = arg.split (os.pathsep)
+            elif opt in ("--apphome"):
+                appHome = arg
             elif opt in ("--package"):
                 package = True
             elif opt in ("--package-file"):
@@ -127,7 +131,7 @@ def main (argv):
                                          namespace=namespace,
                                          version=version,
                                          logLevel=logLevel,
-                                         appHome=None,
+                                         appHome=appHome,
                                          outputdir=outputDirectory,
                                          modelProperties=inputModelProperties,
                                          execute=execute,

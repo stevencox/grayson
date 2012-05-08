@@ -109,6 +109,7 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=No
         GraysonCompiler.compile (models    = [ archivePath ],
                                  outputdir = unpack_dir,
                                  logDir    = unpack_dir,
+                                 appHome   = unpack_dir,
                                  toLogFile = "log.txt",
                                  execute   = True,
                                  logLevel  = "debug",
