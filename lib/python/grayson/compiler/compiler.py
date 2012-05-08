@@ -635,8 +635,6 @@ class GraysonCompiler:
         file = self.workflowModel.addFile (fileName, fileURL, site)
         fileElement.setDaxNode (file)
 
-
-
         jobContext.outFiles [fileElement.getLabel ()] = (fileElement, arg)        
         '''
         self.getReplicaCatalog().addEntry (fileName,
