@@ -716,8 +716,37 @@ class GraysonScanTest (GraysonCompilerTests):
             "contextModels": "scan-test-core-context.graphml:scan-executable-context.graphml", 
             "sites": "local"
             }
-        self.assertTrue (self.areEqual (expectedObj, generatedObj, [ 'graysonHome' ]))
+        self.compareConfs (expectedObj, generatedObj)
+
+        #self.assertTrue (self.areEqual (expectedObj, generatedObj, [ 'graysonHome' ]))
         logger.info ("Verified generated map operator configuration: \n%s", json.dumps (generatedObj, indent=4))
+
+    def compareConfs (self, L, R):
+        fields = {
+            "top" : [
+                "outputName",
+                "modelPath",
+                #"graysonHome", machine dependent
+                "appHome",
+                #"outputDir", machine dependent
+                "sites" ],
+            "operator" : [
+                "index",
+                "version",
+                "variable",
+                "input",
+                "flow",
+                "namespace",
+                "type",
+                "method" ]
+        }
+        self.compareObj (L, R, fields ['top'])
+        self.compareObj (L, R, fields ['operator'])
+
+    def compareObj (self, L, R, fields):
+        for field in fields:
+            logger.info ("comparing map operator field: %s", field)
+            self.areEqual (L, R, [ field ])
 
 class GraysonNAMDTest (GraysonCompilerTests):
     def setUp (self):
