@@ -155,7 +155,7 @@ install_nodelibs () {
     setup_node
     
     cd $GRAYSON_STACK/node
-    curl $releases/node-install.sh | clean=no sh
+    curl --insecure $releases/node-install.sh | clean=no sh
 
     cd $GRAYSON_HOME/event/
     log "installing node libs"
@@ -238,7 +238,7 @@ install_all_clean () {
 }
 
 grayson-create-virtualenv () {
-    curl -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
+    curl --insecure -O https://raw.github.com/pypa/virtualenv/master/virtualenv.py
     #echo "Creating virtual env: $GRAYSON_VENV"
     python virtualenv.py $VIRTUALENV_ARGS $GRAYSON_VENV
     source $GRAYSON_VENV/bin/activate
