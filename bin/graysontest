@@ -84,29 +84,29 @@ dependencies:
 """dax name: <nucleosome>
 files:
    file: <prmtop>
-      pfn: <file://target/nucleosome/prmtop>
+      pfn: <file://target/nucleosome/work/outputs/prmtop>
    file: <minimization.mdin>
-      pfn: <file://target/nucleosome/minimization.mdin>
+      pfn: <file://target/nucleosome/work/outputs/minimization.mdin>
    file: <restart.min>
-      pfn: <file://target/nucleosome/restart.min>
+      pfn: <file://target/nucleosome/work/outputs/restart.min>
    file: <restrt>
-      pfn: <file://target/nucleosome/restrt>
+      pfn: <file://target/nucleosome/work/outputs/restrt>
    file: <min.out>
-      pfn: <file://target/nucleosome/min.out>
+      pfn: <file://target/nucleosome/work/outputs/min.out>
    file: <logfile>
-      pfn: <file://target/nucleosome/logfile>
+      pfn: <file://target/nucleosome/work/outputs/logfile>
    file: <heatsystem.1.mdin>
-      pfn: <file://target/nucleosome/heatsystem.1.mdin>
+      pfn: <file://target/nucleosome/work/outputs/heatsystem.1.mdin>
    file: <dyn1.out>
-      pfn: <file://target/nucleosome/dyn1.out>
+      pfn: <file://target/nucleosome/work/outputs/dyn1.out>
    file: <restart.1>
-      pfn: <file://target/nucleosome/restart.1>
+      pfn: <file://target/nucleosome/work/outputs/restart.1>
    file: <heatsystem.2.mdin>
-      pfn: <file://target/nucleosome/heatsystem.2.mdin>
+      pfn: <file://target/nucleosome/work/outputs/heatsystem.2.mdin>
    file: <dyn2.out>
-      pfn: <file://target/nucleosome/dyn2.out>
+      pfn: <file://target/nucleosome/work/outputs/dyn2.out>
    file: <restart.2>
-      pfn: <file://target/nucleosome/restart.2>
+      pfn: <file://target/nucleosome/work/outputs/restart.2>
 jobs:
    job: <minimization>, id: <1n2> namespace: <nucleosome> version: <None>
       usedfile: <restart.min>
@@ -157,6 +157,7 @@ dependencies:
       parent: parent=><minimization> edge_label=><None>
    dependency: <1n6>
       parent: parent=><dynamics-1> edge_label=><None>"""
+
                     }
                 },
             'blackdiamond' : {
@@ -172,17 +173,17 @@ dependencies:
 """dax name: <blackdiamond>
 files:
    file: <f.b1>
-      pfn: <file://target/blackdiamond/f.b1>
+      pfn: <file://target/blackdiamond/work/outputs/f.b1>
    file: <f.c1>
-      pfn: <file://target/blackdiamond/f.c1>
+      pfn: <file://target/blackdiamond/work/outputs/f.c1>
    file: <f.b2>
-      pfn: <file://target/blackdiamond/f.b2>
+      pfn: <file://target/blackdiamond/work/outputs/f.b2>
    file: <f.c2>
-      pfn: <file://target/blackdiamond/f.c2>
+      pfn: <file://target/blackdiamond/work/outputs/f.c2>
    file: <f.a>
-      pfn: <file://target/blackdiamond/f.a>
+      pfn: <file://target/blackdiamond/work/outputs/f.a>
    file: <f.d>
-      pfn: <file://target/blackdiamond/f.d>
+      pfn: <file://target/blackdiamond/work/outputs/f.d>
 jobs:
    job: <findrange.1>, id: <1n2> namespace: <blackdiamond> version: <None>
       usedfile: <f.b1>
@@ -234,11 +235,11 @@ dependencies:
 """dax name: <lambda-uber>
 files:
    file: <input-one.tar.gz>
-      pfn: <file://target/lambda/input-one.tar.gz>
+      pfn: <file://target/lambda/work/input-one.tar.gz>
    file: <input-two.tar.gz>
-      pfn: <file://target/lambda/input-two.tar.gz>
+      pfn: <file://target/lambda/work/input-two.tar.gz>
    file: <report.txt>
-      pfn: <file://target/lambda/report.txt>
+      pfn: <file://target/lambda/work/outputs/report.txt>
 jobs:
    job: <package>, id: <1n4> namespace: <lambda-uber> version: <None>
       usedfile: <input-one.tar.gz>
@@ -269,13 +270,13 @@ dependencies:
 """dax name: <lambda-flow.0>
 files:
    file: <a.22.tar.gz-0-out.tar.gz>
-      pfn: <file://target/lambda/a.22.tar.gz-0-out.tar.gz>
+      pfn: <file://target/lambda/work/outputs/a.22.tar.gz-0-out.tar.gz>
    file: <input-one.tar.gz>
-      pfn: <file://target/lambda/input-one.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-one.tar.gz>
    file: <input-two.tar.gz>
-      pfn: <file://target/lambda/input-two.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-two.tar.gz>
    file: <a.22.tar.gz>
-      pfn: <file://.*/samples/lambda/data/a.22.tar.gz>
+      pfn: <file:///home/scox/dev/grayson/samples/lambda/data/a.22.tar.gz>
 jobs:
    job: <lambda>, id: <1n2> namespace: <lambda-flow.0> version: <None>
       usedfile: <a.22.tar.gz>
@@ -294,23 +295,23 @@ dependencies:
       parent: parent=><lambda> edge_label=><None>""",
 
 
+
                     # ========================
                     # == Lambda Flow 0 Test
                     # ========================
                     'lambda-flow.20.dax' : ''
-
 """dax name: <lambda-flow.20>
 files:
    file: <c.22.tar.gz-6-out.tar.gz>
-      pfn: <file://target/lambda/c.22.tar.gz-6-out.tar.gz>
+      pfn: <file://target/lambda/work/outputs/c.22.tar.gz-6-out.tar.gz>
    file: <input-one.tar.gz>
-      pfn: <file://target/lambda/input-one.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-one.tar.gz>
    file: <input-two.tar.gz>
-      pfn: <file://target/lambda/input-two.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-two.tar.gz>
    file: <c.22.tar.gz>
-      pfn: <file:///.*/samples/lambda/data/c.22.tar.gz>
+      pfn: <file:///home/scox/dev/grayson/samples/lambda/data/c.22.tar.gz>
    file: <c.22.tar.gz-5-out.tar.gz>
-      pfn: <file://target/lambda/c.22.tar.gz-5-out.tar.gz>
+      pfn: <file://target/lambda/work/outputs/c.22.tar.gz-5-out.tar.gz>
 jobs:
    job: <lambda>, id: <1n2> namespace: <lambda-flow.20> version: <None>
       usedfile: <input-one.tar.gz>
@@ -329,6 +330,7 @@ dependencies:
    dependency: <ID0000001>
       parent: parent=><lambda> edge_label=><None>""",
 
+
                     # ========================
                     # == Quality Check 0 Test
                     # ========================
@@ -337,7 +339,7 @@ dependencies:
 """dax name: <quality-check.0>
 files:
    file: <a.22.tar.gz-0-out.tar.gz>
-      pfn: <file://target/lambda/a.22.tar.gz-0-out.tar.gz>
+      pfn: <file://target/lambda/work/outputs/a.22.tar.gz-0-out.tar.gz>
 jobs:
    job: <check>, id: <1n1> namespace: <quality-check.0> version: <None>
       usedfile: <a.22.tar.gz-0-out.tar.gz>
@@ -346,6 +348,7 @@ executables:
    executable: <check> namespace: <quality-check.0>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/lambda/bin/check.sh>
 dependencies:""",
+
                     # ========================
                     # == Quality Check 20 Test
                     # ========================
@@ -354,7 +357,7 @@ dependencies:""",
 """dax name: <quality-check.20>
 files:
    file: <c.22.tar.gz-6-out.tar.gz>
-      pfn: <file://target/lambda/c.22.tar.gz-6-out.tar.gz>
+      pfn: <file://target/lambda/work/outputs/c.22.tar.gz-6-out.tar.gz>
 jobs:
    job: <check>, id: <1n1> namespace: <quality-check.20> version: <None>
       usedfile: <c.22.tar.gz-6-out.tar.gz>
@@ -362,7 +365,7 @@ transformations:
 executables:
    executable: <check> namespace: <quality-check.20>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/lambda/bin/check.sh>
-dependencies:"""
+dependencies:""",
 
                     }
                 },
