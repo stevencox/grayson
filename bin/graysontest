@@ -51,9 +51,9 @@ files:
    file: <input.txt>
       pfn: <file://target/alpha/input.txt>
    file: <one.out>
-      pfn: <file://target/alpha/one.out>
+      pfn: <file://target/alpha/work/outputs/one.out>
    file: <two.out>
-      pfn: <file://target/alpha/two.out>
+      pfn: <file://target/alpha/work/outputs/two.out>
 jobs:
    job: <one>, id: <1n1> namespace: <alpha> version: <None>
       usedfile: <input.txt>
@@ -694,26 +694,6 @@ class GraysonScanTest (GraysonCompilerTests):
         self.do_test_model (test_name)
         config = os.path.join (self.outputDir, test_name, "map.grayconf")
         generatedObj = json.loads (GraysonUtil.readFile (config))
-        '''
-        expectedObj = {
-            "outputName": "scan-flow", 
-            "modelPath": "target/scan:target/scan:", 
-            "operator": {
-                "index": "chunk", 
-                "flow": "scan-flow.graphml", 
-                "version": "1.0", 
-                "variable": "file", 
-                "input": "fasta-chunks.tar.gz", 
-                "type": "dynamicMap", 
-                "method": "tar"
-                }, 
-            "graysonHome": "/home/scox/dev/grayson", 
-            "appHome": "target/scan", 
-            "outputDir": "target/scan", 
-            "contextModels": "scan-test-core-context.graphml:scan-executable-context.graphml", 
-            "sites": "local"
-            }
-            '''
         expectedObj = {
             "outputName": "scan-flow", 
             "modelPath": "target/scan:target/scan:", 
