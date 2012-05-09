@@ -4,7 +4,7 @@ if [ "x$1" == "xdev" ]
 then
     ids=$( ps -ef | grep celeryd | grep -v grep | grep -i debug | awk '{ print $2 }' )
 else
-    ids=$( ps -ef | grep celeryd | grep -v grep | awk '{ print $2 }' )
+    ids=$( ps -ef | grep celeryd | grep -v grep | grep -vi debug | awk '{ print $2 }' )
 fi
 echo $ids
 kill -9 $ids

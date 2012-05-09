@@ -2203,9 +2203,12 @@ class GraysonCompiler:
             compiler.appHome = unpackdir
             compiler.getWorkflowManagementSystem().getSiteCatalog().configureLocal ()
             local = compiler.getWorkflowManagementSystem().getSiteCatalog().getEntry ("local")
-            local ["scratchFileServerMountPoint"] = "%s/work/outputs" % compiler.appHome
-            local ["storageFileServerMountPoint"] = "%s/work/outputs" % compiler.appHome
-            local ["scratchInternalMountPoint"]   = "%s/work/outputs" % compiler.appHome
+
+            localStorage = "%s/work/outputs" % compiler.appHome
+	    local ["scratchFileServerMountPoint"] = localStorage
+            local ["scratchInternalMountPoint"]   = localStorage
+            local ["storageFileServerMountPoint"] = localStorage
+            local ["storageInternalMountPoint"]   = localStorage
 
             models.remove (modelName)
             models.insert (0, newName)

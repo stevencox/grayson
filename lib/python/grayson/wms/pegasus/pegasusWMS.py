@@ -375,6 +375,7 @@ class SiteCatalogXML(object):
          </storage>
        </head-fs>
        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+       <profile namespace="condor" key="periodic_release" >0</profile>
        <profile namespace="env" key="PEGASUS_HOME" >${pegasusLocation}</profile>
        ${X509_user_proxy_profile}
        <profile namespace="env" key="GLOBUS_LOCATION" >${globusLocation}</profile>
