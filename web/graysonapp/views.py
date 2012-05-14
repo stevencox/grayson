@@ -116,6 +116,7 @@ def api_run (request):
             ExecuteWorkflow.delay (user         = user,
                                    archive      = file_name,
                                    archivePath  = archivePath,
+                                   logRelPath   = settings.GRAYSONWEB_WORKFLOW_ROOT,
                                    amqpSettings = settings.AMQP_SETTINGS)
             logger.debug ("execute called..")
     except Exception as e:
@@ -294,7 +295,9 @@ def dirlist(request):
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:
         r=['<ul class="jqueryFileTree" style="display: none;">']
-        d = os.path.join (settings.GRAYSONWEB_WORKFLOW_ROOT, request.REQUEST ['dir'])
+        
+        d = request.REQUEST ['dir']
+        d = os.path.join (settings.GRAYSONWEB_WORKFLOW_ROOT, d)
         files = os.listdir(d)                                                                                                                                                                        
         files.sort ()                                                                                                                                                                                
         for f in files:

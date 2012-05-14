@@ -83,7 +83,7 @@ class PegasusWMS (WorkflowManagementSystem):
                 "--verbose",
                 "--verbose",
                 "--output local"]
-        if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1: 
+        if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1 or pegasusHome.find ("4.1") > -1: 
             args = ["--conf=${outputDir}/${pegasusProperties}",
                     "--sites ${sites}",
                     #"--relative-dir ${outputDir}/work",
@@ -375,7 +375,7 @@ class SiteCatalogXML(object):
          </storage>
        </head-fs>
        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
-       <profile namespace="condor" key="periodic_release" >0</profile>
+       <profile namespace="dagman" key="retry">0</profile>
        <profile namespace="env" key="PEGASUS_HOME" >${pegasusLocation}</profile>
        ${X509_user_proxy_profile}
        <profile namespace="env" key="GLOBUS_LOCATION" >${globusLocation}</profile>
@@ -444,7 +444,8 @@ class SiteCatalogXML(object):
                 protocol = site [protocolKey]
                 mountPoint = site [mountPointKey]
                 if protocol == "file":            
-                    fileURL = "file://%s/%s" % (mountPoint, fileName)
+                    path = os.path.abspath ("%s/%s" % (mountPoint, fileName))
+                    fileURL = "file://%s" % path
                 else:
                     if self.HOSTNAME in site:
                         hostname = site [self.HOSTNAME]

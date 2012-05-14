@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:y="http://www.yworks.com/xml/graphml" xmlns:yed="http://www.yworks.com/xml/yed/3" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml/1.1/ygraphml.xsd">
-  <!--Created by yFiles for Java 2.8-->
+  <!--Created by yFiles for Java 2.9-->
   <key for="graphml" id="d0" yfiles.type="resources"/>
   <key for="port" id="d1" yfiles.type="portgraphics"/>
   <key for="port" id="d2" yfiles.type="portgeometry"/>
@@ -33,7 +33,7 @@
     "CLUSTER_HOSTNAME" : "brgw1.renci.org",
     "CLUSTER_SCHEDULER" : "pbs",
     "CLUSTER_WORK_DIR" : "/osg/osg-data",
-    "CLUSTER_PEGASUS_HOME" : "/osg/osg-app/pegasus-3.0.3/",
+    "CLUSTER_PEGASUS_HOME" : "/osg/osg-app/pegasus-4.0.0/",
     "CLUSTER_GLOBUS_LOCATION" : "/opt/osg/1.2.13/osg-1.2.13/globus"
   }
 }]]></data>
@@ -42,7 +42,7 @@
           <y:Geometry height="52.0" width="100.92215568862252" x="-1556.5021833339465" y="-2153.784215943115"/>
           <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="75.75" x="12.586077844311149" y="15.8515625">properties</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="73.69921875" x="13.611468469311149" y="15.85498046875">properties</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
@@ -52,7 +52,7 @@
           <y:Geometry height="84.33333333333333" width="439.3345687531189" x="-1725.708389866195" y="-2326.7366173902183"/>
           <y:Fill color="#F3FBF0" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="179.13671875" x="130.09892500155956" y="28.526041666666515">Blueridge Basic</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.271484375" modelName="internal" modelPosition="c" textColor="#808080" visible="true" width="161.119140625" x="139.10771406405956" y="28.530924479166515">Blueridge Basic</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Double" name="ModernNodeRadius" value="7.0"/>
           </y:StyleProperties>
@@ -66,7 +66,7 @@
           <y:Fill color="#E9FAE2" color2="#C0C0C0" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="left" autoSizePolicy="content" bottomInset="2" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" leftInset="2" modelName="internal" modelPosition="c" rightInset="2" textColor="#000000" topInset="2" visible="true" width="4.0" x="151.5" y="32.25"/>
-          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.90625" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="242.34765625" x="32.326171875" y="11.296875">Characterize Blueridge cluster basics 
+          <y:NodeLabel alignment="left" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="45.888671875" modelName="internal" modelPosition="c" textColor="#333333" visible="true" width="233.60546875" x="36.697265625" y="11.3056640625">Characterize Blueridge cluster basics 
 * Properties for site catalog
 * MPI queues defined as abstract nodes</y:NodeLabel>
           <y:StyleProperties>
@@ -86,6 +86,7 @@
       "maxWallTime" : "2800"
     }
   },
+  "site" : "${clusterId}",
   "arch" : "x86_64"
 }]]></data>
       <data key="d6">
@@ -94,9 +95,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="51.31208832335369" y="15.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="54.349609375" x="26.13728363585369" y="8.515625">MPIBase</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="50.7578125" x="27.93318207335369" y="8.5185546875">MPIBase</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -111,9 +112,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="48.46107784431115" y="15.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="38.763671875" x="31.07924190681115" y="8.515625">MPI_8</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="38.013671875" x="31.45424190681115" y="8.5185546875">MPI_8</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -134,9 +135,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="88.50867594832812" y="15.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="115.240234375" x="32.88855876082812" y="8.515625">MPI_Largememory</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="110.171875" x="35.42273844832812" y="8.5185546875">MPI_Largememory</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>
@@ -156,9 +157,9 @@
           <y:Fill color="#E8E2E2" color2="#FFFFFF" transparent="false"/>
           <y:BorderStyle color="#C0C0C0" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="4.0" x="61.218955838323154" y="15.5"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="72.982421875" x="26.727744900823154" y="8.515625">MPI_GPGPU</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="69.349609375" x="28.544151150823154" y="8.5185546875">MPI_GPGPU</y:NodeLabel>
           <y:StyleProperties>
-            <y:Property class="java.lang.Boolean" name="shadow" value="true"/>
+            <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
           </y:StyleProperties>
         </y:GenericNode>
       </data>

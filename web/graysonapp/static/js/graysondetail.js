@@ -261,6 +261,14 @@ GraysonDetail.prototype.processGenericEvent = function (event, html) {
 	detailText = this.getDetailText (event);
 	if (! this.monitorReady) {
 	    if (event.logdir.match ('[0-9]{8}T[0-9]{6}\-[0-9]{4}$') != null) {
+
+		var prefix = "/var/workflow";
+		var prefixLoc = event.logdir.indexOf (prefix);
+		if (prefixLoc > -1) {
+		    event.logdir = event.logdir.substring (prefixLoc);
+		}
+
+
 		$('#monitor_detail').attr ('dir', event.logdir);
 		$('#monitor_detail_handle').show ();
 		$('#file_detail').attr ('dir', event.logdir);

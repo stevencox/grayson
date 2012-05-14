@@ -852,7 +852,7 @@ GraysonView.prototype.clickNode = function (event) {
 		var flowName = node.label.text;
 		appView.selectWorkflow (flowName);
 		grayson.applyEvents (grayson.allEvents);
-	    } else if (appView.isClickable (node)) { //annotation.type === 'reference' || annotation.type === 'executable' || annotation.type === 'file' || annotation.type === 'job' || (annotation.type === 'map' && annotation.style === 'dynamic') ) {
+	    } else if (appView.isClickable (node)) {
 		var workflowId = node.graph.isRoot ? '' : appView.getContext().instance;
 		var paths = appView.getPaths (workflowId, node.label.text, node);
 		appView.grayson.api.get (paths.joblog, function (text) {
@@ -1666,10 +1666,12 @@ Grayson.prototype.applyEvents = function (events) {
 		var logBase = basename (logdir);
 		var parts = logBase.split ('_');
 		if (parts && parts.length > 1) {
-		    var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.		    
+		    var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
 		    var concreteName = parts [1].replace ("gid", ".") + ".dax";
+		    var daxRunPattern = new RegExp ('[0-9]+\.dax');
+		    concreteName = concreteName.replace (daxRunPattern, "dax")
 		    var concreteName2 = parts [0] + ".dax";
-		    if (concreteName == context.instance || concreteName2 == context.instance) {
+		    if (context.instance.endsWith (concreteName) || context.instance.endsWith (concreteName2)) {
 			if (flowName) {
 			    var node = this.model.byName (flowName, grokedEvent.jobName);
 			    if (node) {

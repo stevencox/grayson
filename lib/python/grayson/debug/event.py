@@ -13,6 +13,8 @@ class EventStream (object):
 
     def __init__(self, amqpSettings, logRelPath=".", eventBufferSize=0):
         logger.info ("eventstream:amqpsettings: %s", amqpSettings)
+        logger.info ("eventstream:logRelPath: %s", logRelPath)
+
         self.amqpSettings = amqpSettings
         self.count = 0
         self.eventBufferSize = eventBufferSize
@@ -24,6 +26,7 @@ class EventStream (object):
     def publish (self, event, aux={}):        
         logger.debug ("publishing: %s with amqp settings %s", event, self.amqpSettings)
         event = self.normalize (event)
+        logger.debug ("event: %s", json.dumps (event))
         for key in aux:
             event [key] = aux [key]
         if self.eventBufferSize > 0:

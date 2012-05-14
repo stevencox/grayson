@@ -131,11 +131,14 @@ class DynamicMapOperator (Operator):
         self.updateCatalog (masterCat = masterRC,
                             other     = os.path.join (tmpOutputDir, replicaCatalogName))
                             
+
+        transformationCatalogName = "transformation-catalog.tc"
+        masterTC = os.path.join (outputDir, transformationCatalogName)
+        self.updateCatalog (masterCat = masterTC,
+                            other     = os.path.join (tmpOutputDir, transformationCatalogName))
+
     def updateCatalog (self, masterCat, other):
         newResources = []
-
-        logger.debug ("++++++: %s", masterCat)
-        logger.debug ("<<<<<<: %s", other)
 
         master = GraysonUtil.readFile (masterCat)
         masterLines = master.split ('\n')

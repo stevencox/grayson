@@ -109,7 +109,8 @@
       <data key="d5"><![CDATA[{
    "type" : "properties",
    "map" : {
-        "clusterId" : "local"
+        "clusterId" : "local",
+        "execution-mode" : "shell"
    }
 }]]></data>
       <data key="d6">
@@ -202,7 +203,6 @@
       </data>
     </edge>
     <edge id="e2" source="n11" target="n9">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="4.051440770802401" sy="-21.93156811377048" tx="0.0" ty="0.0"/>
@@ -221,7 +221,6 @@
       </data>
     </edge>
     <edge id="e3" source="n11" target="n10">
-      <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
           <y:Path sx="7.051440770802401" sy="23.796079715573796" tx="0.0" ty="0.0"/>

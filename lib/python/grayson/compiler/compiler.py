@@ -585,7 +585,7 @@ class GraysonCompiler:
                                                 installed = installed)
         self.getTransformationCatalog().addEntry (jobName=jobLabel,
                                                   location=path,
-                                                  transfer=installed,
+                                                  transfer="INSTALLED" if installed == "true" else None,
                                                   cluster=site,
                                                   namespace=self.namespace)
         source.setDaxNode (exe)
@@ -1107,6 +1107,10 @@ class GraysonCompiler:
                                                  label     = "graysonc",
                                                  path      = self.getProperty (self.MAP)['graysonHome'])
 
+                ''' Ensure we dont plan this job to some other site - its installed here. '''
+                exeProps = exe.getProperties () 
+                exeProps ['installed'] = 'true'
+
                 ''' Re-cast the operand workflow as a dax. Add the --basename argument needed for dynamic invocation. '''
                 args = element.get (self.ATTR_ARGS)
                 originalArgs = ' '.join (args) if isinstance (args, list) else args if args else ''
@@ -1126,8 +1130,6 @@ class GraysonCompiler:
                 if self.isPackaging ():
                     ''' get this file recorded as a referenced model. '''
                     self.ast_compileWorkflow (element)
-
-
 
         '''
         The map operators operand has been mapped to concrete instances
@@ -1582,6 +1584,7 @@ class GraysonCompiler:
         return element
 
     def ast_synthesizeExecutables (self):
+        executableElement = None
         """ For each job in the graph, check if it has an associated executable.
         If not, synthesize executables where needed by creating an object based on the name of the job. """
         elements = self.getElementsByType (self.JOB)
@@ -1596,8 +1599,10 @@ class GraysonCompiler:
                     break
             if missingExecutable:
                 self.synthesizeExecutable (targetJob = element)
+        return executableElement
 
     def synthesizeExecutable (self, targetJob, label=None, path=None):
+        executableElement = None
         """ Create an executable based on the name of a target job."""
         executableRef = self.ast_addNode (id       = '%s_exe_ref' % targetJob.getId (),
                                           label    = '%s.sh'  % targetJob.getLabel (),
@@ -1629,7 +1634,7 @@ class GraysonCompiler:
                           executableElement.getId (), 
                           executableElement.getLabel (), 
                           executableElement.getType ())
-            
+        return executableElement
         
     def ast_addNode (self, id, label, typeObj, context=None):
         """ Add a node ot the model. """

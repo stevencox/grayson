@@ -7,7 +7,9 @@
 String.prototype.startsWith = function (str){
     return this.slice(0, str.length) == str;
 };
-
+String.prototype.endsWith = function (str) {
+    return this.slice(-str.length) === str;
+}
 // Array Remove - By John Resig (MIT Licensed)
 Array.prototype.remove = function(from, to) {
     var rest = this.slice((to || from) + 1 || this.length);
