@@ -848,8 +848,17 @@ class GraysonCompilerTests (GraysonTestCase):
 
         except Exception as e:
             error = """
-_____________E_R_R_O_R______________________________________\n%s\n_____________E_R_R_O_R______________________________________
-""" % baseline
+_____________E_R_R_O_R______________________________________\n
+GOT:
+%s
+EXPECTED:
+%s
+_____________E_R_R_O_R______________________________________
+
+""" % (actual, baseline)
+
+            traceback.print_exc ()
+
             self.output (error)
             exit (1)
 
