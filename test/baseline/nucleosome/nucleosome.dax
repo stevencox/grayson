@@ -26,40 +26,40 @@ files:
       pfn: <file://.*/target/nucleosome/work/outputs/restrt>
 jobs:
    job: <dynamics-1>, id: <1n5> namespace: <nucleosome> version: <None>
-      usedfile: <restrt>
-      usedfile: <heatsystem.1.mdin>
-      usedfile: <restart.1>
-      usedfile: <logfile>
-      usedfile: <prmtop>
       usedfile: <dyn1.out>
-         profile: namespace:<globus> key:<jobType> value:<...>
-         profile: namespace:<globus> key:<xcount> value:<...>
-         profile: namespace:<globus> key:<queue> value:<...>
-         profile: namespace:<globus> key:<host_xcount> value:<...>
-         profile: namespace:<globus> key:<maxWallTime> value:<...>
-   job: <dynamics-2>, id: <1n6> namespace: <nucleosome> version: <None>
-      usedfile: <restrt>
+      usedfile: <heatsystem.1.mdin>
       usedfile: <logfile>
-      usedfile: <restart.2>
-      usedfile: <dyn2.out>
       usedfile: <prmtop>
-      usedfile: <heatsystem.2.mdin>
-         profile: namespace:<globus> key:<jobType> value:<...>
-         profile: namespace:<globus> key:<xcount> value:<...>
-         profile: namespace:<globus> key:<queue> value:<...>
-         profile: namespace:<globus> key:<host_xcount> value:<...>
-         profile: namespace:<globus> key:<maxWallTime> value:<...>
-   job: <minimization>, id: <1n2> namespace: <nucleosome> version: <None>
+      usedfile: <restart.1>
       usedfile: <restrt>
+         profile: namespace:<globus> key:<host_xcount> value:<...>
+         profile: namespace:<globus> key:<jobType> value:<...>
+         profile: namespace:<globus> key:<maxWallTime> value:<...>
+         profile: namespace:<globus> key:<queue> value:<...>
+         profile: namespace:<globus> key:<xcount> value:<...>
+   job: <dynamics-2>, id: <1n6> namespace: <nucleosome> version: <None>
+      usedfile: <dyn2.out>
+      usedfile: <heatsystem.2.mdin>
       usedfile: <logfile>
+      usedfile: <prmtop>
+      usedfile: <restart.2>
+      usedfile: <restrt>
+         profile: namespace:<globus> key:<host_xcount> value:<...>
+         profile: namespace:<globus> key:<jobType> value:<...>
+         profile: namespace:<globus> key:<maxWallTime> value:<...>
+         profile: namespace:<globus> key:<queue> value:<...>
+         profile: namespace:<globus> key:<xcount> value:<...>
+   job: <minimization>, id: <1n2> namespace: <nucleosome> version: <None>
+      usedfile: <logfile>
+      usedfile: <min.out>
       usedfile: <minimization.mdin>
       usedfile: <prmtop>
-      usedfile: <min.out>
       usedfile: <restart.min>
-         profile: namespace:<globus> key:<maxWallTime> value:<...>
-         profile: namespace:<globus> key:<xcount> value:<...>
+      usedfile: <restrt>
          profile: namespace:<globus> key:<host_xcount> value:<...>
          profile: namespace:<globus> key:<jobType> value:<...>
+         profile: namespace:<globus> key:<maxWallTime> value:<...>
+         profile: namespace:<globus> key:<xcount> value:<...>
 transformations:
 executables:
    executable: <dynamics-1> namespace: <nucleosome>, version: <None>, arch: <None>, os: <linux>

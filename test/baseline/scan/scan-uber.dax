@@ -17,12 +17,12 @@ files:
 jobs:
    job: <map>, id: <1n12.synth> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>
-         profile: namespace:<env> key:<PATH> value:<...>
-         profile: namespace:<env> key:<GLOBUS_LOCATION> value:<...>
          profile: namespace:<env> key:<CONDOR_HOME> value:<...>
+         profile: namespace:<env> key:<GLOBUS_LOCATION> value:<...>
          profile: namespace:<env> key:<GRAYSON_HOME> value:<...>
-         profile: namespace:<env> key:<PYTHONPATH> value:<...>
          profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<...>
+         profile: namespace:<env> key:<PATH> value:<...>
+         profile: namespace:<env> key:<PYTHONPATH> value:<...>
    job: <prepare>, id: <1n9> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>
       usedfile: <fasta.txt>
@@ -31,11 +31,11 @@ jobs:
    dax-job: <scan-flow.dax>
       usedfile: <fasta-chunks.tar.gz>
    job: <score>, id: <1n2> namespace: <scan-uber> version: <None>
-      usedfile: <score.x>
-      usedfile: <full-sifs.txt>
-      usedfile: <matrix.txt>
       usedfile: <adjacency.txt>
       usedfile: <database.txt>
+      usedfile: <full-sifs.txt>
+      usedfile: <matrix.txt>
+      usedfile: <score.x>
 transformations:
 executables:
    executable: <map> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>

@@ -8,8 +8,8 @@ files:
       pfn: <file://.*/target/alpha/work/outputs/two.out>
 jobs:
    job: <one>, id: <1n1> namespace: <alpha> version: <None>
-      usedfile: <one.out>
       usedfile: <input.txt>
+      usedfile: <one.out>
    job: <two>, id: <1n3> namespace: <alpha> version: <None>
       usedfile: <one.out>
       usedfile: <two.out>

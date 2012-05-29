@@ -14,18 +14,18 @@ files:
       pfn: <file://.*/target/blackdiamond/work/outputs/f.d>
 jobs:
    job: <analyze>, id: <1n5> namespace: <blackdiamond> version: <None>
+      usedfile: <f.c1>
       usedfile: <f.c2>
       usedfile: <f.d>
-      usedfile: <f.c1>
    job: <findrange.1>, id: <1n2> namespace: <blackdiamond> version: <None>
+      usedfile: <f.b1>
       usedfile: <f.c1>
-      usedfile: <f.b1>
    job: <findrange.2>, id: <1n3> namespace: <blackdiamond> version: <None>
-      usedfile: <f.c2>
       usedfile: <f.b2>
+      usedfile: <f.c2>
    job: <preprocess>, id: <1n4> namespace: <blackdiamond> version: <None>
-      usedfile: <f.b1>
       usedfile: <f.a>
+      usedfile: <f.b1>
       usedfile: <f.b2>
 transformations:
 executables:

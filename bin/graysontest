@@ -733,9 +733,11 @@ class GraysonCompilerTests (GraysonTestCase):
                 self.bufferlog (buffer, "   dax-job: <%s>" % job.file.name)
             else:
                 self.bufferlog (buffer, "   job: <%s>, id: <%s> namespace: <%s> version: <%s>" % ( job.name, job.id, job.namespace, job.version))
-            for file in job.used:
+            used = sorted (job.used, key=lambda u: u.name)
+            for file in used:
                 self.bufferlog (buffer, "      usedfile: <%s>" % file.name)
-            for profile in job.profiles:
+            profiles = sorted (job.profiles, key=lambda p: "%s-%s-%s" % (p.namespace, p.key, p.value))
+            for profile in profiles:
                 self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
 
         self.bufferlog (buffer, "transformations:")

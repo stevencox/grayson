@@ -12,11 +12,11 @@ files:
       pfn: <file://target/lambda/work/outputs/input-two.tar.gz>
 jobs:
    job: <lambda>, id: <1n2> namespace: <lambda-flow.20> version: <None>
+      usedfile: <c.22.tar.gz>
+      usedfile: <c.22.tar.gz-5-out.tar.gz>
+      usedfile: <c.22.tar.gz-6-out.tar.gz>
       usedfile: <input-one.tar.gz>
       usedfile: <input-two.tar.gz>
-      usedfile: <c.22.tar.gz>
-      usedfile: <c.22.tar.gz-6-out.tar.gz>
-      usedfile: <c.22.tar.gz-5-out.tar.gz>
    dax-job: <quality-check.20.dax>
       usedfile: <c.22.tar.gz-6-out.tar.gz>
 transformations:
