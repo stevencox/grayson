@@ -1,0 +1,12 @@
+dax name: <quality-check.20>
+files:
+   file: <c.22.tar.gz-6-out.tar.gz>
+      pfn: <file://.*/target/lambda/work/outputs/c.22.tar.gz-6-out.tar.gz>
+jobs:
+   job: <check>, id: <1n1> namespace: <quality-check.20> version: <None>
+      usedfile: <c.22.tar.gz-6-out.tar.gz>
+transformations:
+executables:
+   executable: <check> namespace: <quality-check.20>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file://target/lambda/bin/check.sh>
+dependencies:

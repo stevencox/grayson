@@ -1,0 +1,25 @@
+dax name: <lambda-flow.0>
+files:
+   file: <a.22.tar.gz>
+      pfn: <file://.*/samples/lambda/data/a.22.tar.gz>
+   file: <input-one.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-one.tar.gz>
+   file: <a.22.tar.gz-0-out.tar.gz>
+      pfn: <file://.*/target/lambda/work/outputs/a.22.tar.gz-0-out.tar.gz>
+   file: <input-two.tar.gz>
+      pfn: <file://target/lambda/work/outputs/input-two.tar.gz>
+jobs:
+   dax-job: <<File quality-check.0.dax>>
+      usedfile: <a.22.tar.gz-0-out.tar.gz>
+   job: <lambda>, id: <1n2> namespace: <lambda-flow.0> version: <None>
+      usedfile: <input-one.tar.gz>
+      usedfile: <a.22.tar.gz>
+      usedfile: <input-two.tar.gz>
+      usedfile: <a.22.tar.gz-0-out.tar.gz>
+transformations:
+executables:
+   executable: <lambda> namespace: <lambda-flow.0>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file://target/lambda/bin/lambda.sh>
+dependencies:
+   dependency: <ID0000001>
+      parent: parent=><lambda> edge_label=><None>
