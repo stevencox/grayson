@@ -166,7 +166,7 @@ class GraysonCompilerTests (GraysonTestCase):
                 self.verify_compiler_output (output_workflow, baseline.rstrip ())
                 
     def bufferlog (self, buffer, text):
-        self.output (text)
+        #self.output (text)
         buffer.append (text)
 
     def generate_digest (self, output_workflow):
@@ -191,7 +191,6 @@ class GraysonCompilerTests (GraysonTestCase):
             njobs.append (job)           
         jobs = sorted (njobs, key=lambda job: job.file.name if isinstance (job, DAX) else job.name)
         for job in jobs:
-            print "job => %s" % job
             if isinstance (job, DAX):
                 self.bufferlog (buffer, "   dax-job: <%s>" % job.file.name)
             else:
@@ -232,20 +231,10 @@ class GraysonCompilerTests (GraysonTestCase):
 
     def verify_compiler_output (self, output_workflow, baseline=None):
         buffer = []
-        banner = """\n
-================================================================================================
-== A N A L Y Z E    output: %s
-================================================================================================\n
-""" % output_workflow
-        self.output (banner)
         actual = self.generate_digest (output_workflow)
         try:
             if re.search (baseline, actual):
-                matched = """
-=========================================================================================================
-== ** (%s) : output matched baseline expectations  
-=========================================================================================================
-"""
+                matched = "== ** (%s) : output matched baseline expectations" % output_workflow
                 self.output (matched)
             else:
                 broken = True
