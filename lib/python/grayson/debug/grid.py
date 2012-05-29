@@ -296,15 +296,6 @@ class PegasusWorkflowMonitor (Processor):
         while self.monitorRunning:
             max_timestamp= self.scanner.getEvents (processor = self,
                                                    since     = max_timestamp)
-
-
-            if self.monitorRunning:
-                self.monitorRunning = 
-                self.workdir == GraysonUtil.readFileAsString (key)
-                
-
-
-
             time.sleep (2)
         self.finish ()
 
