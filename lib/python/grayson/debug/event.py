@@ -20,8 +20,10 @@ class EventStream (object):
         self.eventBufferSize = eventBufferSize
         self.eventBuffer = []
         self.logRelPath = logRelPath
+        '''
         if (isinstance (amqpSettings, int)):
             raise ValueError ("badness")
+            '''
 
     def publish (self, event, aux={}):        
         logger.debug ("publishing: %s with amqp settings %s", event, self.amqpSettings)
@@ -32,7 +34,7 @@ class EventStream (object):
         if self.eventBufferSize > 0:
             if len (self.eventBuffer) < self.eventBufferSize:
                 self.eventBuffer.append (event)
-                logger.debug ("amqp-event-stream:buffered event: %s", event)
+                #logger.debug ("amqp-event-stream:buffered event: %s", event)
             else:
                 self.flush (event)
         else:

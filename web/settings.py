@@ -29,6 +29,7 @@ BROKER_PORT = AMQP_SETTINGS.port #nodeConf["amqpSettings"]["port"]
 BROKER_VHOST = AMQP_SETTINGS.vhost #nodeConf["amqpSettings"]["vhost"]
 SOCKET_IO_PORT = nodeConf ["socketioListenPort"]
 DATA_ROOT = os.path.join (SITE_ROOT, os.path.sep.join (nodeConf ["var"]))
+DB_EVENT_MODEL = nodeConf ["databaseEventModel"]
 
 DEBUG = True #False #nodeConf ["debug"]
 DEV = DEBUG #False #True

@@ -642,7 +642,7 @@ class GraysonCompiler:
                                            self.ATTR_LOCAL)
                                            '''
 
-        logger.debug ('--zzz: file (register generated): %s', fileElement.getLabel ())
+        logger.debug ('--zzz: file (register generated): %s %s', fileElement.getLabel (), fileURL)
         self.ctx().generatedFile [fileElement.getLabel ()] = True
         self.getReplicaCatalog().removeEntry (fileName)
 

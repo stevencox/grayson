@@ -23,6 +23,8 @@ from sys import settrace
 # third-party 
 from Pegasus.DAX3 import ADAG
 from Pegasus.DAX3 import DAX
+from Pegasus.DAX3 import Dependency
+from Pegasus.DAX3 import DuplicateError
 from Pegasus.DAX3 import Executable
 from Pegasus.DAX3 import File
 from Pegasus.DAX3 import Job
@@ -532,6 +534,10 @@ class PegasusWorkflowModel (WorkflowModel):
             if not site:
                 site = "local"
  
+            if not isinstance(fileURL, basestring) and len (fileURL) > 0:
+                fileURL = fileURL [0]
+
+
             logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
             pfn = PFN (fileURL, site)
             file.addPFN (pfn)
@@ -627,10 +633,13 @@ class PegasusWorkflowModel (WorkflowModel):
                 tuple = files [fileKey]
                 fileElement = tuple [0]
                 file = fileElement.getDaxNode ()
-                abstractJob.uses (file, link=link)
-                arg = tuple [1]
-                if arg:
-                    abstractJob.addArguments (arg, file)
+                try:
+                    abstractJob.uses (file, link=link)
+                    arg = tuple [1]
+                    if arg:
+                        abstractJob.addArguments (arg, file)
+                except DuplicateError:
+                    pass
 
     def addInputFiles (self, abstractJob, files):
         self.addFiles (abstractJob, files, Link.INPUT)
@@ -643,7 +652,7 @@ class PegasusWorkflowModel (WorkflowModel):
             abstractJob.addArguments (arguments)
 
     def addDependency (self, parent, child):
-        self.adag.addDependency (parent, child)
+        self.adag.addDependency (Dependency (parent, child))
                         
     def writeExecutable (self, stream):
         self.adag.writeXML (stream)

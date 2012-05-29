@@ -26,12 +26,11 @@ from grayson.packager import GraysonPackager
 from grayson.net.amqp import GraysonAMQPTransmitter
 from grayson.debug.monitor import WorkflowMonitorCompilerPlugin
 from grayson.debug.grid import GridWorkflowMonitor
+from grayson.debug.grid import PegasusWorkflowMonitor
 from grayson.debug.event import EventStream
 
 from web.graysonapp.util import GraysonWebConst
 from web.graysonapp.util import GraysonWebUtil
-from web.graysonapp.util import StrUtil
-from web.graysonapp.util import Workflow
 
 
 ''' #http://celeryproject.org/docs/django-celery/getting-started/first-steps-with-django.html '''
@@ -60,7 +59,10 @@ class WorkflowMonitor (Task):
         if acquire_lock ():
             try:
                 # Read and emit events so far, then loop continually until the workflow completes.
-                monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
+                if settings.DB_EVENT_MODEL:
+                    monitor = PegasusWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
+                else:
+                    monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
                 monitor.execute ()
             finally:
                 release_lock()

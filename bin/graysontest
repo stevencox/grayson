@@ -32,12 +32,18 @@ import Pegasus.DAX3
 logger = logging.getLogger (__name__)
 broken = False
 
+generateBaseline = False
+
 ''' Basic test case '''
 class GraysonTestCase (unittest.TestCase):
 
     def setUp (self):
         self.outputDir = "target"
-        self.invocations = {
+        self.invocations = json.loads (GraysonUtil.readFile ("test/test.conf"))
+        self.invocations ["lambda"]["define"]["data"] = os.path.realpath (self.invocations ["lambda"]["define"]["data"])
+        self.baselinePath = os.path.join ("test", "baseline")
+
+        self.invocations0 = {
             'alpha' : {
                 "model"     : "alpha-context.graphml",
                 "modelPath" : [ self.getSamplePath ("alpha") ],
@@ -512,9 +518,20 @@ dependencies:
         return os.path.join (self.outputDir, fileName)
 
     def getSamplePath (self, sample):
+        logger.debug ("====================== %s", type(sample))
         if type (sample) == list:
             sample = os.path.join (sample)
+            logger.debug ("====================== %s", sample)
         return os.path.join ("samples", sample, "model")
+
+    def getSampleModelPath (self, sample, modelPath):
+        newModelPath = []
+        for model in modelPath:
+            if model == "samples":
+                newModelPath.append (model)
+            else:
+                newModelPath.append (self.getSamplePath (model))
+        return newModelPath
 
 class GraysonCompilerTests (GraysonTestCase):
 
@@ -535,8 +552,95 @@ class GraysonCompilerTests (GraysonTestCase):
     def output (self, text):
         print text
         logger.info (text)
+    
+    def do_compile_model (self, test_name):
+        #test_name = test_case ["name"]
+        test_case = self.invocations [test_name]
+        models = [ test_case ["model"] ]
+        modelPath = self.getSampleModelPath (test_name, test_case ["modelPath"])
+        inputProperties={}
+        if "define" in test_case:
+            inputProperties = test_case ["define"]
+            
+        banner = """
+        ========================================================================
+        == P A C K A G E                                                        
+        ==             test: (%s)
+        ==            model: (%s)
+        ==             path: (%s)
+        == input-properties: (%s)
+        ========================================================================""" % (
+            test_name, models, modelPath, inputProperties)
+
+        self.output (banner)
+        outputPath = os.path.join (self.outputDir, test_name)
+        GraysonCompiler.compile (models = models,
+                                 modelPath = modelPath,
+                                 outputdir = outputPath,
+                                 logLevel = "debug",
+                                 modelProperties = inputProperties,
+                                 output=models[0].replace (".graphml", ".dax"),
+                                 packaging = True)
+        banner = """
+        ========================================================================
+        == C O M P I L E                                                        
+        ==             test: (%s)
+        ==            model: (%s)
+        ==             path: (%s)
+        == input-properties: (%s)
+        =========================================================================""" % (
+            test_name, models, modelPath, inputProperties)
+
+        self.output (banner)
+        modelName = models[0].replace (".graphml", ".grayson")
+        modelName = os.path.join (outputPath, os.path.basename (modelName))
+        models[0] = modelName
+        GraysonCompiler.compile (models = models,
+                                 outputdir = outputPath,
+                                 output=models[0].replace (".grayson", ".dax"),
+                                 toLogFile="%s/%s" % (outputPath, "log.txt") )
+
+        return test_case
+
+    def do_baseline_model (self, test_name):
+        outputPath = os.path.join (self.outputDir, test_name)
+        test_case = self.do_compile_model (test_name)
+        if "verify" in test_case:
+            verifications = test_case ["verify"]
+            for filename in verifications:
+                output_workflow = os.path.join (outputPath, filename)
+                baselinePath = os.path.join (self.baselinePath, test_name)
+                if not os.path.exists (baselinePath):
+                    os.makedirs (baselinePath)
+                baselinePath = os.path.join (self.baselinePath, test_name, filename)
+                output = self.generate_digest (output_workflow)
+                output = output.replace (os.getcwd (), ".*")                
+                output, subs = re.subn (" value:\<(.*)\>", " value:<...>", output)
+                GraysonUtil.writeFile (baselinePath, output)
 
     def do_test_model (self, test_name):
+        if generateBaseline:
+            self.do_baseline_model (test_name)
+            return
+
+        for test_name in self.invocations:
+            test = self.invocations [test_name]
+            verify = test ["verify"]
+            for name in verify:
+                baseline = os.path.join (self.baselinePath, test_name, name)
+                verify [name] = GraysonUtil.readFile (baseline)
+
+
+        outputPath = os.path.join (self.outputDir, test_name)
+        test_case = self.do_compile_model (test_name)
+        if "verify" in test_case:
+            verifications = test_case ["verify"]
+            for filename in verifications:
+                output_workflow = os.path.join (outputPath, filename)
+                baseline = verifications [filename]
+                self.verify_compiler_output (output_workflow, baseline.rstrip ())
+    '''
+    def do_test_model0 (self, test_name):
         #test_name = test_case ["name"]
         test_case = self.invocations [test_name]
         models = [ test_case ["model"] ]
@@ -589,13 +693,13 @@ class GraysonCompilerTests (GraysonTestCase):
                 output_workflow = os.path.join (outputPath, filename)
                 baseline = verification [filename]
                 self.verify_compiler_output (output_workflow, baseline.rstrip ())
-
+                '''
                 
     def bufferlog (self, buffer, text):
         self.output (text)
         buffer.append (text)
 
-    def verify_compiler_output (self, output_workflow, baseline=None):
+    def generate_digest (self, output_workflow):
         buffer = []
         banner = """\n
 ==============================================
@@ -608,41 +712,128 @@ class GraysonCompilerTests (GraysonTestCase):
         self.bufferlog (buffer, "dax name: <%s>" % dag.name)
         self.bufferlog (buffer, "files:")
         for file in dag.files:
-            self.bufferlog (buffer, "   file: <%s>" % file.name)
+            self.bufferlog (buffer, "   file: <%s>" % str(file.name))
             for pfn in file.pfns:
-                self.bufferlog (buffer, "      pfn: <%s>" % pfn.url)
+                self.bufferlog (buffer, "      pfn: <%s>" % str(pfn.url))
                 for profile in pfn.profiles:
                     self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
         self.bufferlog (buffer, "jobs:")
         for job in dag.jobs:
+            print "job => %s" % job
+            if not isinstance (job, Job):
+                job = dag.getJob (job)
+
             if isinstance (job, DAX):
                 self.bufferlog (buffer, "   dax-job: <%s>" % job.file)
             else:
                 self.bufferlog (buffer, "   job: <%s>, id: <%s> namespace: <%s> version: <%s>" % ( job.name, job.id, job.namespace, job.version))
-            for file in job.used_files:
+#            for file in job.used_files:
+            for file in job.used:
                 self.bufferlog (buffer, "      usedfile: <%s>" % file.name)
             for profile in job.profiles:
                 self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
         self.bufferlog (buffer, "transformations:")
         for trans in dag.transformations:
             self.bufferlog (buffer, "   transformation: <%s> namespace: <%s>, version: <%s>" % (trans.name, trans.namespace, trans.version))
-            for use in trans.used_files:
+#            for use in trans.used_files:
+            for use in trans.used:
                 self.bufferlog (buffer, "       uses: <%s>" % use.name)
         self.bufferlog (buffer, "executables:")
         for exe in dag.executables:
             self.bufferlog (buffer, "   executable: <%s> namespace: <%s>, version: <%s>, arch: <%s>, os: <%s>" % ( exe.name, exe.namespace, exe.version, exe.arch, exe.os))
             for pfn in exe.pfns:
-                self.bufferlog (buffer, "      pfn: <%s>" % pfn.url)
+                self.bufferlog (buffer, "      pfn: <%s>" % str(pfn.url))
                 for profile in pfn.profiles:
                     self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
         self.bufferlog (buffer, "dependencies:")
         for dep in dag.dependencies:
-            self.bufferlog (buffer, "   dependency: <%s>" % dep.child.id)
+
+#            self.bufferlog (buffer, "   dependency: <%s>" % dep.child.id)
+
+            child = dag.getJob (dep.child)
+            self.bufferlog (buffer, "   dependency: <%s>" % child.id)
+ 
+            job = dag.getJob (dep.parent)
+            name = job.file.name if isinstance (job, DAX) else job.name
+            self.bufferlog (buffer, "      parent: parent=><%s> edge_label=><%s>" % ( name, "None"))
+
+
+            '''
             for parent in dep.parents:
                 job = parent [0]
                 name = job.file if isinstance (job, DAX) else job.name
                 self.bufferlog (buffer, "      parent: parent=><%s> edge_label=><%s>" % ( name, parent[1]))
+                '''
+
         actual = '\n'.join (buffer).rstrip ()
+        return actual
+
+    def verify_compiler_output (self, output_workflow, baseline=None):
+        buffer = []
+        banner = """\n
+==============================================
+== A N A L Y Z E                              
+==    output: %s
+==============================================\n
+""" % output_workflow
+        self.output (banner)
+
+        actual = self.generate_digest (output_workflow)
+
+        '''
+        dag = Pegasus.DAX3.parse (output_workflow)
+        self.bufferlog (buffer, "dax name: <%s>" % dag.name)
+        self.bufferlog (buffer, "files:")
+        for file in dag.files:
+            self.bufferlog (buffer, "   file: <%s>" % str(file.name))
+            for pfn in file.pfns:
+                self.bufferlog (buffer, "      pfn: <%s>" % str(pfn.url))
+                for profile in pfn.profiles:
+                    self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
+        self.bufferlog (buffer, "jobs:")
+        for job in dag.jobs:
+            print "job => %s" % job
+            if not isinstance (job, Job):
+                job = dag.getJob (job)
+
+            if isinstance (job, DAX):
+                self.bufferlog (buffer, "   dax-job: <%s>" % job.file)
+            else:
+                self.bufferlog (buffer, "   job: <%s>, id: <%s> namespace: <%s> version: <%s>" % ( job.name, job.id, job.namespace, job.version))
+#            for file in job.used_files:
+            for file in job.used:
+                self.bufferlog (buffer, "      usedfile: <%s>" % file.name)
+            for profile in job.profiles:
+                self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
+        self.bufferlog (buffer, "transformations:")
+        for trans in dag.transformations:
+            self.bufferlog (buffer, "   transformation: <%s> namespace: <%s>, version: <%s>" % (trans.name, trans.namespace, trans.version))
+#            for use in trans.used_files:
+            for use in trans.used:
+                self.bufferlog (buffer, "       uses: <%s>" % use.name)
+        self.bufferlog (buffer, "executables:")
+        for exe in dag.executables:
+            self.bufferlog (buffer, "   executable: <%s> namespace: <%s>, version: <%s>, arch: <%s>, os: <%s>" % ( exe.name, exe.namespace, exe.version, exe.arch, exe.os))
+            for pfn in exe.pfns:
+                self.bufferlog (buffer, "      pfn: <%s>" % str(pfn.url))
+                for profile in pfn.profiles:
+                    self.bufferlog (buffer, "         profile: namespace:<%s> key:<%s> value:<%s>" % (profile.namespace, profile.key, profile.value))
+        self.bufferlog (buffer, "dependencies:")
+        for dep in dag.dependencies:
+
+#            self.bufferlog (buffer, "   dependency: <%s>" % dep.child.id)
+
+            child = dag.getJob (dep.child)
+            self.bufferlog (buffer, "   dependency: <%s>" % child.id)
+ 
+            job = dag.getJob (dep.parent)
+            name = job.file.name if isinstance (job, DAX) else job.name
+            self.bufferlog (buffer, "      parent: parent=><%s> edge_label=><%s>" % ( name, "None"))
+
+        actual = '\n'.join (buffer).rstrip ()
+        '''
+    
+
         try:
             if re.search (baseline, actual):
                 matched = """
@@ -660,6 +851,8 @@ class GraysonCompilerTests (GraysonTestCase):
 _____________E_R_R_O_R______________________________________\n%s\n_____________E_R_R_O_R______________________________________
 """ % baseline
             self.output (error)
+            exit (1)
+
             raise e
 
     def tearDown (self):
@@ -670,24 +863,32 @@ class GraysonAlphaTest (GraysonCompilerTests):
         super (GraysonAlphaTest, self).setUp ()
     def test_alpha (self):
         self.do_test_model ("alpha")
+    def baseline_alpha (self):
+        self.do_baseline_model ("alpha")
 
 class GraysonNucleosomeTest (GraysonCompilerTests):
     def setUp (self):
         super (GraysonNucleosomeTest, self).setUp ()
     def test_nucleosome (self):
         self.do_test_model ("nucleosome")
+    def baseline_alpha (self):
+        self.do_baseline_model ("nucleosome")
 
 class GraysonBlackdiamondTest (GraysonCompilerTests):
     def setUp (self):
         super (GraysonBlackdiamondTest, self).setUp ()
     def test_blackdiamond (self):
         self.do_test_model ("blackdiamond")
+    def baseline_alpha (self):
+        self.do_baseline_model ("blackdiamond")
 
 class GraysonLambdaTest (GraysonCompilerTests):
     def setUp (self):
         super (GraysonLambdaTest, self).setUp ()
     def test_lambda (self):
         self.do_test_model ("lambda")
+    def baseline_alpha (self):
+        self.do_baseline_model ("lambda")
 
 class GraysonScanTest (GraysonCompilerTests):
     def setUp (self):
@@ -753,13 +954,13 @@ class GraysonNAMDTest (GraysonCompilerTests):
         super (GraysonNAMDTest, self).setUp ()
     def test_namd (self):
         self.do_test_model ("namd")
+    def baseline_alpha (self):
+        self.do_baseline_model ("namd")
 
 
 class GraysonCycleDetectionTests (GraysonTestCase):
-
     def setUp (self):
         super (GraysonCycleDetectionTests, self).setUp ()
-
     def test_cycle_detection (self):        
         banner = """
 ====================================
@@ -775,6 +976,9 @@ class GraysonCycleDetectionTests (GraysonTestCase):
                                      modelPath = [ self.getSamplePath ("test") ],
                                      outputdir = outputPath,
                                      output    = model.replace (".graphml", ".dax")) 
+    def baseline_alpha (self):
+        self.do_baseline_model ("detect-cycle")
+
                            
 class GraysonUITests (GraysonTestCase):
 
@@ -809,6 +1013,10 @@ class GraysonUITests (GraysonTestCase):
 
 if __name__ == '__main__':
     
+    #print "len: %s argv1: %s" % (len (sys.argv),  sys.argv [1])
+    if len (sys.argv) == 2 and sys.argv [1] == "--baseline":
+        generateBaseline = True
+
     suite = []
     testClasses = [
         GraysonCycleDetectionTests,

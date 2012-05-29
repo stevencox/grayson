@@ -851,7 +851,8 @@ GraysonView.prototype.clickNode = function (event) {
 	    if (annotation.type == 'workflow' || annotation.type == 'dax') {
 		var flowName = node.label.text;
 		appView.selectWorkflow (flowName);
-		grayson.applyEvents (grayson.allEvents);
+		//grayson.applyEvents (grayson.allEvents);
+		
 	    } else if (appView.isClickable (node)) {
 		var workflowId = node.graph.isRoot ? '' : appView.getContext().instance;
 		var paths = appView.getPaths (workflowId, node.label.text, node);
@@ -1669,9 +1670,18 @@ Grayson.prototype.applyEvents = function (events) {
 		    var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
 		    var concreteName = parts [1].replace ("gid", ".") + ".dax";
 		    var daxRunPattern = new RegExp ('[0-9]+\.dax');
+
+		    // todo: consolidate possible name patterns
+		    var concreteName3 = parts [1].
+			replace ("gid", ".").
+			replace (new RegExp ('\.[0-9]{3}'), '') + ".dax";
+
 		    concreteName = concreteName.replace (daxRunPattern, "dax")
 		    var concreteName2 = parts [0] + ".dax";
-		    if (context.instance.endsWith (concreteName) || context.instance.endsWith (concreteName2)) {
+		    if (context.instance.endsWith (concreteName) ||
+			context.instance.endsWith (concreteName2) ||
+			context.instance.endsWith (concreteName3)) 
+		    {
 			if (flowName) {
 			    var node = this.model.byName (flowName, grokedEvent.jobName);
 			    if (node) {

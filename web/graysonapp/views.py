@@ -206,9 +206,8 @@ def get_flow_events (request):
     workdirPath = ViewUtil.form_workflow_path (user, workdirPath)
     logger.debug ("launching monitor: user: %s, workdir: %s, workflowId: %s, runId: %s",
                   user.username, workdirPath, workflowId, runId)
-    logger.debug ("amqpsettings: %s", settings.AMQP_SETTINGS)
     monitor = WorkflowMonitor ()
-    monitor.delay (username        = user.username, # used to route messages to a specific client 
+    monitor.delay (username        = user.username, # route messages to a specific client 
                    workflowId      = workflowId,
                    workdir         = workdirPath,
                    logRelPath      = settings.GRAYSONWEB_WORKFLOW_ROOT,

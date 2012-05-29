@@ -3,7 +3,7 @@
 if [ -z "$GRAYSON_HOME" ]; then
    echo error: GRAYSON_HOME must be set.
 else
-    export PYTHONPATH=${GRAYSON_HOME}/lib/python:${PYTHONPATH}
+    export PYTHONPATH=${GRAYSON_HOME}/lib/python:$PEGASUS_HOME/lib/pegasus/python:$PEGASUS_HOME/lib/pegasus/externals/python:${PYTHONPATH}
     export PATH=${GRAYSON_HOME}/bin:${PATH}
     chmod +x $GRAYSON_HOME/bin/*
     if [ -z "$installdir" ]; then

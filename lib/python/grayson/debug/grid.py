@@ -13,6 +13,8 @@ import time
 
 from grayson.common.util import GraysonUtil
 from grayson.debug.event import EventStream
+from grayson.debug.stampede import EventScanner
+from grayson.debug.stampede import Processor
 
 from Pegasus.tools import kickstart_parser
 
@@ -48,7 +50,6 @@ class GridWorkflow (object):
 
         if type (item) == unicode or type (item) == str:
             request = ".*?%s/%s" % (pattern, item)
-            logger.debug ("_______________________: %s", request)
             output = GraysonUtil.findFilesByName (".*?%s/%s" % (pattern, item), files)
         elif type(item) == list:
             for output in item:
@@ -223,13 +224,155 @@ class GridWorkflowMonitor (object):
                         transfers.append (transfer)
                 aux ['transfer'] = transfers
 
-                '''
+        if status == GridWorkflowMonitor.STATUS_FAILED:
+            execution = self.getExecutionData (logdir, jobId)
+            if execution:
+                aux ["detail"] = {
+                    "stdout" : GraysonUtil.ceilingString (execution ["stdout"], maxLength=500, fromEnd=True),
+                    "stderr" : GraysonUtil.ceilingString (execution ["stderr"], maxLength=500, fromEnd=True)
+                    }
+
+        dagLog = glob.glob (os.path.join (logdir, '*.dag.dagman.out'))
+        dax = glob.glob (os.path.join (logdir, 'dax', '*.dax'))
+        
+        if len(dagLog) > 0 or len (dax) > 0:
+            log = {}
+            aux ['log'] = log
+            if len (dagLog) > 0:
+                log ['daglog'] = os.path.basename (dagLog [0])
+            if len (dax) > 0:
+                log ['dax'] = os.path.basename (dax [0])
+
+        return aux
+
+    def getExecutionData (self, logdir, jobId):
+        obj = None
+        kickstartPath = os.path.join (logdir, "%s.out.000" % jobId)
+        logger.debug ("opening kickstartpath: %s", kickstartPath)
+        kickstart = kickstart_parser.Parser (kickstartPath)
+        logger.debug ("ks: %s", kickstartPath)
+        if kickstart.open ():
+            obj = kickstart.parse_stdout_stderr ()
+            if obj and len(obj) > 0:
+                obj = obj [0]
+        return obj
+
+class PegasusWorkflowMonitor (Processor):
+
+    SUBMIT = "SUBMIT"
+    EXECUTE = "EXECUTE"
+    JOB_SUCCESS = "JOB_SUCCESS"
+    JOB_FAILURE = "JOB_FAILURE"
+    JOB_HELD = "JOB_HELD"
+    DAGMAN_FINISHED = "DAGMAN_FINISHED"
+    ALL_CODES = [ SUBMIT, EXECUTE, JOB_SUCCESS, JOB_FAILURE, DAGMAN_FINISHED ]
+
+    STATUS_PENDING = "pending"
+    STATUS_EXECUTING = "executing"
+    STATUS_SUCCEEDED = "succeeded"
+    STATUS_FAILED = "failed"
+
+    def __init__(self, workflowId, username, workdir, logRelPath=".", amqpSettings=None, eventBufferSize=0):
+        logger.debug ("gridworkflowmonitor:init")
+        self.workdir = os.path.abspath (workdir)
+        self.workflowId = workflowId
+        self.username = username
+        self.monitorRunning = False
+
+        self.scanner = EventScanner (workdir)
+
+        logger.debug ("gridworkflowmonitor:amqpsettings: %s", amqpSettings)
+        self.eventStream = EventStream (amqpSettings    = amqpSettings,
+                                        logRelPath      = logRelPath,
+                                        eventBufferSize = eventBufferSize)
+        self.transferBytesPattern = re.compile ('Stats: ([0-9]+(.[0-9]+)?)')
+        self.transferDurationPattern = re.compile ('in ([0-9]+(.[0-9]+)?) seconds')
+        self.transferRateUpPattern = re.compile ('Rate: ([0-9]+(.[0-9]+) [A-Za-z]+/s)')
+        self.transferRateDownPattern = re.compile ('/s \(([0-9]+(.[0-9]+) [A-Za-z]+/s\))')
+
+    def execute (self, loop=True):
+        self.monitorRunning = True
+        max_timestamp = 0
+        while self.monitorRunning:
+            max_timestamp= self.scanner.getEvents (processor = self,
+                                                   since     = max_timestamp)
+
+
+            if self.monitorRunning:
+                self.monitorRunning = 
+                self.workdir == GraysonUtil.readFileAsString (key)
+                
+
+
+
+            time.sleep (2)
+        self.finish ()
+
+    def finish (self):
+        self.monitorRunning = False
+        logger.debug ("debug:grid:endevent: user(%s) workflow(%s)", self.username, self.workflowId)
+        self.eventStream.sendEndEvent (self.username, self.workflowId)
+
+    def sendEvent (self, logdir, evt_time, jobId, status):        
+        aux = self.detectEventDetails (logdir, jobId, status)
+        logdir = os.path.abspath (logdir)
+        logger.debug ("--logdir: %s ", logdir)
+        self.eventStream.sendJobStatusEvent (username = self.username,
+                                             flowId   = self.workflowId,
+                                             jobid    = jobId,
+                                             status   = status,
+                                             logdir   = logdir,
+                                             evt_time = evt_time,
+                                             aux      = aux)
+
+    def translateExitCode (self, event):
+        status = GridWorkflowMonitor.STATUS_PENDING
+        if event.exitcode is not None:
+            if event.exitcode == 0:
+                status = GridWorkflowMonitor.STATUS_SUCCEEDED
+            else:
+                status = GridWorkflowMonitor.STATUS_FAILED
+        return status
+
+    def accepts (self, pattern):
+        return pattern.find ('scan-uber') > -1 or pattern.find ('scan-flow') > -1
+
+    def processEvent (self, event):
+        status = None
+        if event.is_dax and event.work_dir == self.workdir:
+            if event.exitcode is not None:
+                self.monitorRunning = False
+        self.sendEvent (event.work_dir, event.start_time, event.name, self.translateExitCode (event))
+
+    def detectEventDetails (self, logdir, jobId, status):
+        aux = {}
+
+        if not logdir:
+            return aux
+
+        if jobId.startswith ('stage_in') or jobId.startswith ('stage_out'):
+            path = os.path.join (logdir, "%s.in" % jobId)
+            logger.debug ("opening path: %s", path)
+            text = GraysonUtil.readFile (path)
+            lines = text.split ('\n')
+            if lines:
+                transfers = []
+                pair = 0
+                #for line in lines:
+                while len (lines) > ((pair * 4) + 4):
+
+                    for line in lines:
+                        logger.debug ("line: %s", line)
+
+                    offset = pair * 4
+                    
                     transfer = {
-                        "sourceSite" : lines [0],
-                        "sourceFile" : lines [1],
-                        "destSite"   : lines [2],
-                        "destFile"   : lines [3],
+                        "sourceSite" : lines [offset + 0],
+                        "sourceFile" : lines [offset + 1],
+                        "destSite"   : lines [offset + 2],
+                        "destFile"   : lines [offset + 3],
                         }
+                    pair += 1
                     execution = self.getExecutionData (logdir, jobId)
                     if execution:
                         stdout = execution ['stdout']
@@ -243,8 +386,9 @@ class GridWorkflowMonitor (object):
                         transfer ["down"] = rateDown
                         logger.debug ("kickstart stdout/err: %s" + json.dumps (execution, indent=4))
                         logger.debug ("     transferred: %s duration: %s rateUp: %s rateDown: %s", transferred, duration, rateUp, rateDown)
-                        aux ['transfer'] = transfer
-                        '''
+                        transfers.append (transfer)
+                aux ['transfer'] = transfers
+
 
         if status == GridWorkflowMonitor.STATUS_FAILED:
             execution = self.getExecutionData (logdir, jobId)
