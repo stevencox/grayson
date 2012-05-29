@@ -1,22 +1,18 @@
 dax name: <blackdiamond>
 files:
-   file: <f.c1>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.c1>
-   file: <f.c2>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.c2>
-   file: <f.b2>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.b2>
    file: <f.a>
       pfn: <file://.*/target/blackdiamond/work/outputs/f.a>
    file: <f.b1>
       pfn: <file://.*/target/blackdiamond/work/outputs/f.b1>
+   file: <f.b2>
+      pfn: <file://.*/target/blackdiamond/work/outputs/f.b2>
+   file: <f.c1>
+      pfn: <file://.*/target/blackdiamond/work/outputs/f.c1>
+   file: <f.c2>
+      pfn: <file://.*/target/blackdiamond/work/outputs/f.c2>
    file: <f.d>
       pfn: <file://.*/target/blackdiamond/work/outputs/f.d>
 jobs:
-   job: <preprocess>, id: <1n4> namespace: <blackdiamond> version: <None>
-      usedfile: <f.b1>
-      usedfile: <f.a>
-      usedfile: <f.b2>
    job: <analyze>, id: <1n5> namespace: <blackdiamond> version: <None>
       usedfile: <f.c2>
       usedfile: <f.d>
@@ -27,22 +23,26 @@ jobs:
    job: <findrange.2>, id: <1n3> namespace: <blackdiamond> version: <None>
       usedfile: <f.c2>
       usedfile: <f.b2>
+   job: <preprocess>, id: <1n4> namespace: <blackdiamond> version: <None>
+      usedfile: <f.b1>
+      usedfile: <f.a>
+      usedfile: <f.b2>
 transformations:
 executables:
-   executable: <findrange.2> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
+   executable: <analyze> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/blackdiamond/bin/keg>
    executable: <findrange.1> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/blackdiamond/bin/keg>
-   executable: <analyze> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
+   executable: <findrange.2> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/blackdiamond/bin/keg>
    executable: <preprocess> namespace: <blackdiamond>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/blackdiamond/bin/keg>
 dependencies:
    dependency: <1n2>
       parent: parent=><preprocess> edge_label=><None>
-   dependency: <1n5>
-      parent: parent=><findrange.1> edge_label=><None>
    dependency: <1n3>
       parent: parent=><preprocess> edge_label=><None>
+   dependency: <1n5>
+      parent: parent=><findrange.1> edge_label=><None>
    dependency: <1n5>
       parent: parent=><findrange.2> edge_label=><None>

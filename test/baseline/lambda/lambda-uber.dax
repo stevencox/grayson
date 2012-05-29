@@ -2,27 +2,27 @@ dax name: <lambda-uber>
 files:
    file: <input-one.tar.gz>
       pfn: <file://target/lambda/work/input-one.tar.gz>
-   file: <report.txt>
-      pfn: <file://.*/target/lambda/work/outputs/report.txt>
    file: <input-two.tar.gz>
       pfn: <file://target/lambda/work/input-two.tar.gz>
+   file: <report.txt>
+      pfn: <file://.*/target/lambda/work/outputs/report.txt>
 jobs:
+   job: <merge>, id: <1n6> namespace: <lambda-uber> version: <None>
+      usedfile: <report.txt>
    job: <package>, id: <1n4> namespace: <lambda-uber> version: <None>
       usedfile: <input-one.tar.gz>
       usedfile: <input-two.tar.gz>
-   job: <merge>, id: <1n6> namespace: <lambda-uber> version: <None>
-      usedfile: <report.txt>
    dax-job: <wind.0.dax>
       usedfile: <input-one.tar.gz>
       usedfile: <input-two.tar.gz>
 transformations:
 executables:
-   executable: <package> namespace: <lambda-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/lambda/bin/package.sh>
    executable: <merge> namespace: <lambda-uber>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/lambda/bin/merge.sh>
+   executable: <package> namespace: <lambda-uber>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file://target/lambda/bin/package.sh>
 dependencies:
-   dependency: <ID0000001>
-      parent: parent=><package> edge_label=><None>
    dependency: <1n6>
       parent: parent=><wind.0.dax> edge_label=><None>
+   dependency: <ID0000001>
+      parent: parent=><package> edge_label=><None>

@@ -1,28 +1,20 @@
 dax name: <scan-uber>
 files:
-   file: <fasta.txt>
-      pfn: <file://target/scan/input/fasta.txt>
-   file: <fasta-chunks.tar.gz>
-      pfn: <file://target/scan/work/outputs/fasta-chunks.tar.gz>
-   file: <full-sifs.txt>
-      pfn: <file://.*/target/scan/work/outputs/full-sifs.txt>
    file: <adjacency.txt>
       pfn: <file://.*/target/scan/work/outputs/adjacency.txt>
-   file: <matrix.txt>
-      pfn: <file://.*/target/scan/work/outputs/matrix.txt>
    file: <database.txt>
       pfn: <file://.*/target/scan/work/outputs/database.txt>
+   file: <fasta-chunks.tar.gz>
+      pfn: <file://target/scan/work/outputs/fasta-chunks.tar.gz>
+   file: <fasta.txt>
+      pfn: <file://target/scan/input/fasta.txt>
+   file: <full-sifs.txt>
+      pfn: <file://.*/target/scan/work/outputs/full-sifs.txt>
+   file: <matrix.txt>
+      pfn: <file://.*/target/scan/work/outputs/matrix.txt>
    file: <score.x>
       pfn: <file://target/scan/bin/score.x>
 jobs:
-   job: <score>, id: <1n2> namespace: <scan-uber> version: <None>
-      usedfile: <score.x>
-      usedfile: <full-sifs.txt>
-      usedfile: <matrix.txt>
-      usedfile: <adjacency.txt>
-      usedfile: <database.txt>
-   dax-job: <scan-flow.dax>
-      usedfile: <fasta-chunks.tar.gz>
    job: <map>, id: <1n12.synth> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>
          profile: namespace:<env> key:<PATH> value:<...>
@@ -31,29 +23,37 @@ jobs:
          profile: namespace:<env> key:<GRAYSON_HOME> value:<...>
          profile: namespace:<env> key:<PYTHONPATH> value:<...>
          profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<...>
-   job: <reduce>, id: <1n10> namespace: <scan-uber> version: <None>
-      usedfile: <full-sifs.txt>
    job: <prepare>, id: <1n9> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>
       usedfile: <fasta.txt>
+   job: <reduce>, id: <1n10> namespace: <scan-uber> version: <None>
+      usedfile: <full-sifs.txt>
+   dax-job: <scan-flow.dax>
+      usedfile: <fasta-chunks.tar.gz>
+   job: <score>, id: <1n2> namespace: <scan-uber> version: <None>
+      usedfile: <score.x>
+      usedfile: <full-sifs.txt>
+      usedfile: <matrix.txt>
+      usedfile: <adjacency.txt>
+      usedfile: <database.txt>
 transformations:
 executables:
-   executable: <prepare> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/scan/bin/prepare.sh>
    executable: <map> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://.*/bin/graysonc>
-   executable: <score> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/scan/bin/score.sh>
+   executable: <prepare> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file://target/scan/bin/prepare.sh>
    executable: <reduce> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
       pfn: <file://target/scan/bin/reduce.sh>
+   executable: <score> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file://target/scan/bin/score.sh>
 dependencies:
    dependency: <1n10>
       parent: parent=><scan-flow.dax> edge_label=><None>
    dependency: <1n12.synth>
       parent: parent=><prepare> edge_label=><None>
+   dependency: <1n2>
+      parent: parent=><reduce> edge_label=><None>
    dependency: <ID0000001>
       parent: parent=><prepare> edge_label=><None>
    dependency: <ID0000001>
       parent: parent=><map> edge_label=><None>
-   dependency: <1n2>
-      parent: parent=><reduce> edge_label=><None>

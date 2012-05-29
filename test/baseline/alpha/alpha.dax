@@ -1,9 +1,9 @@
 dax name: <alpha>
 files:
-   file: <one.out>
-      pfn: <file://.*/target/alpha/work/outputs/one.out>
    file: <input.txt>
       pfn: <file://target/alpha/input.txt>
+   file: <one.out>
+      pfn: <file://.*/target/alpha/work/outputs/one.out>
    file: <two.out>
       pfn: <file://.*/target/alpha/work/outputs/two.out>
 jobs:

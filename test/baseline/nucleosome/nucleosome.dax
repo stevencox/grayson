@@ -1,29 +1,29 @@
 dax name: <nucleosome>
 files:
-   file: <dyn2.out>
-      pfn: <file://.*/target/nucleosome/work/outputs/dyn2.out>
-   file: <prmtop>
-      pfn: <file://.*/target/nucleosome/work/outputs/prmtop>
-   file: <restart.min>
-      pfn: <file://.*/target/nucleosome/work/outputs/restart.min>
    file: <dyn1.out>
       pfn: <file://.*/target/nucleosome/work/outputs/dyn1.out>
-   file: <minimization.mdin>
-      pfn: <file://.*/target/nucleosome/work/outputs/minimization.mdin>
-   file: <logfile>
-      pfn: <file://.*/target/nucleosome/work/outputs/logfile>
-   file: <restart.2>
-      pfn: <file://.*/target/nucleosome/work/outputs/restart.2>
-   file: <restrt>
-      pfn: <file://.*/target/nucleosome/work/outputs/restrt>
-   file: <restart.1>
-      pfn: <file://.*/target/nucleosome/work/outputs/restart.1>
-   file: <min.out>
-      pfn: <file://.*/target/nucleosome/work/outputs/min.out>
+   file: <dyn2.out>
+      pfn: <file://.*/target/nucleosome/work/outputs/dyn2.out>
    file: <heatsystem.1.mdin>
       pfn: <file://.*/target/nucleosome/work/outputs/heatsystem.1.mdin>
    file: <heatsystem.2.mdin>
       pfn: <file://.*/target/nucleosome/work/outputs/heatsystem.2.mdin>
+   file: <logfile>
+      pfn: <file://.*/target/nucleosome/work/outputs/logfile>
+   file: <min.out>
+      pfn: <file://.*/target/nucleosome/work/outputs/min.out>
+   file: <minimization.mdin>
+      pfn: <file://.*/target/nucleosome/work/outputs/minimization.mdin>
+   file: <prmtop>
+      pfn: <file://.*/target/nucleosome/work/outputs/prmtop>
+   file: <restart.1>
+      pfn: <file://.*/target/nucleosome/work/outputs/restart.1>
+   file: <restart.2>
+      pfn: <file://.*/target/nucleosome/work/outputs/restart.2>
+   file: <restart.min>
+      pfn: <file://.*/target/nucleosome/work/outputs/restart.min>
+   file: <restrt>
+      pfn: <file://.*/target/nucleosome/work/outputs/restrt>
 jobs:
    job: <dynamics-1>, id: <1n5> namespace: <nucleosome> version: <None>
       usedfile: <restrt>
@@ -62,14 +62,14 @@ jobs:
          profile: namespace:<globus> key:<jobType> value:<...>
 transformations:
 executables:
+   executable: <dynamics-1> namespace: <nucleosome>, version: <None>, arch: <None>, os: <linux>
+      pfn: <file:///home/scox/gpu/bin/pmemd.cuda.MPI>
    executable: <dynamics-2> namespace: <nucleosome>, version: <None>, arch: <None>, os: <linux>
       pfn: <file:///home/scox/gpu/bin/pmemd.cuda.MPI>
    executable: <minimization> namespace: <nucleosome>, version: <None>, arch: <None>, os: <linux>
       pfn: <file:///home/scox/gpu/bin/pmemd.MPI>
-   executable: <dynamics-1> namespace: <nucleosome>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file:///home/scox/gpu/bin/pmemd.cuda.MPI>
 dependencies:
-   dependency: <1n6>
-      parent: parent=><dynamics-1> edge_label=><None>
    dependency: <1n5>
       parent: parent=><minimization> edge_label=><None>
+   dependency: <1n6>
+      parent: parent=><dynamics-1> edge_label=><None>
