@@ -21,7 +21,7 @@ jobs:
       usedfile: <matrix.txt>
       usedfile: <adjacency.txt>
       usedfile: <database.txt>
-   dax-job: <<File scan-flow.dax>>
+   dax-job: <scan-flow.dax>
       usedfile: <fasta-chunks.tar.gz>
    job: <map>, id: <1n12.synth> namespace: <scan-uber> version: <None>
       usedfile: <fasta-chunks.tar.gz>

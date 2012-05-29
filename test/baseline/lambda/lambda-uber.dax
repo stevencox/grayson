@@ -12,7 +12,7 @@ jobs:
       usedfile: <input-two.tar.gz>
    job: <merge>, id: <1n6> namespace: <lambda-uber> version: <None>
       usedfile: <report.txt>
-   dax-job: <<File wind.0.dax>>
+   dax-job: <wind.0.dax>
       usedfile: <input-one.tar.gz>
       usedfile: <input-two.tar.gz>
 transformations:

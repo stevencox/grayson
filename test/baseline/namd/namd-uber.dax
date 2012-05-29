@@ -1,7 +1,7 @@
 dax name: <namd-uber>
 files:
 jobs:
-   dax-job: <<File map.0.dax>>
+   dax-job: <map.0.dax>
 transformations:
 executables:
 dependencies:

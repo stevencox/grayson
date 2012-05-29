@@ -1,9 +1,9 @@
 dax name: <map.0.dax>
 files:
 jobs:
-   dax-job: <<File namd-flow.0.dax>>
-   dax-job: <<File namd-flow.1.dax>>
-   dax-job: <<File namd-flow.2.dax>>
+   dax-job: <namd-flow.0.dax>
+   dax-job: <namd-flow.1.dax>
+   dax-job: <namd-flow.2.dax>
 transformations:
 executables:
 dependencies:

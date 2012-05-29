@@ -724,7 +724,7 @@ class GraysonCompilerTests (GraysonTestCase):
                 job = dag.getJob (job)
 
             if isinstance (job, DAX):
-                self.bufferlog (buffer, "   dax-job: <%s>" % job.file)
+                self.bufferlog (buffer, "   dax-job: <%s>" % job.file.name)
             else:
                 self.bufferlog (buffer, "   job: <%s>, id: <%s> namespace: <%s> version: <%s>" % ( job.name, job.id, job.namespace, job.version))
 #            for file in job.used_files:
