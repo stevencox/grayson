@@ -47,6 +47,7 @@ class JobStatistics:
         self.hostname = None
 
         self.is_dax = False
+        self.dax_file = None
 
         self.condorQlen = None
         self.seqexec = None
@@ -68,6 +69,25 @@ class JobStatEncoder(json.JSONEncoder):
             val = json.JSONEncoder.default (self, j)
         return val        
         
+class StatsUtil (object):
+    @staticmethod
+    def formDaxName (workdir):
+        result = None
+        logger.debug ("---------------------form dax name: %s", workdir)
+        if workdir:
+            workdir = os.path.basename (workdir)
+            if '_' in workdir:
+                index = workdir.find ('_')
+                val = workdir [index + 1:]
+                val = val.replace ("gid", ".")
+                match = re.match("([\w-]+)\.?(\d+)\.?(\d+)?", val)
+                logger.debug ("---------------------val: %s", val)
+                if match:
+                    logger.debug ("---------------------match: %s", match)
+                    groups = match.groups ()
+                    result = '.'.join ([ groups [0], groups [1] ])
+        return result
+
 class GraysonStampedeStatistics ():
 
     ROOT_DIR_PAT = re.compile ('([0-9]{8})T')
@@ -151,14 +171,22 @@ class GraysonStampedeStatistics ():
         sq_12 = sq_12.filter(Invocation.wf_id == Job.wf_id).correlate(Job)
         sq_12 = sq_12.filter(Invocation.task_submit_seq >= 0)
         sq_12 = sq_12.group_by().subquery()
+
+        sq_13 = database.session.query (Workflow.dax_file)
+        sq_13 = sq_13.filter(Job.wf_id == Workflow.wf_id).correlate (Job)
+        sq_13 = sq_13.filter(JobInstance.job_id == Job.job_id).correlate (Job)
+        sq_13 = sq_13.filter(Invocation.task_submit_seq >= 0)
+        sq_13 = sq_13.group_by().subquery()
         
-        q = database.session.query(Job.job_id, JobInstance.job_instance_id, JobInstance.job_submit_seq,
+        q = database.session.query(Job.job_id,
+                                   JobInstance.job_instance_id,
+                                   JobInstance.job_submit_seq,
             Job.exec_job_id.label('job_name'), JobInstance.site,
             cast(sq_1.as_scalar() - sq_2.as_scalar(), Float).label('condor_q_time'),
             cast(sq_3.as_scalar() - sq_4.as_scalar(), Float).label('resource_delay'),
             cast(JobInstance.local_duration, Float).label('runtime'),
-#very bad   cast(Invocation.start_time, Float).label('start_time'),
             cast(sq_12.as_scalar(), Float).label('start_time'),
+            sq_13.as_scalar().label('dax_file'),
             cast(sq_5.as_scalar(), Float).label('kickstart'),
             cast(sq_6.as_scalar() - sq_7.as_scalar(), Float).label('post_time'),
             cast(JobInstance.cluster_duration, Float).label('seqexec'),
@@ -219,10 +247,27 @@ class GraysonStampedeStatistics ():
         
         return q.all ()
 
+    def formDaxName (self, workdir):
+        result = None
+        logger.debug ("---------------------form dax name: %s", workdir)
+        if workdir:
+            workdir = os.path.basename (workdir)
+            if '_' in workdir:
+                index = workdir.find ('_')
+                val = workdir [index + 1:]
+                val = val.replace ("gid", ".")
+                match = re.match("([\w-]+)\.?(\d+)\.?(\d+)?", val)
+                logger.debug ("---------------------val: %s", val)
+                if match:
+                    logger.debug ("---------------------match: %s", match)
+                    groups = match.groups ()
+                    result = '.'.join ([ groups [0], groups [1] ])
+        return result
+
     def grok_subdax (self, database, dax_label, submit_dir, processor, since):
         max_timestamp = since
         workflow_states = database.get_workflow_states ()
-        logger.debug ("(%s) workflow_states => %s", dax_label, json.dumps (workflow_states, cls = JobStatEncoder,indent=2))
+        #logger.debug ("(%s) workflow_states => %s", dax_label, json.dumps (workflow_states, cls = JobStatEncoder,indent=2))
         for state in workflow_states:
             if state.timestamp <= since:
                 continue
@@ -245,6 +290,9 @@ class GraysonStampedeStatistics ():
                 event.is_dax = True
                 event.work_dir =  os.path.abspath (submit_dir)
                 event.start_time = state [4]
+
+                event.dax_file = StatsUtil.formDaxName (event.work_dir)
+
                 processor.processEvent (event)
 
         return max_timestamp
@@ -290,7 +338,7 @@ class EventScanner (object):
         job_stats.remote_cpu_time = job.remote_cpu_time
         job_stats.post = job.post_time
         job_stats.runtime = job.runtime
-#        job_stats.start_time = job.start_time
+        job_stats.start_time = job.start_time
         job_stats.condor_delay = job.condor_q_time
         job_stats.resource = job.resource_delay
         job_stats.seqexec = job.seqexec
@@ -299,6 +347,7 @@ class EventScanner (object):
         job_stats.sched_id = job.sched_id
         job_stats.work_dir = os.path.abspath (job.work_dir)
         job_stats.work_dir = job_stats.work_dir.replace ("work/outputs", "work")
+        job_stats.dax_file = os.path.basename (job.dax_file) if job.dax_file else StatsUtil.formDaxName (job_stats.workdir) #None
         if job_stats.seqexec is not None and job_stats.kickstart is not None:
             job_stats.seqexec_delay = (float(job_stats.seqexec) - float(job_stats.kickstart))
         if job_retry_count_dict.has_key(job.job_name):
@@ -324,12 +373,12 @@ class EventScanner (object):
     def getEvents (self,
                    processor,
                    wf_uuid       = None,
-                   daxFilter     = None,
                    jobNameFilter = [ 'clean_up',
                                      'chmod',
                                      'register_',
                                      'create_dir_' ],
-                   since         = 0):
+                   since         = 0,
+                   daxName       = None):
 
         if not wf_uuid:
             wf_uuid = self.wf_uuid
@@ -344,24 +393,33 @@ class EventScanner (object):
         if max_time <= since:
             return since
 
+        logger.debug ("generating events for dax: %s", daxName)
+
         ''' get dax events for this workflow '''
         wf_det = database.get_workflow_details()[0]
+        
+        if not daxName:
+            daxName = str (wf_det.dax_label)
+
         max_timestamp = max (graysonStats.grok_subdax (database   = database,
-                                             dax_label  = wf_det.dax_label,
-                                             submit_dir = wf_det.submit_dir,
-                                             processor  = processor,
-                                             since      = since),
+                                                       dax_label  = wf_det.dax_label,
+                                                       submit_dir = wf_det.submit_dir,
+                                                       processor  = processor,
+                                                       since      = since),
                              max_timestamp)
 
+        #if processor.accepts (daxName):
+        logger.debug ("generating events for dax(%s)", daxName)
+        
         ''' read events '''
         max_timestamp = max (self.queryJobStats (graysonStats  = graysonStats,
-                                       database      = database,
-                                       wf_det        = wf_det,
-                                       jobNameFilter = jobNameFilter,
-                                       since         = since,
-                                       processor     = processor),
+                                                 database      = database,
+                                                 wf_det        = wf_det,
+                                                 jobNameFilter = jobNameFilter,
+                                                 since         = since,
+                                                 processor     = processor),
                              max_timestamp)
-
+            
         details = database.get_descendant_workflow_ids ()
         for wf_det in details:
             sub_wf_uuid  = wf_det.wf_uuid
@@ -369,22 +427,22 @@ class EventScanner (object):
             wf_det       = sub_database.get_workflow_details()[0]
             workflow_id  = str (sub_wf_uuid)
             dax_label    = str (wf_det.dax_label)
+            '''
             logger.debug ("processing: %s, dax: %s, wfid: %s, dets: %s",
                          sub_wf_uuid,
                          dax_label,
                          workflow_id,
                          json.dumps (wf_det, indent=2, sort_keys=True))
-
+                         '''
             ''' There's no filter or the filter matches this dax '''
             logger.debug ("dax_label => %s", dax_label)
-            if not daxFilter or daxFilter and dax_label == daxFilter: 
-                ''' recurse - get events pertaining to the subdax '''
-                max_timestamp = max (self.getEvents (processor     = processor,
-                                           wf_uuid       = sub_wf_uuid,
-                                           daxFilter     = daxFilter,
-                                           jobNameFilter = jobNameFilter,
-                                           since         = since),
-                                     max_timestamp)
+            ''' recurse - get events pertaining to the subdax '''
+            max_timestamp = max (self.getEvents (processor     = processor,
+                                                 wf_uuid       = sub_wf_uuid,
+                                                 jobNameFilter = jobNameFilter,
+                                                 since         = since,
+                                                 daxName       = dax_label),
+                                 max_timestamp)
         return max_timestamp
 
     def queryJobStats (self, graysonStats, database, wf_det, jobNameFilter, since, processor):
@@ -416,7 +474,7 @@ class EventScanner (object):
 class Processor (object):
     def processEvent (self, event):
         pass
-    def acceptsEvent (self, event):
+    def accepts (self, daxName):
         return True
 
 class BufferProcessor (Processor):
@@ -425,19 +483,24 @@ class BufferProcessor (Processor):
     def processEvent (self, event):
         self.buffer.append (event)
 
-class DebugProcessor (Processor):            
+class DebugProcessor (Processor):
+    def __init__ (self, daxFilter = None):
+        self.daxFilter = daxFilter
     def processEvent (self, event):
-        logger.debug ("event=>(%s)", json.dumps (event,
-                                                 cls       = JobStatEncoder,
-                                                 indent    = 2,
-                                                 sort_keys = True))
-
+        if not daxFilter or event.dax_file == self.daxFilter:
+            logger.debug ("event=>(%s)",
+                          json.dumps (event,
+                                      cls       = JobStatEncoder,
+                                      indent    = 2,
+                                      sort_keys = True))
+            
 if __name__ == "__main__":
     logging.basicConfig ()
     __name__ = "stampede"
     logger.setLevel (logging.DEBUG)
     logger.info ("argv: %s", json.dumps (sys.argv))
 
+    
     subdir = sys.argv [1]
     daxFilter = None if len (sys.argv) < 3 else sys.argv [2]
     if daxFilter == "-":
@@ -446,13 +509,8 @@ if __name__ == "__main__":
     since = 0 if len (sys.argv) < 4 else int(sys.argv [3])
     scanner = EventScanner (subdir)
     max_timestamp = scanner.getEvents (wf_uuid   = scanner.wf_uuid,
-                                       daxFilter = daxFilter,
                                        since     = since,
-                                       processor = DebugProcessor ())
+                                       processor = DebugProcessor (daxFilter))
     logger.debug ("max_timestamp=%s", max_timestamp)
 
-    '''
-    text = scanner.emitJSON (eventBuffer)
-    logger.debug ("output=>%s, max_timestamp=%s", text, max_timestamp)
-    '''
 

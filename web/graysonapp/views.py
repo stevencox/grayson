@@ -196,20 +196,29 @@ def connect_flows (request):
 
 @login_required
 def get_flow_events (request):
-    workdir = request.REQUEST ["workdir"]
+    workdir    = request.REQUEST ["workdir"]
     workflowId = request.REQUEST ["workflowid"]
-    runId = request.REQUEST ["runid"]    
+    runId      = request.REQUEST ["runid"]    
+    dax        = request.REQUEST ["dax"] if "dax" in request.REQUEST else None
+
+    if not dax:
+        dax = os.path.basename (workflowId)
+        logger.debug ("dax: %s", dax)
+
     workflowName = os.path.basename (workflowId).replace (".dax", "")
+
+    
     process_username = ViewUtil.get_os_username ()
     workdirPath = GraysonUtil.form_workdir_path (workdir, process_username, workflowName, runId)
     user = ViewUtil.get_user (request)
     workdirPath = ViewUtil.form_workflow_path (user, workdirPath)
-    logger.debug ("launching monitor: user: %s, workdir: %s, workflowId: %s, runId: %s",
-                  user.username, workdirPath, workflowId, runId)
+    logger.debug ("launching monitor: user: %s, workdir: %s, workflowId: %s, runId: %s, dax: %s",
+                  user.username, workdirPath, workflowId, runId, dax)
     monitor = WorkflowMonitor ()
     monitor.delay (username        = user.username, # route messages to a specific client 
                    workflowId      = workflowId,
                    workdir         = workdirPath,
+                   dax             = dax,
                    logRelPath      = settings.GRAYSONWEB_WORKFLOW_ROOT,
                    amqpSettings    = settings.AMQP_SETTINGS,
                    eventBufferSize = settings.EVENT_BUFFER_SIZE)

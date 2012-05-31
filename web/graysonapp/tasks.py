@@ -42,7 +42,7 @@ LOCK_EXPIRE = 60 * 5 # Lock expires in 5 minutes
 class WorkflowMonitor (Task):
     name = "workflow.monitor"
 
-    def run (self, username, workflowId, workdir, logRelPath=".", amqpSettings=None, eventBufferSize=0, **kwargs):
+    def run (self, username, workflowId, workdir, dax, logRelPath=".", amqpSettings=None, eventBufferSize=0, **kwargs):
         logger = self.get_logger (**kwargs)
 
         # The cache key is the task name and the MD5 digest of the workdir.
@@ -60,24 +60,41 @@ class WorkflowMonitor (Task):
             try:
                 # Read and emit events so far, then loop continually until the workflow completes.
                 if settings.DB_EVENT_MODEL:
-                    monitor = PegasusWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
+                    logger.error ("=========================================== STAMPEDE MONITOR ==================================================")
+                    monitor = PegasusWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
                 else:
-                    monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings, eventBufferSize)
+                    logger.error ("=========================================== GRID MONITOR ==================================================")
+                    monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
                 monitor.execute ()
             finally:
+
+
+                logger.debug ("=========================================== RELEASE LOCK ==================================================")
+
                 release_lock()
         else:
             logger.debug(
                 "Workflow %s is already being monitored by another worker. Emit events so far." % (
                     workdir))
             # Read and emit events so far, then exit.
-            monitor = GridWorkflowMonitor (workflowId, username, workdir, logRelPath, amqpSettings)
+            monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings)
             monitor.execute (loop=False)
 
+
 @task()
-def MonitorWorkflow (workflowId, username, workdir, amqpSettings=None):
+def MonitorWorkflow (workflowId, username, workdir, dax, amqpSettings=None):
+    '''
     monitor = GridWorkflowMonitor (workflowId, username, workdir, amqpSettings)
     monitor.execute (loop=False)
+    '''
+    monitor = None
+    if settings.DB_EVENT_MODEL:
+        logger.error ("2=========================================== STAMPEDE MONITOR ==================================================")
+        monitor = PegasusWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
+    else:
+        logger.error ("2=========================================== GRID MONITOR ==================================================")
+        monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
+    monitor.execute ()
 
 @task()
 def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=None):

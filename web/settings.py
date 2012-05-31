@@ -258,7 +258,11 @@ LOGGING = {
         },
         'web.graysonapp.views': {
             'handlers': ['console', 'fileHandler'],
-            'level': 'DEBUG'
+            'level': 'ERROR'
+        },
+        'web.graysonapp.tasks': {
+            'handlers': ['console', 'fileHandler'],
+            'level': 'ERROR'
         },
         'web.graysonapp.models.GraysonTestCase': {
             'handlers': ['console', 'fileHandler'],
@@ -266,7 +270,7 @@ LOGGING = {
         },
         'web.graysonapp.LDAPAuthBackend': {
             'handlers': ['console', 'fileHandler'],
-            'level': 'DEBUG'
+            'level': 'ERROR'
         },
         'grayson.myproxycontroller': {
             'handlers': ['console', 'fileHandler'],
@@ -294,17 +298,40 @@ LOGGING = {
         # ===================================
         'grayson.net.amqp' : {
             'handlers' : [ 'console', 'fileHandler' ],
-            'level'    : 'DEBUG'
+            'level'    : 'ERROR'
         },
         'grayson.debug.event' : {
             'handlers' : [ 'console', 'fileHandler' ],
-            'level'    : 'DEBUG'
+            'level'    : 'ERROR'
         },
         'grayson.debug.grid' : {
             'handlers' : [ 'console', 'fileHandler' ],
-            'level'    : 'DEBUG'
-        }
+            'level'    : 'ERROR'
+        },
 
+        # ===================================
+        # ==        S Q L A L C H E M Y    ==
+        # ===================================
+        'sqlalchemy.engine' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'sqlalchemy.dialects' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'sqlalchemy.pool' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'sqlalchemy.orm' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'sqlalchemy.engine.base.Engine' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        }
     }
 }
 

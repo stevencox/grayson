@@ -46,7 +46,7 @@ class WorkflowMonitorCompilerPlugin (object):
             logger.info ("starting grid monitor workflowId: %s, username: %s, workDir: %s", outputWorkflowPath, self.username, workDir)
             gridMonitor = GridWorkflowMonitor (workflowId   = outputWorkflowPath,
                                                username     = self.username,
-                                               workdir      = workDir,
+                                               workdir      = workDir,                                               
                                                logRelPath   = self.logRelPath,
                                                amqpSettings = self.amqpSettings)
             gridMonitor.execute ()

@@ -1,4 +1,6 @@
 
+var oldEvents = false;
+
 // get https if this is prod
 if (graysonConf.uriPrefix == '/grayson' && ! graysonConf.unitTest) {
 //if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
@@ -851,8 +853,44 @@ GraysonView.prototype.clickNode = function (event) {
 	    if (annotation.type == 'workflow' || annotation.type == 'dax') {
 		var flowName = node.label.text;
 		appView.selectWorkflow (flowName);
-		//grayson.applyEvents (grayson.allEvents);
-		
+
+
+
+
+		if (oldEvents) {
+		    //grayson.applyEvents (grayson.allEvents);
+		} else {
+		    var daxContext = appView.getContext ();
+		    if (daxContext && daxContext.instance) {
+
+			var flowContext = appView.grayson.api.getFlowContext ();
+			/*
+			var daxen = [ basename (flowContext.workflowId) ];
+			for (key in grayson.view.context) {
+			    if (typeof key == 'string')
+				daxen.push (key);
+			}
+			var dax = daxen.join (',');
+			*/
+
+			appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', flowContext.workdir,
+						       '&workflowid=',              flowContext.workflowId,
+						       '&runid=',                   flowContext.runId,
+						       '&dax=',                     daxContext.instance  ].join (''),
+						     function (response) {
+							 if (response && response.status == 'ok') {
+							 } else {
+							     grayson.log_error ('error status: ' + response);
+							 }
+						     });
+		    }
+		}
+
+
+
+
+
+
 	    } else if (appView.isClickable (node)) {
 		var workflowId = node.graph.isRoot ? '' : appView.getContext().instance;
 		var paths = appView.getPaths (workflowId, node.label.text, node);
@@ -1039,11 +1077,11 @@ GraysonView.prototype.connectFlow = function (event) {
     appView.grayson.prepareCanvas ();
     $(".tooltip").remove ();
     appView.grayson.api.setFlowContext ({
-	    workdir    : workdir,
-		workflowId : workflowId,
-		runId      : runId,
-		graph      : null
-		});
+	workdir    : workdir,
+	workflowId : workflowId,
+	runId      : runId,
+	graph      : null
+    });
     var limit = "/" + grayson.getClientId () + "/";
     var subscribeId = workflowId;
     for (var index = subscribeId.indexOf (limit); index > -1; index = subscribeId.indexOf (limit)) {
@@ -1051,18 +1089,82 @@ GraysonView.prototype.connectFlow = function (event) {
     }
     subscribe (subscribeId);
     appView.onRenderWorkflow (workflowId, graph, null, function (g) {
-	    appView.onRootGraphRendered (workflowId, graph, g);
+	appView.onRootGraphRendered (workflowId, graph, g);
+
+
+
+
+
+
+
+	var daxen = [ basename (workflowId) ];
+	for (var c = 0; c < g.graph.length; c++) {
+	    var n = g.graph [c];
+	    if (n && n.annot != null && (n.annot.type === 'workflow' || 
+					 n.annot.type === 'dax'      || 
+					 n.annot.type === 'map'      )) 
+	    {
+		if (n.label && n.label.text) {
+		    console.log (n.annot + " " + n.label.text); 
+		    daxen.push (n.label.text);
+		}
+	    }
+	}
+	
+	appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', workdir,
+				       '&workflowid=',              workflowId, 
+				       '&runid=',                   runId,
+				       '&dax=',                     daxen.join (',') ].join (''),
+				     function (response) {
+					 if (response && response.status == "ok") {
+					 } else {
+					     grayson.log_error ("error status: " + response);
+					 }
+				     });
+
+
+
+
+
+
+
+
 	});
+
     appView.selectWorkflow (basename (graph).replace (".graphml", ""));
     if (appView.detailView)
 	appView.detailView.setEventBufferSize (100);
-    appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', workdir, '&workflowid=', workflowId, '&runid=', runId ].join (''),
+
+/*
+
+    var daxen = [];
+    var graph = grayson.model.getGraph (basename (workflowId)).graph;
+    for (var c = 0; c < graph.length; c++) {
+	var n = graph [c];
+	if (n && n.annot != null && (n.annot.type === 'workflow' || 
+				     n.annot.type === 'dax'      || 
+				     n.annot.type === 'map'      )) 
+	{
+	    if (n.label && n.label.text) {
+		console.log (n.annot + " " + n.label.text); 
+		daxen.push (n.label.text);
+	    }
+	}
+    }
+
+    appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', workdir,
+				   '&workflowid=',              workflowId, 
+				   '&runid=',                   runId,
+				   '&dax=',                     daxen.join (',') ].join (''),
 				 function (response) {
 				     if (response && response.status == "ok") {
 				     } else {
 					 grayson.log_error ("error status: " + response);
 				     }
 				 });
+
+*/
+
 };
 GraysonView.prototype.onRootGraphRendered = function (flowId, graphName, graph) {
     base = dirname (flowId);
@@ -1072,6 +1174,7 @@ GraysonView.prototype.onRootGraphRendered = function (flowId, graphName, graph) 
     }
     $("#modelName").html (base + " : " + basename (graphName));
     graph.setRootGraph (true);
+
 }
 GraysonView.prototype.initializeFlows = function (callback) {
     var appView = this;
@@ -1577,7 +1680,8 @@ Grayson.prototype.updateNodeLogs = function (event, node) {
     }
 };
 Grayson.prototype.onUpdateJobStatus = function (event) {
-    this.allEvents.push (event);
+    if (oldEvents)
+	this.allEvents.push (event);
     var grokedEvent = this.grokEvent (event);
     if (grokedEvent) {
 	var colorMap = this.getColorMap ();
@@ -1616,10 +1720,65 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
 			this.renderSubFlow (subflowId, grokedEvent.jobName);
 		    }
 		}
+
+
+
+
+
+
+		grayson.applyEvent (event, grokedEvent);
+
+
+		
+
+
+
+
+
 	    }
 	}
     }
 };
+Grayson.prototype.applyEvent = function (event, grokedEvent) {
+    var context = grayson.view.getContext ();
+    var logdir = event.logdir;
+    var logBase = basename (logdir);
+    var parts = logBase.split ('_');
+    if (parts && parts.length > 1) {
+        var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.                                                                          
+        var concreteName = parts [1].replace ("gid", ".") + ".dax";
+        var daxRunPattern = new RegExp ('[0-9]+\.dax');
+        // todo: consolidate possible name patterns
+        var concreteName3 = parts [1].
+            replace ("gid", ".").                                                                                                                                                               
+            replace (new RegExp ('\.[0-9]{3}'), '') + ".dax";
+
+        concreteName = concreteName.replace (daxRunPattern, "dax");
+        var concreteName2 = parts [0] + ".dax";
+
+
+
+
+	if (context && context.instance) {
+            if (context.instance.endsWith (concreteName)  ||
+		context.instance.endsWith (concreteName2) ||
+		context.instance.endsWith (concreteName3))
+            {
+		if (flowName) {
+                    var node = this.model.byName (flowName, grokedEvent.jobName);
+                    if (node) {
+			this.applyNodeState (node, grokedEvent.state, event);
+                    }
+		}
+	    }
+        }
+    }
+
+};
+
+
+
+
 Grayson.prototype.applyNodeState = function (node, state, event) {
     if (node && node.graphNode) {
 
