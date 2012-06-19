@@ -37,6 +37,10 @@
            "PEGASUS_BIN_DIR"   : "/opt/pegasus/pegasus-4.0.0",
            "GLOBUS_LOCATION" : "/opt/globus/5.0.5"
         }
+     },
+     "staging" : {
+         "hostname" : "${FQDN}",
+         "directory"  : "${appHome}/work"
      }
   }
 }]]></data>

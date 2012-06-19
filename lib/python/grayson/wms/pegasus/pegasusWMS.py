@@ -322,6 +322,13 @@ class SiteCatalogXML(object):
     def __init__(self, wms):
         self.wms = wms;
         self.sites = {}
+        self.stagingTemplate = {
+            "architecture" : "x86_64",
+            "os"           : "LINUX",
+            "protocol"     : "file",
+            "name"         : "staging"
+            }
+
         self.siteProperties = {
             "siteName"      : "local",
             "hostName"      : "localhost",
@@ -382,6 +389,19 @@ class SiteCatalogXML(object):
        <profile namespace="env"    key="PEGASUS_HOME" >${pegasusLocation}</profile>
        <profile namespace="env"    key="GLOBUS_LOCATION" >${globusLocation}</profile>
    </site>"""
+
+        self.xmlStaging = """
+    <site handle="${name}" arch="${architecture}" os="${os}">
+        <head-fs>
+            <scratch>
+                <shared>
+                    <file-server protocol="${protocol}" url="${protocol}://${hostname}" mount-point="${directory}/staging"/>
+                    <internal-mount-point mount-point="${directory}/staging"/>
+                </shared>
+            </scratch>
+        </head-fs>
+        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+    </site>"""
 
         self.xmlSitePool = """
     <site handle="${clusterId}" arch="${architecture}" os="${os}">
@@ -485,6 +505,8 @@ class SiteCatalogXML(object):
             template = None
             logger.debug ("site: %s", json.dumps (site, sort_keys=True, indent=3))
 
+            staging = None
+
             if "scratchFileServerMountPoint" in site:
                 x509userproxyKey = 'x509userproxy'
                 x509userproxyProfileKey = 'X509_user_proxy_profile'
@@ -518,7 +540,20 @@ class SiteCatalogXML(object):
 
                 ''' site xml '''
                 template = Template (self.xmlSitePool)
+
+                ''' staging '''
+                if 'staging' in site:
+                    staging = site ['staging']
+
             siteText.append (template.substitute (site))
+
+            if staging:
+                symmetric_difference = set(staging) ^ set(self.stagingTemplate)
+                for k in symmetric_difference:
+                    if not k in staging:
+                        staging [k] = self.stagingTemplate [k]
+                template = Template (self.xmlStaging)
+                siteText.append (template.substitute (staging))
 
         siteText.append (self.xmlFooter)
         return "\n".join (siteText)

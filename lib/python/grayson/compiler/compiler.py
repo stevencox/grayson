@@ -1971,9 +1971,23 @@ class GraysonCompiler:
                                                                        workflow,
                                                                        other)
 
+    def replaceProps (self, obj):
+        value = obj
+        if isinstance (obj, basestring):
+            value = self.ast_replaceProperties (obj)
+            logger.debug ("zzz str: %s", obj)
+        elif isinstance (obj, dict):
+            value = {}
+            for k in obj:
+                value [k] = self.replaceProps (obj [k]) 
+            logger.debug ("zzz dict: ")
+        else:
+            logger.debug ("zzz: not instance of much: %s", type (obj))
+        return value
+
+
     def addSite (self, clusterId, site, entry):
-        for k in site.iterkeys ():
-            site [k] = self.ast_replaceProperties (site [k])
+        logger.debug ("site: %s", json.dumps (site, indent=3, sort_keys=True))
         if not clusterId in self.getSites ():
             self.setSites (",".join ([ self.getSites (), clusterId ]))
         logger.debug ("ast:add-site: %s", self.getSites ())
@@ -1986,6 +2000,8 @@ class GraysonCompiler:
         logger.debug ("configuring site: %s", json.dumps (site, sort_keys=True, indent=3))
         if site:
             ''' site catalog '''
+
+            site = self.replaceProps (site)
 
             if "CLUSTER_ID" in site:
                 clusterId = site ["CLUSTER_ID"]
