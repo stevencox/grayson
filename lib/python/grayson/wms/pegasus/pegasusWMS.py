@@ -378,10 +378,20 @@ class SiteCatalogXML(object):
        </head-fs>
        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
        <profile namespace="dagman" key="retry">0</profile>
-       <profile namespace="env" key="PEGASUS_HOME" >${pegasusLocation}</profile>
        ${X509_user_proxy_profile}
-       <profile namespace="env" key="GLOBUS_LOCATION" >${globusLocation}</profile>
+       <profile namespace="env"    key="PEGASUS_HOME" >${pegasusLocation}</profile>
+       <profile namespace="env"    key="GLOBUS_LOCATION" >${globusLocation}</profile>
    </site>"""
+
+        self.xmlSitePool = """
+    <site handle="${clusterId}" arch="${architecture}" os="${os}">
+        <head-fs>
+            <scratch />
+            <storage />
+        </head-fs>
+        <replica-catalog  type="LRC" url="rlsn://dummyValue.url.edu" />
+        ${profileText}
+    </site>"""
 
         self.xmlFooter="""
 </sitecatalog>
@@ -411,12 +421,18 @@ class SiteCatalogXML(object):
         
 
     ''' Add a site catalog entry '''
-    def addEntry (self, siteName, properties):
+    def addEntry (self, siteName, properties, profiles = []):
         if not siteName in self.sites:
-            base = copy (self.siteProperties)        
-            logger.debug ("wms:pegasus:register-site %s", base)
-            base.update (properties)
-            self.sites [siteName] = base
+            if "clusterId" in properties:
+                for key in [ 'os', 'architecture', 'scheduler' ]:                    
+                    properties [key] = self.siteProperties [key] 
+                self.sites [siteName] = properties                
+                logger.debug ("wms:pegasus:register-site %s", properties)
+            else:
+                base = copy (self.siteProperties)        
+                logger.debug ("wms:pegasus:register-site %s", base)
+                base.update (properties)
+                self.sites [siteName] = base
 
     ''' Get an entry '''
     def getEntry (self, siteName):
@@ -466,23 +482,44 @@ class SiteCatalogXML(object):
             logger.debug ("generating site catalog data for site (%s)", siteName)
             site = self.sites [siteName]
 
+            template = None
+            logger.debug ("site: %s", json.dumps (site, sort_keys=True, indent=3))
 
-            x509userproxyKey = 'x509userproxy'
-            x509userproxyProfileKey = 'X509_user_proxy_profile'
-            x509userproxyProfile = ''
-            if x509userproxyKey in site:
-                x509userproxyProfile = '<profile namespace="condor" key="x509userproxy" >%s</profile>' % site [x509userproxyKey]
-            site [x509userproxyProfileKey] = x509userproxyProfile
+            if "scratchFileServerMountPoint" in site:
+                x509userproxyKey = 'x509userproxy'
+                x509userproxyProfileKey = 'X509_user_proxy_profile'
+                x509userproxyProfile = ''
+                if x509userproxyKey in site:
+                    x509userproxyProfile = '<profile namespace="condor" key="x509userproxy" >%s</profile>' % site [x509userproxyKey]
+                site [x509userproxyProfileKey] = x509userproxyProfile
 
-            for kind in [ 'scratch', 'storage' ]:
-                fileServerProtocolKey = "%sFileServerProtocol" % kind
-                fileServerURLKey = "%sFileServerURL" % kind
-                if site [fileServerProtocolKey] is "file":
-                    site [fileServerURLKey] = "file://"
-                else:
-                    site [fileServerURLKey] = "%s://%s" % (site [fileServerProtocolKey], site ["hostName"])
-            template = Template (self.xmlSite)
+                for kind in [ 'scratch', 'storage' ]:
+                    fileServerProtocolKey = "%sFileServerProtocol" % kind
+                    fileServerURLKey = "%sFileServerURL" % kind
+                    if site [fileServerProtocolKey] is "file":
+                        site [fileServerURLKey] = "file://"
+                    else:
+                        site [fileServerURLKey] = "%s://%s" % (site [fileServerProtocolKey], site ["hostName"])
+                template = Template (self.xmlSite)
+                
+            elif "clusterId" in site:
+                ''' TODO - migrate above approach to this. '''
+
+                ''' profiles '''
+                profileText = []
+                if 'profiles' in site:
+                    profiles = site ['profiles']
+                    for groupKey in profiles:
+                        profileGroup = profiles [groupKey]
+                        for key in profileGroup:
+                            value = profileGroup [key]
+                            profileText.append ('\n        <profile namespace="%s" key="%s" >%s</profile>' % (groupKey, key, value))
+                    site ['profileText'] = ''.join (profileText)
+
+                ''' site xml '''
+                template = Template (self.xmlSitePool)
             siteText.append (template.substitute (site))
+
         siteText.append (self.xmlFooter)
         return "\n".join (siteText)
 

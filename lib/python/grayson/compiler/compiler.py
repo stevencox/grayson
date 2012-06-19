@@ -1970,17 +1970,26 @@ class GraysonCompiler:
         return self.getWorkflowManagementSystem().getExecuteArguments (self.getSites (),
                                                                        workflow,
                                                                        other)
+
+    def addSite (self, clusterId, site, entry):
+        for k in site.iterkeys ():
+            site [k] = self.ast_replaceProperties (site [k])
+        if not clusterId in self.getSites ():
+            self.setSites (",".join ([ self.getSites (), clusterId ]))
+        logger.debug ("ast:add-site: %s", self.getSites ())
+        self.getSiteCatalog ().addEntry (clusterId, entry)
+
     def configureSites (self):
         """ Generate workflow management system specific catalogs. """
         site = self.getProperty ("site")
+
+        logger.debug ("configuring site: %s", json.dumps (site, sort_keys=True, indent=3))
         if site:
             ''' site catalog '''
-            clusterId = site ["CLUSTER_ID"]
-            if not clusterId in self.getSites ():
-                self.setSites (",".join ([ self.getSites (), clusterId ]))
-            
-            logger.debug ("ast:add-site: %s", self.getSites ())
-            entry = {
+
+            if "CLUSTER_ID" in site:
+                clusterId = site ["CLUSTER_ID"]
+                entry = {
                     "siteName"                     : clusterId,
                     "hostName"                     : site ["CLUSTER_HOSTNAME"],
                     "scheduler"                    : site ["CLUSTER_SCHEDULER"],
@@ -1996,14 +2005,12 @@ class GraysonCompiler:
                     "pegasusLocation"              : site ["CLUSTER_PEGASUS_HOME"],
                     "globusLocation"               : site ["CLUSTER_GLOBUS_LOCATION"]
                     }
-
-            for k in site.iterkeys ():
-                site [k] = self.ast_replaceProperties (site [k])
-                '''
-            if "x509userproxy" in site:
-                entry ["x509userproxy"] = self.ast_replaceProperties (site ["x509userproxy"])
-                '''
-            self.getSiteCatalog ().addEntry (clusterId, entry)
+                self.addSite (clusterId, site, entry)
+            elif "clusterId" in site:
+                clusterId = site ["clusterId"]
+                self.addSite (clusterId, site, site)
+            else:
+                raise ValueError ("Either clusterId nor CLUSTER_ID must be defined in the site element: (%)" % str(site))
 
         sites = self.getProperty ('sites')
         if sites:

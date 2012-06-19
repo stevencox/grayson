@@ -29,7 +29,6 @@ do_start()
                                        . $GRAYSON_HOME/bin/setup.sh;                              \
                                        cd $GRAYSON_HOME;                                          \
 		                       echo in dir $PWD; ls;                                          \
-                                       export PEGASUS_HOME=/opt/pegasus/default;                  \
                                        export GLOBUS_LOCATION=/opt/osg/1.2.18/osg-1.2.18/globus;  \
                                        $DAEMON -f $LOG_FILE &)" && echo_success || echo_failure
                 RETVAL=$?
