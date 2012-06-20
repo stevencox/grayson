@@ -20,7 +20,7 @@
       <data key="d5"><![CDATA[{
   "type" : "properties",
   "map" : {
-     "clusterId" : "local"
+     "clusterId" : "condorpool"
   },
   "site" : {
      "clusterId" : "condorpool",
@@ -42,6 +42,13 @@
          "hostname" : "${FQDN}",
          "directory"  : "${appHome}/work"
      }
+  },
+  "local" : {
+      "profiles" : {
+          "env" : {
+             "GLOBUS_TCP_PORT_RANGE" : "40000,50000"
+          }
+      }
   }
 }]]></data>
       <data key="d6">
