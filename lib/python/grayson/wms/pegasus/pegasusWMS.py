@@ -234,16 +234,28 @@ class PegasusTC:
     def __init__(self):
         '''Firefly        pegasus::kickstart                /panfs/panasas/CMS/app/engage/rynge/pegasus/3.0.0cvs/bin/kickstart                     INSTALLED   INTEL32::LINUX'''
         self.text = "${cluster}        ${namespace}::${jobName}                ${location}             ${transfer}   ${architecture}::${OS}"
+
+        self.text = """
+tr ${namespace}::${jobName} {
+   site ${cluster} {
+      pfn "${location}"
+      arch "${architecture}"
+      os "${OS}"
+      type "${transfer}"
+   }
+}"""
+
         self.entries = []
         
     def addEntry (self,
                   jobName,
                   location,
-                  transfer="INSTALLED",
-                  architecture="INTEL64",
-                  OS="LINUX",
-                  cluster="local",
-                  namespace="app"):
+                  transfer     = "INSTALLED",
+                  architecture = "INTEL64",
+                  OS           = "linux",
+                  cluster      = "local",
+                  namespace    = "app",
+                  version      = "1.0"):
         if cluster == None:
             cluster = "local"
         if location.startswith (os.sep):
@@ -268,12 +280,14 @@ class PegasusTC:
             "architecture"          : architecture,
             "OS"                    : OS,
             "cluster"               : cluster,
-            "namespace"             : namespace
+            "namespace"             : namespace,
+            "version"               : version
             }
         entryText = template.substitute (context)
         self.entries.append (entryText)
         
     def generateTC (self):
+        self.entries.append ("\n")
         return "\n".join (self.entries)
 
 ''' Write a pegasus file replica catalog '''

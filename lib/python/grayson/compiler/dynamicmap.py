@@ -33,7 +33,7 @@ class DynamicMapOperator (Operator):
 
         self.subdax = """
    <dax id='${namespace}gid${c}' file='${outputname}' >
-      <argument>--force --sites ${sites}</argument>
+      <argument>--verbose --verbose --verbose --force --sites ${sites}</argument>
    </dax>"""
 
     def validate (self, context):

@@ -583,11 +583,12 @@ class GraysonCompiler:
                                                 site = site,
                                                 exe_arch = architecture,
                                                 installed = installed)
-        self.getTransformationCatalog().addEntry (jobName=jobLabel,
-                                                  location=path,
-                                                  transfer="INSTALLED" if installed == "true" else None,
-                                                  cluster=site,
-                                                  namespace=self.namespace)
+        self.getTransformationCatalog().addEntry (jobName   = jobLabel,
+                                                  location  = path,
+                                                  transfer  = "INSTALLED" if installed == "true" else None,
+                                                  cluster   = site,
+                                                  namespace = self.namespace,
+                                                  version   = self.version)
         source.setDaxNode (exe)
         job.addProfiles (source)
 

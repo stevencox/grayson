@@ -20,10 +20,10 @@
       <data key="d5"><![CDATA[{
   "type" : "properties",
   "map" : {
-     "clusterId" : "Engage-ORCA"
+     "clusterId" : "condorpool"
   },
   "site" : {
-     "clusterId" : "Engage-ORCA",
+     "clusterId" : "condorpool",
      "profiles" : {
         "pegasus" : {
            "style" : "condor"
