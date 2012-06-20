@@ -181,7 +181,8 @@ pegasus.catalog.site.file=${configDir}/${siteCatalog}
 pegasus.catalog.replica=File
 pegasus.catalog.replica.file=${configDir}/${replicaCatalog}
 
-pegasus.catalog.transformation=File
+#pegasus.catalog.transformation=File
+pegasus.catalog.transformation=Text
 pegasus.catalog.transformation.file=${configDir}/${transformationCatalog}
 
 pegasus.dir.useTimestamp=true
@@ -251,7 +252,7 @@ tr ${namespace}::${jobName} {
                   jobName,
                   location,
                   transfer     = "INSTALLED",
-                  architecture = "INTEL64",
+                  architecture = "x86_64", #"INTEL64" # old format
                   OS           = "linux",
                   cluster      = "local",
                   namespace    = "app",

@@ -1092,7 +1092,7 @@ class GraysonCompiler:
                 for edge in origins:
                     source = self.getElement (edge.getSource ())
 
-                    output = self.ast_addNode (id      = "%s.synth" % source.getId (),
+                    output = self.ast_addNode (id      = "%s_synth" % source.getId (),
                                                label   = source.getLabel (),
                                                typeObj = { 'type' : 'reference' });
                     job.getContext ()['allowCycle'] = True
@@ -1185,7 +1185,7 @@ class GraysonCompiler:
         """ Copy the element into the graph if it isnt already there. """
         end_element = graph.getNodeByLabel (element.getLabel ())
         if not end_element:
-            end_element = graph.addNode ("%s.synth" % element.getId (),
+            end_element = graph.addNode ("%s_synth" % element.getId (),
                                          element.getLabel (),
                                          element.getNode().getType ())
         return end_element
@@ -1641,7 +1641,7 @@ class GraysonCompiler:
         """ Add a node ot the model. """
         if isinstance (typeObj, dict):
             typeObj = json.dumps (typeObj)
-        node = self.graph.addNode ("%s.synth" % id, label, typeObj)
+        node = self.graph.addNode ("%s_synth" % id, label, typeObj)
         if (context):
             node.setContext (context)
         return self.ast_mapNode (node)
