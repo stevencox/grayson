@@ -1088,6 +1088,11 @@ class GraysonCompiler:
                         }
                     }
 
+                if 'profiles' in operator.getProperties ():
+                    jobType ['profiles'] = operator ['profiles']
+                    
+                        
+
                 origins = operator.getSourceEdges (self.graph)
 
                 outputPatterns = [
@@ -1127,6 +1132,12 @@ class GraysonCompiler:
                 ''' Ensure we dont plan this job to some other site - its installed here. '''
                 exeProps = exe.getProperties () 
                 exeProps ['installed'] = 'true'
+                exeProps ['profiles'] = {
+                    "hints" : {
+                        "executionPool" : "local"
+                        }
+                    }
+
 
                 ''' Re-cast the operand workflow as a dax. Add the --basename argument needed for dynamic invocation. '''
                 args = element.get (self.ATTR_ARGS)
