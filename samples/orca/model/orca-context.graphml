@@ -20,7 +20,7 @@
       <data key="d5"><![CDATA[{
   "type" : "properties",
   "map" : {
-     "clusterId" : "condorpool"
+     "clusterId" : "local"
   },
   "site" : {
      "clusterId" : "condorpool",

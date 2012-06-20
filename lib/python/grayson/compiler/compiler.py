@@ -172,6 +172,7 @@ class GraysonCompiler:
         
         self.EXECUTION_MODE = "execution-mode"
         self.EXECUTION_MODE__SHELL = "shell"
+        self.DATA_CONFIGURATION = "data-configuration"
         self.CONF_INPUT_PROPERTIES = "define"
         self.CONF_OUTPUT_FILE = "output-file"
         self.CONF_SITES = "sites"
@@ -276,7 +277,22 @@ class GraysonCompiler:
         self.compilerContext.sites = sites
 
     def getSites (self):
-        return self.compilerContext.sites
+        useLocal = True
+        if self.compilerContext.getWorkflowManagementSystem().getDataConfiguration ():
+            useLocal = False
+        value = []
+
+        sites = self.compilerContext.sites.split (",")
+        for site in sites:
+            if site == "local":
+                if useLocal:
+                    value.append (site)
+            else:
+                value.append (site)
+
+        return ",".join (value)
+    
+        #return self.compilerContext.sites
 
     def getTransformationCatalog (self):
         return self.compilerContext.getWorkflowManagementSystem().getTransformationCatalog ()
@@ -1263,11 +1279,6 @@ class GraysonCompiler:
                                 self.graph.addExistingNode (node)
                                 self.ast_mapNode (node)
 
-                                ''' delta 
-                                syntheticElement = self.getElement (node.getId ())
-                                syntheticElement.set (self.ATTR_ARGS, self.getExecuteArguments ())
-                                '''                                
-
                                 targetEdges = self.ast_getMapTargets (operator)
                                 for edge in targetEdges:
                                     if not type(edge) == unicode and not type(edge) == str:
@@ -1534,6 +1545,11 @@ class GraysonCompiler:
             logger.debug ("setting shell execution mode for workflow: %s", self.compilerId)
             self.getWorkflowManagementSystem().enableShellExecution ()
 
+        if self.DATA_CONFIGURATION in basics:
+            dataConfiguration = basics [self.DATA_CONFIGURATION]
+            logger.debug ("setting data configuration: %s", dataConfiguration)
+            self.getWorkflowManagementSystem().setDataConfiguration (dataConfiguration)
+            
         logger.debug (properties)
 
     def ast_replaceProperties (self, text):

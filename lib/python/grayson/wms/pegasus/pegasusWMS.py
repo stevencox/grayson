@@ -51,6 +51,7 @@ class PegasusWMS (WorkflowManagementSystem):
         self.siteCatalog = SiteCatalogXML (self)
         self.transformationCatalog = PegasusTC ()
         self.replicaCatalog = PegasusFileRC ()
+        self.dataConfiguration = None
     def setOutputDir (self, outputDir):
         self.outputDir = os.path.abspath (outputDir)
     def getOutputDir (self):
@@ -67,9 +68,12 @@ class PegasusWMS (WorkflowManagementSystem):
         return self.pegasusProperties.enableShellExecution (enabled)
     def isShellExecutionEnabled (self):
         return self.pegasusProperties.isShellExecutionEnabled ()
-
         if self.isShellExecutionEnabled ():
             installed = "false"
+    def setDataConfiguration (self, dataConfiguration):
+        self.dataConfiguration = dataConfiguration
+    def getDataConfiguration (self):
+        return self.dataConfiguration
     def enableSymlinkTransfers (self, enabled=True):
         self.pegasusProperties.enableSymlinkTransfers (enabled)
 
@@ -93,8 +97,12 @@ class PegasusWMS (WorkflowManagementSystem):
                     "--verbose",
                     "--verbose",
                     "--verbose",
-                    "--nocleanup",
+                    "--nocleanup",                    
                     "--output local"]
+            ''' if using one of the new data configuration modes '''
+            if self.dataConfiguration:
+                args.append ("-Dpegasus.data.configuration=%s" % self.dataConfiguration)
+                args.append ("--staging-site=local") # TODO - make this more flexible
 
         for arg in other:
             args.append (arg)
@@ -442,7 +450,7 @@ class SiteCatalogXML(object):
         self.addEntry (
             "local",
             {
-            "architecture"                : "x86",            # TODO: inspect environment
+            "architecture"                : "x86_64",            # TODO: inspect environment
             "scratchFileServerProtocol"   : "file",
             "scratchFileServerMountPoint" : "%s/work/outputs" % self.wms.getOutputDir (),
             "scratchInternalMountPoint"   : "%s/work/outputs" % self.wms.getOutputDir (),
@@ -640,7 +648,7 @@ class PegasusWorkflowModel (WorkflowModel):
         else:
             return None
 	
-    def addExecutable (self, jobId, name, path, version="4.0", exe_os="linux", exe_arch="x86", site="local", installed="true"):
+    def addExecutable (self, jobId, name, path, version="4.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
         e_exe = self.getExecutable (name)
         
         if not e_exe:
