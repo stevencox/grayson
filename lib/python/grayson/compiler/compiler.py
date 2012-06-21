@@ -206,6 +206,7 @@ class GraysonCompiler:
         self.astElements = {}
         self.typeIndex = {}
         self.labelIndex = {}
+        self.referenceIndex = {}
         self.validModel = True
         self.errorMessages = []
         
@@ -385,8 +386,11 @@ class GraysonCompiler:
                           element.getType (),
                           self.compilerId)
             node = element.getNode ()
-            if isinstance (node, Node) and not elementType == self.ATTR_REFERENCE:
-                self.labelIndex [node.getLabel ()] = element
+            if isinstance (node, Node):
+                if elementType == self.ATTR_REFERENCE:
+                    self.referenceIndex [node.getLabel ()] = element
+                else:
+                    self.labelIndex [node.getLabel ()] = element
 
     def removeElement (self, id, removeEdges=True):
         """ Remove an abstract syntax element from the AST. """
@@ -430,6 +434,9 @@ class GraysonCompiler:
         if label in self.labelIndex:
             value = self.labelIndex [label]
         return value
+    
+    def getReferenceByLabel (self, label):
+        return self.referenceIndex [label] if label in self.referenceIndex else None
 
     def getElementsByType (self, type):
         """ Get an AST element by type. """
@@ -456,34 +463,31 @@ class GraysonCompiler:
                     result.append (element)
         return result
 
-    def getElement (self, id):
+    def getElement (self, id, dereference=True):
         """ Get an element. Dereference if necessary. """
         value = None
         if id in self.astElements:
             value = self.astElements [id]
             if value:
                 type = value.get (self.ATTR_TYPE)
-                if type == self.ATTR_REFERENCE:
-                    referencedValue = None
-                    node = value.getNode ()
-                    if node:
-                        label = node.getLabel ()
-                        if label:
-                            referencedValue = self.getElementByLabel (label)
-                            if referencedValue:
-                                logger.debug ("ast:dereference: (%s) to object (%s) of type (%s)",
-                                              label,
-                                              referencedValue.getLabel (),
-                                              referencedValue.getType () )
-                                value = referencedValue
-                            else:
-                                #self.addError ("(cid=%s): unable to find concrete object referenced by label: %s" % (self.compilerId, value.getNode().getLabel ()))
-                                #logger.info ("(cid=%s): unable to find concrete object referenced by label: %s" % (self.compilerId, value.getNode().getLabel ()))
-                                #traceback.print_stack ()
-                                #self.graph.dump ()
-                                for key in self.labelIndex:
-                                    logger.debug ("        (reference-not-found) == %s ( %s )", key, self.labelIndex [key])
-                                value = None
+                if type == self.ATTR_REFERENCE and dereference:
+                    value = self.dereference (value)
+        return value
+
+    def dereference (self, original):
+        value = None
+        node = original.getNode ()
+        if node:
+            label = node.getLabel ()
+            if label:
+                value = self.getElementByLabel (label)
+                if value:
+                    logger.debug ("ast:dereference: (%s) to object (%s) of type (%s)",
+                                  label,
+                                  value.getLabel (),
+                                  value.getType () )
+                else:
+                    logger.debug ("        (reference-not-found) (%s)", label)
         return value
 
     def addError (self, message):
@@ -653,13 +657,6 @@ class GraysonCompiler:
         fileElement.setDaxNode (file)
 
         jobContext.outFiles [fileElement.getLabel ()] = (fileElement, arg)        
-        '''
-        self.getReplicaCatalog().addEntry (fileName,
-                                           self.getFileURL (fileElement),
-                                           self.ATTR_LOCAL)
-                                           '''
-
-        logger.debug ('--zzz: file (register generated): %s %s', fileElement.getLabel (), fileURL)
         self.ctx().generatedFile [fileElement.getLabel ()] = True
         self.getReplicaCatalog().removeEntry (fileName)
 
@@ -1128,16 +1125,19 @@ class GraysonCompiler:
                 exe = self.synthesizeExecutable (targetJob = job,
                                                  label     = "graysonc",
                                                  path      = self.getProperty (self.MAP)['graysonHome'])
+                
+                originalGraysonc = self.getReferenceByLabel (operator.getLabel ())
+                if originalGraysonc:
+                    logger.debug ("--(map): found existing %s reference.", operator.getLabel ())
+                    origins = originalGraysonc.getOrigins (self.graph)                    
+                    for originId in origins:
+                        origin = self.getElement (originId)
+                        logger.debug ("--(map): adding origin %s of %s executable.", origin.getLabel (), operator.getLabel ())
+                        exe.addAncestor (origin)
 
                 ''' Ensure we dont plan this job to some other site - its installed here. '''
                 exeProps = exe.getProperties () 
                 exeProps ['installed'] = 'true'
-                exeProps ['profiles'] = {
-                    "hints" : {
-                        "executionPool" : "local"
-                        }
-                    }
-
 
                 ''' Re-cast the operand workflow as a dax. Add the --basename argument needed for dynamic invocation. '''
                 args = element.get (self.ATTR_ARGS)
@@ -2003,14 +2003,10 @@ class GraysonCompiler:
         value = obj
         if isinstance (obj, basestring):
             value = self.ast_replaceProperties (obj)
-            logger.debug ("zzz str: %s", obj)
         elif isinstance (obj, dict):
             value = {}
             for k in obj:
                 value [k] = self.replaceProps (obj [k]) 
-            logger.debug ("zzz dict: ")
-        else:
-            logger.debug ("zzz: not instance of much: %s", type (obj))
         return value
 
 
