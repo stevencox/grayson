@@ -197,7 +197,7 @@ pegasus.dir.useTimestamp=true
 pegasus.dir.storage.deep=false
 pegasus.transfer.links=${symlinkTransfers}
 
-pegasus.transfer.*.remote.sites=NERSC-Carver
+#pegasus.transfer.*.remote.sites=NERSC-Carver
 
 ${pegasusCodeGenerator}
 """

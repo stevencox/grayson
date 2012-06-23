@@ -381,16 +381,18 @@ class GraysonCompiler:
             if not elementType in self.typeIndex:
                 self.typeIndex[elementType] = []
             self.typeIndex [elementType].append (element)
-            logger.debug ("ast:add-elem:type-index: name=%s type=%s cid=(%s)",
-                          element.getLabel (),
-                          element.getType (),
-                          self.compilerId)
             node = element.getNode ()
             if isinstance (node, Node):
                 if elementType == self.ATTR_REFERENCE:
                     self.referenceIndex [node.getLabel ()] = element
                 else:
                     self.labelIndex [node.getLabel ()] = element
+                    logger.debug ("ast:add-elem:label-index: name=%s", element.getLabel ())
+            logger.debug ("ast:add-elem:type-index: name=%s type=%s cid=(%s) type=(%s)",
+                          element.getLabel (),
+                          element.getType (),
+                          self.compilerId,
+                          elementType)
 
     def removeElement (self, id, removeEdges=True):
         """ Remove an abstract syntax element from the AST. """
@@ -488,6 +490,17 @@ class GraysonCompiler:
                                   value.getType () )
                 else:
                     logger.debug ("        (reference-not-found) (%s)", label)
+                    '''
+                    class ObjEncoder(json.JSONEncoder):
+                        def default(self, obj):
+                            if not isinstance(obj, ASTElement) and not isinstance(obj, Node):
+                                return super (ObjEncoder, self).default (obj)
+                            return obj.__dict__
+
+                    logger.debug ("        (reference-not-found) (%s)\n%s",
+                                  label,
+                                  json.dumps (self.labelIndex, indent=3, sort_keys=True, cls=ObjEncoder))
+                                  '''
         return value
 
     def addError (self, message):
@@ -1045,6 +1058,22 @@ class GraysonCompiler:
                     if not ( self.isContextModel (context) and context is self.getTopModel () ):
                         keep.append (context)
                 contextModels = os.pathsep.join (keep)
+                instanceArgs = element.get ('instanceArgs')
+
+
+                elementRefs = self.getReferenceByLabel (element.getLabel ())
+                elementOrigins = elementRefs.getOrigins (self.graph)
+                for originId in elementOrigins:
+                    logger.debug ("add-origin;yeah %s", originId)
+                    origin = self.getElement (originId)
+                    logger.debug ("add-origin;yeah %s", origin)
+                    if origin:
+                        logger.debug ("add-origin;yeah %s", origin.getType ())
+                        if origin.getType () == self.ABSTRACT:
+                            origins = self.getAbstractRootElements (origin)
+                            for o in origins:
+                                logger.debug ("add-origin; do it %s", origin.getType ())
+                                self.ast_effectInheritance (o)
 
                 configuration = {
                     'outputName'    : element.getLabel (),
@@ -1061,12 +1090,13 @@ class GraysonCompiler:
                         'variable'  : variable,
                         'index'     : index,
                         'namespace' : element.getLabel (),
+                        'instanceArgs' : instanceArgs if instanceArgs else "",
                         'version'   : '1.0',
                         'flow'      : '%s.%s' % (element.getLabel (), self.MODEL_SUFFIX)
                         }
                     }
                 config = os.path.join (self.getOutputDir (), "%s.grayconf" % operator.getLabel ())
-                GraysonUtil.writeFile (config, json.dumps (configuration, indent=4 ))
+                GraysonUtil.writeFile (config, json.dumps (configuration, indent=4, sort_keys=True))
 
                 ld_library_path = os.environ ["LD_LIBRARY_PATH"] if "LD_LIBRARY_PATH" in os.environ else ""
 
@@ -1088,8 +1118,6 @@ class GraysonCompiler:
                 if 'profiles' in operator.getProperties ():
                     jobType ['profiles'] = operator ['profiles']
                     
-                        
-
                 origins = operator.getSourceEdges (self.graph)
 
                 outputPatterns = [
@@ -1126,10 +1154,11 @@ class GraysonCompiler:
                                                  label     = "graysonc",
                                                  path      = self.getProperty (self.MAP)['graysonHome'])
                 
-                originalGraysonc = self.getReferenceByLabel (operator.getLabel ())
-                if originalGraysonc:
+                ''' Make inheritance work for dynamically added objects '''
+                operatorReferences = self.getReferenceByLabel (operator.getLabel ())
+                if operatorReferences:
                     logger.debug ("--(map): found existing %s reference.", operator.getLabel ())
-                    origins = originalGraysonc.getOrigins (self.graph)                    
+                    origins = operatorReferences.getOrigins (self.graph)                    
                     for originId in origins:
                         origin = self.getElement (originId)
                         logger.debug ("--(map): adding origin %s of %s executable.", origin.getLabel (), operator.getLabel ())
@@ -1142,6 +1171,7 @@ class GraysonCompiler:
                 ''' Re-cast the operand workflow as a dax. Add the --basename argument needed for dynamic invocation. '''
                 args = element.get (self.ATTR_ARGS)
                 originalArgs = ' '.join (args) if isinstance (args, list) else args if args else ''
+                logger.debug ("mapped dax %s original args: %s", element.getLabel (), originalArgs)
                 typeObj = {
                     "type" : "dax",
                     "args" : ''.join ([
@@ -1485,11 +1515,20 @@ class GraysonCompiler:
         """ Make edges that used to point to old point to new.
         Make edges that used to start at old start at new.
         Remove the old element.
+        Add the new element.
         """
-        self.setInboundEdgesTarget (old, new)
-        self.setOutboundEdgesSource (old, new)
+        oldAsSourceEdges = old.getTargetEdges (self.graph)
+        for edge in oldAsSourceEdges:
+            edge.setSource (new.getId ())
+        oldAsTargetEdges = old.getSourceEdges (self.graph)
+        for edge in oldAsTargetEdges:
+            edge.setTarget (new.getId ())
+
+        #self.setInboundEdgesTarget (old, new)
+        #self.setOutboundEdgesSource (old, new)
         logger.debug ("graft: removing original node: %s", old.getLabel ())
         self.removeElement (old.getId (), removeEdges=False)
+        self.addElement (new.getId (), new)
         return new
 
     #////////////////////////////////////////////////////////////
@@ -1837,16 +1876,33 @@ class GraysonCompiler:
         logger.debug ("ast:inheritance: cid=%s", self.compilerId)
         abstractElements = self.getElementsByType (self.ABSTRACT)
         for abstractElement in abstractElements:
-            isRoot = True
-            origins = abstractElement.getOrigins (self.graph)
-            for origin in origins:
-                originElement = self.getElement (origin)
-                #if originElement.getType () == self.ABSTRACT:
-                if originElement and originElement.getType () == self.ABSTRACT:
-                    isRoot = False
-                    break
-            if isRoot:
-                self.ast_effectInheritance (abstractElement)
+            self.ast_inheritAbstractElement (abstractElement)
+
+    def ast_inheritAbstractElement (self, abstractElement):
+        isRoot = True
+        origins = abstractElement.getOrigins (self.graph)
+        for origin in origins:
+            originElement = self.getElement (origin)
+            if originElement and originElement.getType () == self.ABSTRACT:
+                isRoot = False
+                break
+        if isRoot:
+            self.ast_effectInheritance (abstractElement)
+
+    def getAbstractRootElements (self, abstractElement):
+        roots = []
+        origins = abstractElement.getOrigins (self.graph)
+        for origin in origins:
+            originElement = self.getElement (origin)
+            if originElement and originElement.getType () == self.ABSTRACT:
+                origins = self.getAbstractRootElements (originElement)
+                if len (origins) == 0:
+                    roots.append (o)
+                else:
+                    for o in origins:
+                        if not o in roots:
+                            roots.append (o)
+        return roots
 
     def ast_effectInheritance (self, abstractElement, tab=""):        
         """ Effect Inheritance: Add inherited characteristics to targeted nodes. """
@@ -1860,6 +1916,10 @@ class GraysonCompiler:
                                tab, abstractElement.getId (), abstractElement.getLabel (), target.getId (), targetId, target.getLabel ())
                 logger.debug ("target type: %s", target.getType ())
                 target.addAncestor (abstractElement)
+                logger.debug ("object %s after inheriting %s\n%s",
+                              target.getLabel (),
+                              abstractElement.getLabel (),
+                              json.dumps (target.getProperties (), indent=3, sort_keys=True))
                 if target.getType () == self.ABSTRACT:
                     self.ast_effectInheritance (target, "%s%s" % (tab, "    "))
             else:

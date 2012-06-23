@@ -78,7 +78,24 @@ class Graph:
 	def getNodes (self):
 		return self.nodes
 	def getNode (self, id):
-		return self.nodeMap[id] if id in self.nodeMap else None
+		node = None
+		'''
+		logging.debug ("getnode: %s %s", id, id in self.nodeMap)
+		for i in self.nodeMap:
+			logging.debug ("nodemap: id=%s", i)
+			'''
+		if id in self.nodeMap:
+			node = self.nodeMap [id]
+		else:
+			for n in self.nodes:
+				if n.getId () == id:
+					logging.debug ("updating nodemap: id=%s", i)
+					self.nodeMap [id] = node
+					node = n
+					break
+
+		return node #self.nodeMap[id] if id in self.nodeMap else None
+
 	def getNodeByLabel (self, label):
 		value = None
 		if label in self.nodeLabelMap:
@@ -86,11 +103,17 @@ class Graph:
 		return value
 	def addNode (self, id, label, type="{}"):
 		node = Node (id, label, type)
-		self.addExistingNode (node)
-		return node
+		return self.addExistingNode (node)
 	def addExistingNode (self, node):
 		self.nodes.append (node)
-		self.nodeMap[node.getId()] = node
+		self.nodeMap [node.getId()] = node
+		logging.debug ("addednode: %s %s gid=%s", node.getId (), node.getLabel (), self)
+		'''
+		for i in self.nodeMap:
+			logging.debug ("nodemap: id=%s", i)
+			'''
+		if not node.getId () in self.nodeMap:
+			raise ValueError ("insert failed")
 		self.nodeLabelMap[node.getLabel()] = node
 		return node
 	def removeNode (self, id):
@@ -101,6 +124,7 @@ class Graph:
 			del self.nodeMap [node.getId ()]
 		if node.getLabel () in self.nodeLabelMap:
 			del self.nodeLabelMap [node.getLabel ()]
+		logging.debug ("graph remove node: %s %s", id, node.getLabel ())
 	def getEdges (self):
 		return self.edges
 	def addEdge (self, id, source, target, type="{}"):

@@ -208,7 +208,11 @@ class ASTElement:
                         logger.debug ("ast:add-target: (%s) of (%s)" % (target.getLabel(), self.getLabel()) )
                         targets.append (target.getId ())
                     else:
-                        logger.debug ("___________ FAIL couldn't get target %s for node %s", edge.getTarget (), self.getLabel ())
+                        nodes = graph.getNodes ()
+                        for node in nodes:
+                            logger.debug ("    --> label(%s) \t id=(%s)", node.getLabel (), node.getId ())
+
+                        logger.debug ("___________ FAIL couldn't get target %s for node %s %s", edge.getTarget (), self.getLabel (), graph)
         return targets
 
     def getTargetEdges (self, graph):

@@ -2,6 +2,7 @@ import os
 import shutil
 import tarfile
 import logging
+import json
 
 from string import Template
 from grayson.common.util import GraysonUtil
@@ -33,7 +34,7 @@ class DynamicMapOperator (Operator):
 
         self.subdax = """
    <dax id='${namespace}gid${c}' file='${outputname}' >
-      <argument>--verbose --verbose --verbose --force --sites ${sites}</argument>
+      <argument>${instanceArgs} --verbose --verbose --verbose --force --sites ${sites}</argument>
    </dax>"""
 
     def validate (self, context):
@@ -49,6 +50,7 @@ class DynamicMapOperator (Operator):
         index          = operatorContext ["index"]
         flow           = operatorContext ["flow"]
         version        = operatorContext ["version"]
+        instanceArgs   = operatorContext ["instanceArgs"]
 
         outputBasename = context ["outputName"]
         modelPath      = context ["modelPath"]
@@ -57,7 +59,9 @@ class DynamicMapOperator (Operator):
         sites          = context ["sites"]
         appHome        = context ["appHome"]
         graysonHome    = context ["graysonHome"]
-         
+
+        #print "%s" % json.dumps (context, indent=3, sort_keys=True)
+
         tmpOutputDir = os.path.join (outputDir, "tmp") # avoid overwriting replica catalog.
 
         contextModels = contextModels.split (os.pathsep)
@@ -110,6 +114,7 @@ class DynamicMapOperator (Operator):
             flowContext ['c'] = c
             flowContext ['outputname'] = outputname
             flowContext ['sites'] = sites
+            flowContext ['instanceArgs'] = instanceArgs
             text.append (template.substitute (flowContext))
 
             replicaCatalogName = "replica-catalog.rc"
