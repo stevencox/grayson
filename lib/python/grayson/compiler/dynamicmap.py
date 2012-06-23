@@ -37,6 +37,12 @@ class DynamicMapOperator (Operator):
       <argument>${instanceArgs} --verbose --verbose --verbose --force --sites ${sites}</argument>
    </dax>"""
 
+
+        self.subdax = """
+   <dax id='${namespace}gid${c}' file='${outputname}' >
+      <argument>${instanceArgs} --verbose --verbose --verbose --force ${sites}</argument>
+   </dax>"""
+
     def validate (self, context):
         return context
 
@@ -113,8 +119,8 @@ class DynamicMapOperator (Operator):
             template = Template (self.subdax)
             flowContext ['c'] = c
             flowContext ['outputname'] = outputname
-            flowContext ['sites'] = sites
             flowContext ['instanceArgs'] = instanceArgs
+            flowContext ['sites'] = "--sites %s" % sites if instanceArgs == "" else ""
             text.append (template.substitute (flowContext))
 
             replicaCatalogName = "replica-catalog.rc"

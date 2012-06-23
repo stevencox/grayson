@@ -89,7 +89,7 @@ class Graph:
 		else:
 			for n in self.nodes:
 				if n.getId () == id:
-					logging.debug ("updating nodemap: id=%s", i)
+					logging.debug ("updating nodemap: id=%s", id)
 					self.nodeMap [id] = node
 					node = n
 					break

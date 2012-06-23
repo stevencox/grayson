@@ -1059,8 +1059,9 @@ class GraysonCompiler:
                         keep.append (context)
                 contextModels = os.pathsep.join (keep)
                 instanceArgs = element.get ('instanceArgs')
+                logger.debug ("instanceargs: %s %s %s", instanceArgs, element, element.getId ())
 
-
+                '''
                 elementRefs = self.getReferenceByLabel (element.getLabel ())
                 elementOrigins = elementRefs.getOrigins (self.graph)
                 for originId in elementOrigins:
@@ -1074,6 +1075,7 @@ class GraysonCompiler:
                             for o in origins:
                                 logger.debug ("add-origin; do it %s", origin.getType ())
                                 self.ast_effectInheritance (o)
+                                '''
 
                 configuration = {
                     'outputName'    : element.getLabel (),
