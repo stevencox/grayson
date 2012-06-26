@@ -706,7 +706,6 @@ GraysonView.prototype.showFlowSelector = function (node) {
 	    top  : node.geom.y - ( tip.height () * 0.7 ), //- tip.height () + dom.parent().position ().top - 20,
 	    left : node.geom.x - (tip.width () / 2)  + (node.geom.width / 2)
         };
-	//console.log (css);
 	if (css.top !== 'NaN' && css.left !== 'NaN') {
 	    tip.css (css);
 	}
@@ -873,6 +872,8 @@ GraysonView.prototype.clickNode = function (event) {
 			var dax = daxen.join (',');
 			*/
 
+			grayson.log_info ('--> getting flow events: workflowId: ' + flowContext.workflowId + 
+					  ', runId: ' + flowContext.runId);
 			appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', flowContext.workdir,
 						       '&workflowid=',              flowContext.workflowId,
 						       '&runid=',                   flowContext.runId,
@@ -1680,6 +1681,7 @@ Grayson.prototype.updateNodeLogs = function (event, node) {
     }
 };
 Grayson.prototype.onUpdateJobStatus = function (event) {
+    //grayson.log_debug ('on-event: ' + event);
     if (oldEvents)
 	this.allEvents.push (event);
     var grokedEvent = this.grokEvent (event);

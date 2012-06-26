@@ -107,8 +107,8 @@ class Graph:
 	def addExistingNode (self, node):
 		self.nodes.append (node)
 		self.nodeMap [node.getId()] = node
-		logging.debug ("addednode: %s %s gid=%s", node.getId (), node.getLabel (), self)
 		'''
+		logging.debug ("addednode: %s %s gid=%s", node.getId (), node.getLabel (), self)
 		for i in self.nodeMap:
 			logging.debug ("nodemap: id=%s", i)
 			'''

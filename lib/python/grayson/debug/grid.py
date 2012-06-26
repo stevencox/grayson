@@ -272,6 +272,13 @@ class PegasusWorkflowMonitor (Processor):
     STATUS_SUCCEEDED = "succeeded"
     STATUS_FAILED = "failed"
 
+    STATUS_MAP = {
+        'SUBMIT'      : STATUS_PENDING,
+        'EXECUTE'     : STATUS_EXECUTING,
+        'JOB_SUCCESS' : STATUS_SUCCEEDED,
+        'JOB_FAILURE' : STATUS_FAILED
+        }
+
     def __init__(self, workflowId, username, workdir, dax=None, logRelPath=".", amqpSettings=None, eventBufferSize=0):
         logger.debug ("pegasusworkflowmonitor-(stampede):init")
         self.workdir = os.path.abspath (workdir)
@@ -282,19 +289,21 @@ class PegasusWorkflowMonitor (Processor):
 
 
         #self.dax = dax.replace (".dax", "") if dax else None
-        self.dax = {}
-        daxen = dax.split (',')
-        for dax in daxen:
-            dax = dax.replace (".dax", "")            
-            self.dax [dax] = dax
-
+        self.daxen = {}
+        if dax:
+            daxen = dax.split (',')
+            for dax in daxen:
+                dax = dax.replace (".dax", "")            
+                self.daxen [dax] = dax
 
         self.scanner = EventScanner (workdir)
 
         logger.debug ("pegasusworkflowmonitor-amqpsettings: %s", amqpSettings)
-        self.eventStream = EventStream (amqpSettings    = amqpSettings,
-                                        logRelPath      = logRelPath,
-                                        eventBufferSize = eventBufferSize)
+        self.eventStream = None
+        if amqpSettings:
+            self.eventStream = EventStream (amqpSettings    = amqpSettings,
+                                            logRelPath      = logRelPath,
+                                            eventBufferSize = eventBufferSize)
         self.transferBytesPattern = re.compile ('Stats: ([0-9]+(.[0-9]+)?)')
         self.transferDurationPattern = re.compile ('in ([0-9]+(.[0-9]+)?) seconds')
         self.transferRateUpPattern = re.compile ('Rate: ([0-9]+(.[0-9]+) [A-Za-z]+/s)')
@@ -303,29 +312,33 @@ class PegasusWorkflowMonitor (Processor):
     def execute (self, loop=True):
         self.monitorRunning = True
         max_timestamp = 0
-        while self.monitorRunning:
-            max_timestamp= self.scanner.getEvents (processor = self,
-                                                   since     = max_timestamp)
-            time.sleep (2)
+        status = None
+        while not status:
+            status, max_timestamp= self.scanner.getEvents (processor = self,
+                                                           since     = max_timestamp,
+                                                           daxen     = self.daxen)
+            if not status:
+                time.sleep (2)
         self.finish ()
 
     def finish (self):
         self.monitorRunning = False
         logger.debug ("debug:grid:endevent: user(%s) workflow(%s)", self.username, self.workflowId)
-        self.eventStream.sendEndEvent (self.username, self.workflowId)
+        if self.eventStream:
+            self.eventStream.sendEndEvent (self.username, self.workflowId)
 
     def sendEvent (self, logdir, evt_time, jobId, status):
         aux = self.detectEventDetails (logdir, jobId, status)
         logdir = os.path.abspath (logdir)
         logger.debug ("--logdir: %s ", logdir)
-        self.eventStream.sendJobStatusEvent (username = self.username,
-                                             flowId   = self.workflowId,
-                                             jobid    = jobId,
-                                             status   = status,
-                                             logdir   = logdir,
-                                             evt_time = evt_time,
-                                             aux      = aux)
-
+        if self.eventStream:
+            self.eventStream.sendJobStatusEvent (username = self.username,
+                                                 flowId   = self.workflowId,
+                                                 jobid    = jobId,
+                                                 status   = status,
+                                                 logdir   = logdir,
+                                                 evt_time = evt_time,
+                                                 aux      = aux)
     def translateExitCode (self, event):
         status = GridWorkflowMonitor.STATUS_PENDING
         if event.exitcode is not None:
@@ -335,26 +348,24 @@ class PegasusWorkflowMonitor (Processor):
                 status = GridWorkflowMonitor.STATUS_FAILED
         return status
 
-    def accepts (self, daxName):
-        accepts = daxName is None or self.dax is None or daxName.find (self.dax) > -1
-        logger.debug ("dax: %s, filter: %s, accepts: %s", daxName, self.dax, accepts)
-        return accepts
+    def translateExitCode (self, event):
+        return self.STATUS_MAP [event.state]
+
     def accepts (self, daxName):
         accepts = False
         if daxName:
-            for key in self.dax:
-                if daxName.find (key) == 0:
+            for key in self.daxen:
+                if daxName.find (key) == 0 and len(daxName) == (len(key) + 4):
                     accepts = True
                     break
-        logger.debug ("dax: %s, filter: %s, accepts: %s", daxName, self.dax, accepts)
+        logger.debug ("dax: %s, filter: %s, accepts: %s", daxName, self.daxen, accepts)
         return accepts
 
     def processEvent (self, event):
-        if event.is_dax and event.exitcode is not None and event.work_dir == self.workdir:
-            self.monitorRunning = False
-        if self.accepts (event.dax_file): # or event.name.find ("subdax_") == 0:
-            self.sendEvent (event.work_dir, event.start_time, event.name, self.translateExitCode (event))
-        logger.debug ("evt=>(%s)", self.scanner.emitJSON (event))
+        if self.accepts (event.dax_file) or event.name.find ("subdax_") == 0:
+            if event.state in self.STATUS_MAP:
+                self.sendEvent (event.work_dir, event.timestamp, event.name, self.translateExitCode (event))
+                logger.debug ("evt=>(%s)", self.scanner.emitJSON (event))
 
     def detectEventDetails (self, logdir, jobId, status):
         aux = {}
@@ -435,3 +446,15 @@ class PegasusWorkflowMonitor (Processor):
                 obj = obj [0]
         return obj
 
+if __name__ == "__main__":
+    logging.basicConfig ()
+    __name__ = "stampede"
+    logger.setLevel (logging.DEBUG)
+    logging.getLogger('grayson.debug.stampede').setLevel (logging.DEBUG)
+    logging.getLogger('sqlalchemy.engine').setLevel (logging.INFO)
+    logger.info ("argv: %s", json.dumps (sys.argv))
+
+    workdir = sys.argv [1]
+    dax = sys.argv [2] if len(sys.argv) > 2 else '*'
+    monitor = PegasusWorkflowMonitor ("wfName", "username", workdir, dax)
+    monitor.execute ()

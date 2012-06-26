@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-''' system '''
+# system
 from string import Template
 from copy import copy
 import getopt
@@ -82,27 +80,18 @@ class PegasusWMS (WorkflowManagementSystem):
         result = None
 
         pegasusHome = GraysonUtil.getPegasusHome ()
-        args = ["-Dpegasus.user.properties=${outputDir}/${pegasusProperties}",
+        args = ["--conf=${outputDir}/${pegasusProperties}",
                 "--sites ${sites}",
                 "--force",
                 "--verbose",
                 "--verbose",
                 "--verbose",
+                "--nocleanup",                    
                 "--output local"]
-        if pegasusHome.find ("3.1") > -1 or pegasusHome.find ("4.0") > -1 or pegasusHome.find ("4.1") > -1: 
-            args = ["--conf=${outputDir}/${pegasusProperties}",
-                    "--sites ${sites}",
-                    #"--relative-dir ${outputDir}/work",
-                    "--force",
-                    "--verbose",
-                    "--verbose",
-                    "--verbose",
-                    "--nocleanup",                    
-                    "--output local"]
-            ''' if using one of the new data configuration modes '''
-            if self.dataConfiguration:
-                args.append ("-Dpegasus.data.configuration=%s" % self.dataConfiguration)
-                args.append ("--staging-site=local") # TODO - make this more flexible
+        ''' if using one of the new data configuration modes '''
+        if self.dataConfiguration:
+            args.append ("-Dpegasus.data.configuration=%s" % self.dataConfiguration)
+            args.append ("--staging-site=local") # TODO - make this more flexible
 
         for arg in other:
             args.append (arg)
@@ -120,7 +109,6 @@ class PegasusWMS (WorkflowManagementSystem):
 
     ''' Execute workflow the Pegasus way. '''
     def executeWorkflow (self, sites, workflowName, compilerPlugin=None):
-        #additionalArgs = [ " --dax ${outputDax} --submit" ]
         additionalArgs = [ " --dir ${outputDir}/work --dax ${outputDax} --submit" ]
         arguments = self.getExecuteArguments (sites=sites,
                                               workflow=workflowName,
@@ -145,7 +133,7 @@ class PegasusWMS (WorkflowManagementSystem):
             executor.execute (executeCommand, pipe=True, processor=wrappedOutputProcessor)
         except Exception as e:
             traceback.print_exc (e)
-            ''' missing stderr. '''
+            # missing stderr.
             logger.error ('\n'.join (lines))
             raise e
 
@@ -173,10 +161,10 @@ class PegasusWMS (WorkflowManagementSystem):
 ''' Pegasus properties '''
 class PegasusProperties:
 
-    PEGASUS_PROPERTIES="pegasus.properties"
-    REPLICA_CATALOG="replica-catalog.rc"
-    SITE_CATALOG="sites.xml"
-    TRANSFORMATION_CATALOG="transformation-catalog.tc"
+    PEGASUS_PROPERTIES = "pegasus.properties"
+    REPLICA_CATALOG = "replica-catalog.rc"
+    SITE_CATALOG = "sites.xml"
+    TRANSFORMATION_CATALOG = "transformation-catalog.tc"
     
     CODE_GENERATOR_EQUALS_SHELL = "pegasus.code.generator = Shell"
 
@@ -189,15 +177,12 @@ pegasus.catalog.site.file=${configDir}/${siteCatalog}
 pegasus.catalog.replica=File
 pegasus.catalog.replica.file=${configDir}/${replicaCatalog}
 
-#pegasus.catalog.transformation=File
 pegasus.catalog.transformation=Text
 pegasus.catalog.transformation.file=${configDir}/${transformationCatalog}
 
 pegasus.dir.useTimestamp=true
 pegasus.dir.storage.deep=false
 pegasus.transfer.links=${symlinkTransfers}
-
-#pegasus.transfer.*.remote.sites=NERSC-Carver
 
 ${pegasusCodeGenerator}
 """
@@ -212,20 +197,6 @@ ${pegasusCodeGenerator}
         return self.pegasusCodeGenerator == self.CODE_GENERATOR_EQUALS_SHELL
 
     def generateProperties (self, siteFile="sites.xml", configDir="."):
-
-        '''
-        generic way to pass pegasus properties
-
-        remoteSites = []
-        eachSite = sites.split (',')
-        for site in eachSite:
-            if not site == 'local':
-                remoteSites.append (site)
-        remoteSiteText = ','.join (remoteSites)
-
-        pegasus.transfer.*.remote.sites=${remoteSites} 
-        '''
-
         template = Template (self.text)
         context = {
             "configDir"             : configDir,
@@ -241,31 +212,35 @@ ${pegasusCodeGenerator}
 class PegasusTC:
 
     def __init__(self):
-        '''Firefly        pegasus::kickstart                /panfs/panasas/CMS/app/engage/rynge/pegasus/3.0.0cvs/bin/kickstart                     INSTALLED   INTEL32::LINUX'''
-        self.text = "${cluster}        ${namespace}::${jobName}                ${location}             ${transfer}   ${architecture}::${OS}"
-
         self.text = """
-tr ${namespace}::${jobName} {
+tr ${namespace}::${jobName}:${version} {
    site ${cluster} {
       pfn "${location}"
       arch "${architecture}"
       os "${OS}"
       type "${transfer}"
    }
-}"""
+}
 
-        self.entries = []
+"""
+
+        self.entries = {}
         
     def addEntry (self,
                   jobName,
                   location,
                   transfer     = "INSTALLED",
-                  architecture = "x86_64", #"INTEL64" # old format
+                  architecture = "x86_64",
                   OS           = "linux",
                   cluster      = "local",
                   namespace    = "app",
                   version      = "1.0"):
-        if cluster == None:
+
+        if not architecture:
+            architecture = "x86_64"
+        if not version:
+            version = "1.0"
+        if not cluster:
             cluster = "local"
         if location.startswith (os.sep):
             location = "file://%s" % location
@@ -293,11 +268,19 @@ tr ${namespace}::${jobName} {
             "version"               : version
             }
         entryText = template.substitute (context)
-        self.entries.append (entryText)
-        
+
+        key = self.getKey (namespace, jobName, version)
+        self.entries [key] = entryText
+
+    def getKey (self, namespace, app, version):
+        return "%s::%s:%s" % (namespace, app, version)
+
     def generateTC (self):
-        self.entries.append ("\n")
-        return "\n".join (self.entries)
+        text = []
+        keys = sorted (self.entries.iterkeys())
+        for key in keys:
+            text.append (self.entries [key])
+        return ''.join (text)
 
 ''' Write a pegasus file replica catalog '''
 class PegasusFileRC (object):
@@ -636,7 +619,7 @@ class PegasusWorkflowModel (WorkflowModel):
             logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
             pfn = PFN (fileURL, site)
             file.addPFN (pfn)
-            self.adag.addFile (file)
+            #self.adag.addFile (file)
             self.files [fileName] = file
         return file
 	
@@ -648,9 +631,14 @@ class PegasusWorkflowModel (WorkflowModel):
         else:
             return None
 	
-    def addExecutable (self, jobId, name, path, version="4.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
+    def addExecutable (self, jobId, name, path, version="1.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
         e_exe = self.getExecutable (name)
         
+        if not version:
+            version = "1.0"
+        if not exe_arch:
+            exe_arch="x86_64"
+
         if not e_exe:
             e_exe = Executable (
                 namespace=self.namespace, 
@@ -680,7 +668,7 @@ class PegasusWorkflowModel (WorkflowModel):
             e_exe.addPFN (PFN (path, site))
             if not installed:
                 e_exe.installed = installed
-            self.adag.addExecutable (e_exe)
+            #self.adag.addExecutable (e_exe)
             self.exes [name] = e_exe
 
             transformation = Transformation (name, self.namespace, version)
@@ -729,7 +717,7 @@ class PegasusWorkflowModel (WorkflowModel):
                 fileElement = tuple [0]
                 file = fileElement.getDaxNode ()
                 try:
-                    abstractJob.uses (file, link=link)
+                    #abstractJob.uses (file, link=link)
                     arg = tuple [1]
                     if arg:
                         abstractJob.addArguments (arg, file)

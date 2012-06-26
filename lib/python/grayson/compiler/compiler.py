@@ -465,42 +465,54 @@ class GraysonCompiler:
                     result.append (element)
         return result
 
-    def getElement (self, id, dereference=True):
+    def getElementsByRegex (self, regex):
+        values = []
+        for key in self.labelIndex:
+            if re.match (regex, key):
+                values.append (self.labelIndex [key])
+        return values
+
+    def getElement (self, id, dereference=True, regex=False):
         """ Get an element. Dereference if necessary. """
         value = None
         if id in self.astElements:
             value = self.astElements [id]
-            if value:
-                type = value.get (self.ATTR_TYPE)
-                if type == self.ATTR_REFERENCE and dereference:
-                    value = self.dereference (value)
+
+        if dereference:
+            value = self.dereference (value, regex)
+
         return value
 
-    def dereference (self, original):
+    def dereference (self, original, regex=False):
         value = None
-        node = original.getNode ()
-        if node:
-            label = node.getLabel ()
-            if label:
-                value = self.getElementByLabel (label)
-                if value:
-                    logger.debug ("ast:dereference: (%s) to object (%s) of type (%s)",
-                                  label,
-                                  value.getLabel (),
-                                  value.getType () )
-                else:
-                    logger.debug ("        (reference-not-found) (%s)", label)
-                    '''
-                    class ObjEncoder(json.JSONEncoder):
-                        def default(self, obj):
-                            if not isinstance(obj, ASTElement) and not isinstance(obj, Node):
-                                return super (ObjEncoder, self).default (obj)
-                            return obj.__dict__
+        if original:
+            type = original.get (self.ATTR_TYPE)
+            if not type == self.ATTR_REFERENCE:
+                value = original
+            else:
 
-                    logger.debug ("        (reference-not-found) (%s)\n%s",
-                                  label,
-                                  json.dumps (self.labelIndex, indent=3, sort_keys=True, cls=ObjEncoder))
-                                  '''
+                if regex:
+                    value = self.getElementsByRegex (original.getLabel ())
+                else:
+                    value = self.getElementByLabel (original.getLabel ())
+                    if value:
+                        logger.debug ("ast:dereference: (%s) to object (%s) of type (%s)",
+                                      original.getLabel (),
+                                      value.getLabel (),
+                                      value.getType () )
+                    else:
+                        logger.debug ("        (reference-not-found) (%s)", original.getLabel ())
+                        '''
+                        class ObjEncoder(json.JSONEncoder):
+                        def default(self, obj):
+                        if not isinstance(obj, ASTElement) and not isinstance(obj, Node):
+                        return super (ObjEncoder, self).default (obj)
+                        return obj.__dict__
+
+                        logger.debug ("        (reference-not-found) (%s)\n%s",
+                        label,
+                        json.dumps (self.labelIndex, indent=3, sort_keys=True, cls=ObjEncoder))
+                        '''
         return value
 
     def addError (self, message):
@@ -1912,22 +1924,26 @@ class GraysonCompiler:
         targets = abstractElement.getTargets (self.graph)
         logger.debug ("ast-inherit-abstract: %s", abstractElement.getNode().getType ())
         for targetId in targets:
-            target = self.getElement (targetId)
+            target = self.getElement (targetId, regex=True)
             if target:
-                logger.debug ("%s-ast:inherit:target: parent=(id=%s,label=%s) target=(id=%s,origid=%s,label=%s)",
-                               tab, abstractElement.getId (), abstractElement.getLabel (), target.getId (), targetId, target.getLabel ())
-                logger.debug ("target type: %s", target.getType ())
-                target.addAncestor (abstractElement)
-                logger.debug ("object %s after inheriting %s\n%s",
-                              target.getLabel (),
-                              abstractElement.getLabel (),
-                              json.dumps (target.getProperties (), indent=3, sort_keys=True))
-                if target.getType () == self.ABSTRACT:
-                    self.ast_effectInheritance (target, "%s%s" % (tab, "    "))
-            else:
-                pass
-                # todo: 1. cause? 2. error?
-                #logger.info ("unable to find target element (%s) of abstract element (%s)", targetId, abstractElement.getLabel ())
+                if isinstance (target, list):
+                    for item in target:
+                        self.ast_addAncestor (item, abstractElement, tab, recurse=False)
+                else:
+                    self.ast_addAncestor (target, abstractElement, tab)
+
+    def ast_addAncestor (self, target, ancestor, tab="", recurse=True):
+        logger.debug ("%s-ast:inherit:target: parent=(id=%s,label=%s) target=(id=%s,label=%s)",
+                      tab, ancestor.getId (), ancestor.getLabel (), target.getId (), target.getLabel ())
+        logger.debug ("target type: %s", target.getType ())
+        target.addAncestor (ancestor)
+        logger.debug ("object %s after inheriting %s\n%s",
+                      target.getLabel (),
+                      ancestor.getLabel (),
+                      json.dumps (target.getProperties (), indent=3, sort_keys=True))
+        if target.getType () == self.ABSTRACT and recurse:
+            self.ast_effectInheritance (target, "%s%s" % (tab, "    "))
+
 
     def ast_processEdgeOperators (self, edgeElements):
         """ Process edge operators. """
@@ -1976,10 +1992,11 @@ class GraysonCompiler:
                 ''' an output file can be the target end of an edge from a job '''
                 if source and source.getId () == jobId:
                     target = self.getElement (edgeTarget)
-                    logger.debug ("---thing: %s", target.getLabel ())
-                    if target.getType () == self.FILE:
-                        self.addOutputFile (jobContext, target, edge)
-                        logger.debug ("add-job-output: (cid=%s) job (%s) outputs (%s)", self.compilerId, job.getLabel (), target.getLabel ())
+                    if target:
+                        logger.debug ("---thing: %s", target.getLabel ())
+                        if target.getType () == self.FILE:
+                            self.addOutputFile (jobContext, target, edge)
+                            logger.debug ("add-job-output: (cid=%s) job (%s) outputs (%s)", self.compilerId, job.getLabel (), target.getLabel ())
 
                 elif edgeTarget == jobId and source:
                     logger.debug ("add-job-edge: source(%s,%s)-edge(%s)->target(%s,%s)",

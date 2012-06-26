@@ -19,7 +19,7 @@ from grayson.debug.event import EventStream
 from grayson.common.util import GraysonUtil
 from web.graysonapp.util import StrUtil
 from django.utils.translation import ugettext as _
-from grayson.debug.grid import GridWorkflowMonitor
+from grayson.debug.grid import PegasusWorkflowMonitor
 
 logger = logging.getLogger (__name__)
 
@@ -44,11 +44,19 @@ class WorkflowMonitorCompilerPlugin (object):
             workDir = line [ line.rfind (workdirMarker) + len (workdirMarker) : ]
             workDir = workDir.rstrip ()
             logger.info ("starting grid monitor workflowId: %s, username: %s, workDir: %s", outputWorkflowPath, self.username, workDir)
-            gridMonitor = GridWorkflowMonitor (workflowId   = outputWorkflowPath,
-                                               username     = self.username,
-                                               workdir      = workDir,                                               
-                                               logRelPath   = self.logRelPath,
-                                               amqpSettings = self.amqpSettings)
+            gridMonitor = None
+            while not gridMonitor:
+                try:
+                    logger.debug ("Attempting to connect to monitoring database at %s", workDir)
+                    gridMonitor = PegasusWorkflowMonitor (workflowId   = outputWorkflowPath,
+                                                          username     = self.username,
+                                                          workdir      = workDir,                                               
+                                                          logRelPath   = self.logRelPath,
+                                                          amqpSettings = self.amqpSettings)
+                except:
+                    logger.debug ("Failed to connect to monitoring database at %s", workDir)
+                    time.sleep (2)
+
             gridMonitor.execute ()
         elif "Executing JOB" in line:
             jobid = StrUtil.between (line, "::", ":")
