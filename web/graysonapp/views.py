@@ -349,3 +349,30 @@ def mongo (request):
         t.save ()
     return ViewUtil.get_text_response ('')
 '''
+ 
+@login_required
+def debugger (request):
+    commandMap = {
+        'stop'   : 'condor_rm',
+        'pause'  : 'condor_hold',
+        'resume' : 'condor_release'
+        }
+
+    # TODO: Auth check to ensure this job belongs to this user... before running actual condor commands...
+
+    output = []
+    executor = Executor ({
+            'condorHome' : os.environ ['CONDOR_HOME'],
+            'command'    : commandMap [request.REQUEST ["command"]],
+            'jobId'      : request.REQUEST ["job"]
+            })
+
+    executor.execute (command        = "${condorHome}/bin/${command} ${jobId} 2>&1",
+                      pipe           = True,
+                      processor      = lambda n : output.append (n),
+                      raiseException = False)
+
+    return ViewUtil.get_json_response ({
+            "status" : "ok",
+            "output" : ''.join (output)
+            })

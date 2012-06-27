@@ -40,6 +40,7 @@ urlpatterns = patterns('',
     (r'^getfile/$',             'web.graysonapp.views.getfile'),
     (r'^tests/$',               'web.graysonapp.views.tests'),
     (r'^mongo/$',               'web.graysonapp.views.mongo'),
+    (r'^debugger/$',            'web.graysonapp.views.debugger'),
 
     (r'^mobile/', include('web.graysonmobile.urls')),
     (r'^apple-touch-icon.png$','web.graysonmobile.views.icon'),      # this has to be at the root.

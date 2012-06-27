@@ -387,3 +387,28 @@ ul#icons span.ui-icon {float: left; margin: 0 4px;}
     background-color        : #f00;
     opacity      : 0.7;
  }
+
+/* debug player */
+.debugPlayer {
+    position : absolute;
+    left     : 20px;
+}
+.debugPlayerIcon {
+    float   : right; 
+    padding : 10px;
+}
+.debugOutput {
+    border   : lightgray solid 1px;
+    top      : 140px;
+    position : absolute;
+    padding  : 10px;
+    width    : 500px;
+    height   : 224px;
+ }
+.debugClear {
+    position: absolute;
+    left: 20px;
+    top: 170px;
+    font-weight: bold;
+    font-size: 12px;
+}

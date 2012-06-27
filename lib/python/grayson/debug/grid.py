@@ -336,8 +336,22 @@ class PegasusWorkflowMonitor (Processor):
                                                  logdir   = logdir,
                                                  evt_time = evt_time,
                                                  aux      = aux)
+    def sendEvent (self, event):
+        status = self.translateExitCode (event)
+        logdir = os.path.abspath (event.work_dir)
+        self.sendTranslatedEvent (event, status, logdir)
+
+    def sendTranslatedEvent (self, event, status, logdir):        
+        self.eventStream.sendJobStatusEvent (username = self.username,
+                                             flowId   = self.workflowId,
+                                             jobid    = event.name,
+                                             status   = self.translateExitCode (event),
+                                             logdir   = logdir,
+                                             evt_time = event.timestamp,
+                                             aux      = self.detectEventDetails (event, logdir, status))
+
     def translateExitCode (self, event):
-        return self.STATUS_MAP [event.state]
+        return self.STATUS_MAP [event.state] if event.state in self.STATUS_MAP else None
 
     def accepts (self, daxName):
         accepts = False
@@ -352,11 +366,13 @@ class PegasusWorkflowMonitor (Processor):
     def processEvent (self, event):
         if self.accepts (event.dax_file) or event.name.find ("subdax_") == 0:
             if event.state in self.STATUS_MAP:
-                self.sendEvent (event.work_dir, event.dax_file, event.timestamp, event.name, self.translateExitCode (event))
+                #self.sendEvent (event.work_dir, event.dax_file, event.timestamp, event.name, self.translateExitCode (event))
+                self.sendEvent (event)
                 logger.debug ("evt=>(%s)", self.scanner.emitJSON (event))
 
-    def detectEventDetails (self, logdir, jobId, status):
-        aux = {}
+    def detectEventDetails (self, event, logdir, status):
+        jobId = event.name
+        aux = { 'sched_id' : event.sched_id }
 
         if not logdir:
             return aux

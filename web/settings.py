@@ -258,7 +258,7 @@ LOGGING = {
         },
         'web.graysonapp.views': {
             'handlers': ['console', 'fileHandler'],
-            'level': 'ERROR'
+            'level': 'DEBUG'
         },
         'web.graysonapp.tasks': {
             'handlers': ['console', 'fileHandler'],

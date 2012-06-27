@@ -153,9 +153,9 @@ GraysonModel.prototype.createNode = function (args) { //workflow, id, json, fill
 		    },
 		    text  : args.label.text
 	    },
-	    scheduler : {
-		id     : null,
-		status : null 
+	    runtime : {
+		sched_id : null,
+		status   : null 
 	    }
 	});
     }    
@@ -796,6 +796,7 @@ GraysonView.prototype.clickSelector = function (event) {
     var appView = grayson.view;
     var value = $(this).attr ("value");
     if ( $(this).hasClass ("selectedItem") ) {
+	/*
 	// show the dagman and jobstatus logs for this sub-workflow
 	if (false) { // this is just a bad idea right now.
 	    var jobName = basename (value);
@@ -814,6 +815,7 @@ GraysonView.prototype.clickSelector = function (event) {
 				       paths.jobstate);
 	    }
 	}
+	*/
     } else {
 	// If not selected, make it the selected sub-workflow instance
 	var node = grayson.model.byId (grayson.api.getFlowContext ().workflowId,
@@ -913,7 +915,7 @@ GraysonView.prototype.clickNode = function (event) {
 		var paths = appView.getPaths (workflowId, node.label.text, node);
 		appView.grayson.api.get (paths.joblog, function (text) {
 			appView.showJobOutput (paths.workflowId,
-					       node.label.text,
+					       node, //.label.text,
 					       text,
 					       paths.daglog, 
 					       paths.jobstate);
@@ -972,14 +974,15 @@ GraysonView.prototype.getPaths = function (workflowId, nodeName, pathNode) {
 
     return result;
 };
-GraysonView.prototype.showJobOutput = function (workflowId, nodeName, text, dagOutputURL, jobStatusLogURL) {    
+GraysonView.prototype.showJobOutput = function (workflowId, node, text, dagOutputURL, jobStatusLogURL) {    
     // if ! workflowId need to select workflow.
-    grayson.log_debug ("grayson:got job output for wf:" + workflowId + ", jobid:" + nodeName);
+    grayson.log_debug ("grayson:got job output for wf:" + workflowId + ", jobid:" + node.label.text);
+    
     var globalNewline = new RegExp("\n", 'g');
     var jobOutput = $("#jobOutputDialog");
     var html = [];
     jobOutput.html ("");
-    jobOutput.dialog ('option', 'title', "Status for workflow: [" + basename(workflowId) + "], job: [" + nodeName + "]");
+    jobOutput.dialog ('option', 'title', "Status for workflow: [" + basename(workflowId) + "], job: [" + node.label.text + "]");
     var error = "";
     var output = "";
 
@@ -997,8 +1000,9 @@ GraysonView.prototype.showJobOutput = function (workflowId, nodeName, text, dagO
 		   '      <li><a href="#output">Output</a></li>',
 		   '      <li><a href="#error">Error</a></li>');
     }
-    html.push ('      <li><a href="#DAG">Workflow Log</a></li>',
-	       '      <li><a href="#jobStatusLog">Job Status Log</a></li>',
+    html.push ('      <li><a href="#DAG" id="DAG_tab">Workflow Log</a></li>',
+	       '      <li><a href="#jobStatusLog" id="jobStatusLog_tab">Job Status Log</a></li>',
+	       '      <li><a href="#debug" id="debug_tab">Debug</a></li>',
 	       '    </ul>');
     
     if (kickstart.valid) {
@@ -1019,33 +1023,119 @@ GraysonView.prototype.showJobOutput = function (workflowId, nodeName, text, dagO
 		   '    <div id="error" class="jobOutputTab">',
 		   error,
 		   '    </div>');
+	html.push ('    <div id="DAG" class="jobOutputTab">',
+		   '    </div>',
+		   '    <div id="jobStatusLog" class="jobOutputTab">',
+		   '    </div>');
     }
 
-    html.push ('    <div id="DAG" class="jobOutputTab">',
-	       '    </div>',
-	       '    <div id="jobStatusLog" class="jobOutputTab">',
+    //http://www.veryicon.com/icons/media/play-stop-pause/
+    html.push ('    <div id="debug" class="jobOutputTab">',
+	       '       <br/>',
+	       '       <div>Use the buttons below to control job execution.</div>',
+	       '       <br/>',
+	       '       <div id="debugClear" class="debugClear">Clear</div>',
+	       '       <div class="debugPlayer">',
+	       '          <div class="debugPlayerIcon"><img src="static/img/debug/PlayNormalIcon.jpg"        title="Continue Execution"></div>',
+	       '          <div class="debugPlayerIcon"><img src="static/img/debug/PauseNormalIcon.jpg"       title="Pause Job Execution"></div>',
+	       /*
+	       '          <div class="debugPlayerIcon"><img src="static/img/debug/StepForwardNormalIcon.jpg" title="Execute to Next State"></div>',
+	       */
+	       '          <div class="debugPlayerIcon"><img src="static/img/debug/StopNormalIcon.jpg"        title="Stop Job Execution"></div>',
+	       '       </div>',
+	       '       <div id="debugOutput" class="debugOutput"></div>',
 	       '    </div>',
 	       '  </div>');
-
+    
     jobOutput.html (html.join (""));
     $("#outputTabs").tabs ();
 
+    var resetButton = function (event) {
+	var text = event.target.src;
+	$(event.target).attr ('src', 
+			      text.
+			      replace ('Hot', 'Normal').
+			      replace ('Pressed', 'Normal'));
+    };
+    $('#debugOutput').resizable ();
+    $('#debugClear').click (function (e) {
+	$('#debugOutput').html ('');
+    });
+
+    $('div.debugPlayerIcon > img').
+	hover (
+	    function (event) {
+		var text = event.target.src;
+		if (text.indexOf ('Normal') > -1) {
+		    $(event.target).attr ('src', text.replace ('Normal', 'Hot'));
+		}
+	    },
+	    function (event) {
+		var text = event.target.src;
+		if (text.indexOf ('Hot') > -1) {
+		    $(event.target).attr ('src', text.replace ('Hot', 'Normal'));
+		}
+	    }
+	).click (function (event) {
+	    var text = event.target.src;
+	    var states = [ 'Normal', 'Hot' ];
+	    for (var c = 0; c < states.length; c++) {	    
+		var state = states [c];
+		if (text.indexOf (state) > -1) {
+		    $(event.target).attr ('src', text.replace (state, 'Pressed'));
+		    break;
+		}
+	    }
+	    if (text.indexOf ('Pause') > -1) {
+		grayson.api.getJSON ('debugger?command=pause&job=' + node.runtime.sched_id, function (obj) {
+		    resetButton (event);
+		    $('#debugOutput').append (obj.output + '<br/>');
+		});
+	    } else if (text.indexOf ('Stop') > -1) {
+		grayson.api.getJSON ('debugger?command=stop&job=' + node.runtime.sched_id, function (obj) {
+		    resetButton (event);		    
+		    $('#debugOutput').append (obj.output + '<br/>');
+		});
+	    } else if (text.indexOf ('Play') > -1) {
+		grayson.api.getJSON ('debugger?command=resume&job=' + node.runtime.sched_id, function (obj) {
+		    resetButton (event);
+		    $('#debugOutput').append (obj.output + '<br/>');
+		});
+	    }
+	});
+
+
+    if (node.runtime.state == 'pending' || node.runtime.state === 'executing') {
+	$('#outputTabs').tabs ('select', '#debug'); 
+    }
 
     // DAG output
     this.grayson.api.get (dagOutputURL,  function (text) {
-	    $("#DAG").html (text.replace (globalNewline, "<br/>"));
-	});
+	$("#DAG").html (text.replace (globalNewline, "<br/>")).
+	    show ();	
+    });
     
     // Job Status Log
     this.grayson.api.get (jobStatusLogURL,  function (text) {
-	    $("#jobStatusLog").html (text.replace (globalNewline, "<br/>"));
-	});
+	$("#jobStatusLog").html (text.replace (globalNewline, "<br/>")).
+	    show ();
+    });
 
     // Display
     jobOutput.dialog ('open');
     var leftEdge = 600;
+/*
     jobOutput.dialog ('option', 'width', $("#tabs").width () - (leftEdge + 20) + 1);
     jobOutput.dialog ('option', 'height', $("#tabs").height () - 360);
+*/
+    /*
+    width    : 650px;
+    height   : 580px;
+*/
+    jobOutput.dialog ('option', 'width', 650);
+    jobOutput.dialog ('option', 'height', 580);
+
+
     jobOutput.dialog ('option', 'position', [leftEdge, 41]);
 };
 GraysonView.prototype.doDeleteWorkflow = function (event, args, displayNode) {
@@ -1660,24 +1750,7 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
 		    transfer = event.transfer [c];
 		    jobName = basename (transfer.sourceFile);
 		    grokedEvent.jobName = jobName;
-
-		    var node = null;
-
-		    var applied = false;
-/*
-		    var flowName = grayson.prefix (basename (event.flowId));
-		    if (flowName != null) {
-			node = this.model.byName (flowName, grokedEvent.jobName);
-			if (node) {
-			    applied = this.applyNodeState (node, grokedEvent.state, event);
-			}
-		    }
-*/
-		    if (! applied) {
-			if (node == null) {
-			    grayson.applyEvent (event, grokedEvent);
-			}
-		    }
+		    grayson.applyEvent (event, grokedEvent);
 		}
 	    } else {
 		var node = this.model.byName (event.flowId, grokedEvent.jobName);
@@ -1720,7 +1793,6 @@ Grayson.prototype.applyEvent = function (event, grokedEvent) {
 	parts = logdir.split ('/');
     }
 
-
     if (parts && parts.length > 1) {
         var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
         var concreteName = parts [1].replace ("gid", ".") + ".dax";
@@ -1732,26 +1804,12 @@ Grayson.prototype.applyEvent = function (event, grokedEvent) {
 
         concreteName = concreteName.replace (daxRunPattern, "dax");
         var concreteName2 = parts [0] + ".dax";
-
-/*
-	if ((! context) ||
-	    (context && context.instance)) {
-*/
 	if (flowName) {
             var node = this.model.byName (flowName, grokedEvent.jobName);
             if (node) {
 		applied = this.applyNodeState (node, grokedEvent.state, event);
             }
 	}
-	
-/*
-            if (context.instance.endsWith (concreteName)  ||
-		context.instance.endsWith (concreteName2) ||
-		context.instance.endsWith (concreteName3))
-            {
-	    }
-//        }
-*/
     }
     return applied;
 };
@@ -1766,7 +1824,12 @@ Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
 	var stroke = 2;
 	var delay = immediate ? 0 : 1000;
 
-	if (state == 'running' || state == 'pending') {
+	node.runtime.state = state;
+	if (event && event.sched_id) {
+	    node.runtime.sched_id = event.sched_id;
+	}
+
+	if (state == 'running' || state == 'pending') {	    
 	    node.graphNode.animate ({
 		    stroke         : '#000',
 		    opacity        : 0.7,
