@@ -96,6 +96,7 @@ class EventScanner (object):
 
         self.database = StampedeStatistics (self.db_url, True)
         self.database.initialize (self.wf_uuid)
+        self.totalMessages = 0
 
     def createWorkflowEvent (self, record): 
 
@@ -175,17 +176,19 @@ ORDER BY jobstate.TIMESTAMP
                               Jobstate.timestamp > since)
         query = query.order_by (Jobstate.timestamp)
 
-        ''' don't include intermediate statuses '''
+        ''' don't include intermediate statuses 
         query = query.filter (not_(and_(or_(JobInstance.exitcode == 0, JobInstance.exitcode == 1),
                                         or_(Jobstate.state == 'SUBMIT', Jobstate.state == 'EXECUTE'))))
+                                        '''
 
         ''' ensure that either (a) the event does not pertain to a subdax or that,
-                               (b) if it does, the subdax is one in the list of daxen '''
+                               (b) if it does, the subdax is one in the list of daxen  '''
         filters = []
         for dax in daxen:
-            filters.append (Job.exec_job_id.like ('subdax_%s_%%' % dax))
+            filters.append (Job.exec_job_id.like ('subdax_%s%%' % dax))
         query = query.filter (or_( not_(Job.exec_job_id.like ('subdax_%')),
                                    or_(*tuple (filters))))
+
 
         ''' ensure dax_file of this event matches one of the daxen in the filter '''
         filters = []
@@ -222,8 +225,11 @@ ORDER BY jobstate.TIMESTAMP
             processor.processEvent (self.createWorkflowEvent (event))
             max_timestamp = max (max_timestamp, event.timestamp)
             count += 1
-        if logger.isEnabledFor (logging.DEBUG):
+        self.totalMessages += count
+
+        if logger.isEnabledFor (logging.DEBUG):            
             logger.debug ("=====================================================================================================")
+            logger.debug ("==        events: cycle=%s total=%s", count, self.totalMessages)
             logger.debug ("==  total events: %s ", count)
             logger.debug ("== max_timestamp: %s ", max_timestamp)
             logger.debug ("=====================================================================================================")

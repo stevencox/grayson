@@ -1,6 +1,3 @@
-
-var oldEvents = false;
-
 // get https if this is prod
 if (graysonConf.uriPrefix == '/grayson' && ! graysonConf.unitTest) {
 //if (graysonConf.uriPrefix !== '/' && ! graysonConf.unitTest) {
@@ -43,26 +40,26 @@ GraysonGraph.prototype.mapNode = function (node) {
 GraysonGraph.prototype.byName = function (name) {
     var result = this.labelMap [name];
     if (result == null || result == 'undefined') {
-	if (this.variableMap) {
-	    var literalToNodeId = this.variableMap['literalToNodeId'];
-	    if (literalToNodeId && name in literalToNodeId) {
-		var id = this.variableMap['literalToNodeId'][name];
-		if (id) {
-
-		    var numpat = new RegExp ('^[0-9]*');
-		    id = id.replace (numpat, '');
-
-		    result = this.nodeMap [id];
-
-		    if (result != null) {
-			result.graphText.attr ('text', name);
-		    } else {
-			for (k in this.nodeMap) {
-			    console.log (' -- ' + k + ' => ' + this.nodeMap [k].label.text);
-			}
-		    }
+	var literalToNodeId = this.variableMap['literalToNodeId'];
+	if (literalToNodeId && name in literalToNodeId) {
+	    var id = this.variableMap['literalToNodeId'][name];
+	    if (id) {
+		
+		var numpat = new RegExp ('^[0-9]*'); // delete numeric prefix (compiler internal...?)
+		id = id.replace (numpat, '');
+		
+		result = this.nodeMap [id];
+		
+		if (result != null) {
+		    result.graphText.attr ('text', name);
 		}
 	    }
+	}
+    }
+    if (result == null) {
+	grayson.log_debug ('unable to map ' + name + ' in: ');
+	for (k in this.nodeMap) {
+	    grayson.log_debug (' -- ' + k + ' => ' + this.nodeMap [k].label.text);
 	}
     }
     return result;
@@ -877,10 +874,12 @@ GraysonView.prototype.clickNode = function (event) {
 		    grayson.log_debug ('loading obj file: ' + objFile);
 		    appView.grayson.api.getJSON (objFile,
 						 function (object) {
+						     /*
 						     grayson.log_info ("got object: " + object);
 						     console.log ('==================================================');
+						     */
+
 						     console.log (object);
-						     
 						     var graphId = grayson.prefix (daxContext.instance);
 						     var graph = grayson.model.getGraph (graphId);
 						     if (graph) {
@@ -1515,7 +1514,6 @@ function Grayson (args) {
 	this.events.registerSet (args.handlers);
     }
     this.initialize ();
-    this.allEvents = [];
 };
 Grayson.prototype.initialize = function () {
     this.model = new GraysonModel ();
@@ -1531,9 +1529,6 @@ Grayson.prototype.prepareCanvas = function () {
     $("#about").hide ();
     $('#jobOutputDialog').dialog ('close');
     this.setEventBufferSize (1000);
-
-    // TODO: flatten events so we only see ever get events for the selected workflow.
-    this.allEvents = [];
 };
 Grayson.prototype.log_info = function (m) {
     if (window.console && console.log) {
@@ -1653,15 +1648,11 @@ Grayson.prototype.updateNodeLogs = function (event, node) {
     }
 };
 Grayson.prototype.onUpdateJobStatus = function (event) {
-    //grayson.log_debug ('on-event: ' + event);
-    if (oldEvents)
-	this.allEvents.push (event);
     var grokedEvent = this.grokEvent (event);
     if (grokedEvent) {
 	var colorMap = this.getColorMap ();
 	if (grokedEvent.jobName && grokedEvent.state in colorMap) {
-	    // a transfer job containing several files. update status for each node.
-	    //if (grokedEvent.jobName == '@multfiles') {
+	    // a transfer job containing one or more files. update status for each node.
 	    if (grokedEvent.jobName.indexOf ('stage_') == 0) {
 		var transfer = null;
 		var jobName = null;
@@ -1669,13 +1660,24 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
 		    transfer = event.transfer [c];
 		    jobName = basename (transfer.sourceFile);
 		    grokedEvent.jobName = jobName;
-		    grayson.applyEvent (event, grokedEvent);
-		    /*
-		    var node = this.model.byName (event.flowId, jobName);
-		    if (node) {
-			this.applyNodeState (node, grokedEvent.state, event);
+
+		    var node = null;
+
+		    var applied = false;
+/*
+		    var flowName = grayson.prefix (basename (event.flowId));
+		    if (flowName != null) {
+			node = this.model.byName (flowName, grokedEvent.jobName);
+			if (node) {
+			    applied = this.applyNodeState (node, grokedEvent.state, event);
 			}
-		    */
+		    }
+*/
+		    if (! applied) {
+			if (node == null) {
+			    grayson.applyEvent (event, grokedEvent);
+			}
+		    }
 		}
 	    } else {
 		var node = this.model.byName (event.flowId, grokedEvent.jobName);
@@ -1705,10 +1707,20 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
     }
 };
 Grayson.prototype.applyEvent = function (event, grokedEvent) {
+    var applied = false;
     var context = grayson.view.getContext ();
     var logdir = event.logdir;
     var logBase = basename (logdir);
+
+    // for subdaxen, flow name will be the last thing before the underbar.
     var parts = logBase.split ('_');
+
+    // root dax - flowName is second to last directory name in path.
+    if (parts && parts.length == 1) {
+	parts = logdir.split ('/');
+    }
+
+
     if (parts && parts.length > 1) {
         var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
         var concreteName = parts [1].replace ("gid", ".") + ".dax";
@@ -1721,24 +1733,31 @@ Grayson.prototype.applyEvent = function (event, grokedEvent) {
         concreteName = concreteName.replace (daxRunPattern, "dax");
         var concreteName2 = parts [0] + ".dax";
 
-	if (context && context.instance) {
+/*
+	if ((! context) ||
+	    (context && context.instance)) {
+*/
+	if (flowName) {
+            var node = this.model.byName (flowName, grokedEvent.jobName);
+            if (node) {
+		applied = this.applyNodeState (node, grokedEvent.state, event);
+            }
+	}
+	
+/*
             if (context.instance.endsWith (concreteName)  ||
 		context.instance.endsWith (concreteName2) ||
 		context.instance.endsWith (concreteName3))
             {
-		if (flowName) {
-                    var node = this.model.byName (flowName, grokedEvent.jobName);
-                    if (node) {
-			this.applyNodeState (node, grokedEvent.state, event);
-                    }
-		}
 	    }
-        }
+//        }
+*/
     }
-
+    return applied;
 };
 
 Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
+    var applied = false;
     if (node && node.graphNode) {
 
 	this.updateNodeLogs (event, node);
@@ -1760,6 +1779,7 @@ Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
 		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
 		    }, delay);
+	    applied = true;
 	} else {
 	    node.graphNode.animate ({
 		    stroke         : '#000',
@@ -1773,9 +1793,12 @@ Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
 		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
 	    }, delay);	    
+	    applied = true;
 	}
     }
+    return applied;
 };
+/*
 Grayson.prototype.applyEvents = function (events) {
     if (events) {
 	var context = this.view.getContext ();
@@ -1814,6 +1837,7 @@ Grayson.prototype.applyEvents = function (events) {
 	}
     }
 };
+*/
 Grayson.prototype.processSubworkflows = function (workflow) {
     grayson.log_debug ("grayson:process-subworkflows: ");
     consumedEvents = [];

@@ -581,8 +581,6 @@ class PegasusWorkflowModel (WorkflowModel):
         self.exes = {}
         self.propertyMap = {}
         self.nodes = {}
-        #self.workflowRoot = os.getcwd ()
-
         self.jobTransformations = {}
         
         self.variableMap = {
@@ -594,11 +592,6 @@ class PegasusWorkflowModel (WorkflowModel):
         self.variableMap ['literalToVariable'][literal] = variable
         self.variableMap ['literalToNodeId'][literal] = id
         logger.debug ("variablematch: recorded lit=%s var=%s id=%s", literal, variable, id)
-
-        '''
-    def setWorkflowRoot (self, workflowRoot):
-        self.workflowRoot = workflowRoot
-        '''
 
     def setProperties (self, nodeId, properties):
         logger.debug ("wms:pegasus:dax:setprops: (%s)->(%s)" % (nodeId, properties))
@@ -637,7 +630,7 @@ class PegasusWorkflowModel (WorkflowModel):
             logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
             pfn = PFN (fileURL, site)
             file.addPFN (pfn)
-            #self.adag.addFile (file)
+            self.adag.addFile (file)
             self.files [fileName] = file
         return file
 	
@@ -686,7 +679,7 @@ class PegasusWorkflowModel (WorkflowModel):
             e_exe.addPFN (PFN (path, site))
             if not installed:
                 e_exe.installed = installed
-            #self.adag.addExecutable (e_exe)
+            self.adag.addExecutable (e_exe)
             self.exes [name] = e_exe
 
             transformation = Transformation (name, self.namespace, version)
@@ -735,7 +728,7 @@ class PegasusWorkflowModel (WorkflowModel):
                 fileElement = tuple [0]
                 file = fileElement.getDaxNode ()
                 try:
-                    #abstractJob.uses (file, link=link)
+                    abstractJob.uses (file, link=link)
                     arg = tuple [1]
                     if arg:
                         abstractJob.addArguments (arg, file)
