@@ -103,13 +103,13 @@ class JobContext:
     
 class CompilerContext (object):
     """ Models compiler properties which are shared across recursive invocations. """
-    def __init__(self):
+    def __init__(self, outputDir):
         self.topModel = None
         self.properties = ASTElement (Node ("x", "{}", ""))
         self.localFileLocations = {}
         self.aspects = []
         self.sites = "local"
-        self.workflowManagementSystem = PegasusWMS ()
+        self.workflowManagementSystem = PegasusWMS (outputDir)
         self.processedWorkflows = []
         self.inputModelProperties = {}
         self.allModelPaths = []
@@ -131,7 +131,7 @@ class GraysonCompiler:
     SYNTHETIC_ID = 0
     LAMBDA_ID = 0
 
-    def __init__(self, namespace, version, logManager, clean=False, appHome=None):
+    def __init__(self, namespace, version, logManager, outputDir, clean=False, appHome=None):
         self.ABSTRACT = "abstract"
         self.GRAYSON_HOME = "graysonHome"
         self.GRAYSON_VAR = "graysonVar"
@@ -218,7 +218,7 @@ class GraysonCompiler:
         self.roots = []          # Jobs that dont depend on other jobs
         self.contextModels = []  # Models that provide context (are not workflows)
 
-        self.compilerContext = CompilerContext ()
+        self.compilerContext = CompilerContext (outputDir)
         self.workflowModel = self.compilerContext.getWorkflowManagementSystem().createWorkflowModel (self.namespace)
          
         path = os.getenv (self.GRAYSONPATH)
@@ -321,10 +321,6 @@ class GraysonCompiler:
 
     def getModelPath (self):
         return self.compilerContext.modelPath
-
-    def setOutputDir (self, outputDir):
-        self.compilerContext.getWorkflowManagementSystem().setOutputDir (outputDir)
-        self.workflowModel.setWorkflowRoot (outputDir)
 
     def getOutputDir (self):
         return self.compilerContext.getWorkflowManagementSystem().getOutputDir ()
@@ -746,11 +742,12 @@ class GraysonCompiler:
     def createComponentCompiler (self, elementName, version):
         """ Create a compiler object, promoting this compiler context. """
         logger.debug ("ast:compile-component: start(%s)" % elementName )
-        compiler = GraysonCompiler (namespace = elementName,
-                                    version = version,
+        compiler = GraysonCompiler (namespace  = elementName,
+                                    version    = version,
                                     logManager = self.logManager,
-                                    clean = self.clean,
-                                    appHome = self.appHome)
+                                    clean      = self.clean,
+                                    appHome    = self.appHome,
+                                    outputDir  = self.getOutputDir ())
         compiler.compilerContext = self.compilerContext
         return compiler
 
@@ -805,7 +802,8 @@ class GraysonCompiler:
                 if text:
                     node.setType (self.replaceMapVariables (text, context))
                     logger.debug ("ast:compile-workflow:context:text: (%s)-> %s", node.getLabel (), node.getType ())
-                node.setLabel (self.replaceMapVariables (node.getLabel (), context))
+                literal = self.replaceMapVariables (node.getLabel (), context, recordMatches=node.getId (), workflowModel = compiler.workflowModel)
+                node.setLabel (literal)
 
         ''' Compile and write output '''
         self.executeCompiler (compiler, elementName, workflowName)
@@ -832,7 +830,7 @@ class GraysonCompiler:
     #{ 5.0 Map Operator
     #////////////////////////////////////////////////////////////
 
-    def replaceMapVariables (self, text, context):
+    def replaceMapVariables (self, text, context, recordMatches = None, workflowModel = None):
         """ Replace map variables in the text of labels and properties of objects.
 
         This applies to sub-workflows or other object instances created by operators like map or aspect.
@@ -858,6 +856,9 @@ class GraysonCompiler:
                 text = text.replace (overall, unicode (eval (expression)))
             logger.debug ("ast:replace-map-vars:  outcome[%s]", text)
 
+        if recordMatches and workflowModel and not value == text:
+            workflowModel.addToVariableMap (value, text, recordMatches)
+
         value = text
 
         #if text and variableMask in text or mapVariableMask in text or '$' in text or '@' in text:
@@ -871,6 +872,10 @@ class GraysonCompiler:
                 template = Template (text)
                 value = template.safe_substitute (context)
                 logger.debug ("ast:replace-map-vars:  outcome[%s]", value)
+
+        if recordMatches and workflowModel and not value == text:
+            workflowModel.addToVariableMap (value, text, recordMatches)
+
         return value
 
     def getSyntheticId (self, baseId, prefix):
@@ -1944,7 +1949,6 @@ class GraysonCompiler:
         if target.getType () == self.ABSTRACT and recurse:
             self.ast_effectInheritance (target, "%s%s" % (tab, "    "))
 
-
     def ast_processEdgeOperators (self, edgeElements):
         """ Process edge operators. """
         result = []
@@ -2310,11 +2314,15 @@ class GraysonCompiler:
             logger.addHandler (fileHandler)
 
         ''' initialize compiler '''
-        compiler = GraysonCompiler (namespace, version, logManager, clean, appHome)
+        compiler = GraysonCompiler (namespace   = namespace,
+                                    version     = version,
+                                    logManager  = logManager,
+                                    clean       = clean,
+                                    appHome     = appHome,
+                                    outputDir   = outputdir)
         compiler.output = output
         if type(output) == file:
             compiler.output = "stdout"
-        compiler.setOutputDir (outputdir)
         compiler.setSites (sites)        
         compiler.setPackaging (packaging)
         if modelProperties:

@@ -1,55 +1,23 @@
 dax name: <scan-uber>
 files:
-   file: <adjacency.txt>
-      pfn: <file://.*/target/scan/work/outputs/adjacency.txt>
-   file: <database.txt>
-      pfn: <file://.*/target/scan/work/outputs/database.txt>
-   file: <fasta-chunks.tar.gz>
-      pfn: <file://target/scan/work/outputs/fasta-chunks.tar.gz>
-   file: <fasta.txt>
-      pfn: <file://target/scan/input/fasta.txt>
-   file: <full-sifs.txt>
-      pfn: <file://.*/target/scan/work/outputs/full-sifs.txt>
-   file: <matrix.txt>
-      pfn: <file://.*/target/scan/work/outputs/matrix.txt>
-   file: <score.x>
-      pfn: <file://target/scan/bin/score.x>
 jobs:
-   job: <map>, id: <1n12.synth> namespace: <scan-uber> version: <None>
-      usedfile: <fasta-chunks.tar.gz>
+   job: <map>, id: <1n12_synth> namespace: <scan-uber> version: <1.0>
          profile: namespace:<env> key:<CONDOR_HOME> value:<...>
          profile: namespace:<env> key:<GLOBUS_LOCATION> value:<...>
          profile: namespace:<env> key:<GRAYSON_HOME> value:<...>
          profile: namespace:<env> key:<LD_LIBRARY_PATH> value:<...>
          profile: namespace:<env> key:<PATH> value:<...>
          profile: namespace:<env> key:<PYTHONPATH> value:<...>
-   job: <prepare>, id: <1n9> namespace: <scan-uber> version: <None>
-      usedfile: <fasta-chunks.tar.gz>
-      usedfile: <fasta.txt>
-   job: <reduce>, id: <1n10> namespace: <scan-uber> version: <None>
-      usedfile: <full-sifs.txt>
+   job: <prepare>, id: <1n9> namespace: <scan-uber> version: <1.0>
+   job: <reduce>, id: <1n10> namespace: <scan-uber> version: <1.0>
    dax-job: <scan-flow.dax>
-      usedfile: <fasta-chunks.tar.gz>
-   job: <score>, id: <1n2> namespace: <scan-uber> version: <None>
-      usedfile: <adjacency.txt>
-      usedfile: <database.txt>
-      usedfile: <full-sifs.txt>
-      usedfile: <matrix.txt>
-      usedfile: <score.x>
+   job: <score>, id: <1n2> namespace: <scan-uber> version: <1.0>
 transformations:
 executables:
-   executable: <map> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://.*/bin/graysonc>
-   executable: <prepare> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/scan/bin/prepare.sh>
-   executable: <reduce> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/scan/bin/reduce.sh>
-   executable: <score> namespace: <scan-uber>, version: <None>, arch: <None>, os: <linux>
-      pfn: <file://target/scan/bin/score.sh>
 dependencies:
    dependency: <1n10>
       parent: parent=><scan-flow.dax> edge_label=><None>
-   dependency: <1n12.synth>
+   dependency: <1n12_synth>
       parent: parent=><prepare> edge_label=><None>
    dependency: <1n2>
       parent: parent=><reduce> edge_label=><None>

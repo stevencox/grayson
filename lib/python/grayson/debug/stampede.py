@@ -120,8 +120,40 @@ class EventScanner (object):
 
         return event
 
+        '''
+SELECT job.job_id AS job_job_id,
+       job.exec_job_id AS job_exec_job_id,
+       job_instance.site AS job_instance_site,
+       job_instance.sched_id AS job_instance_sched_id,
+       job_instance.stdout_file AS job_instance_stdout_file,
+       job_instance.stderr_file AS job_instance_stderr_file,
+       job_instance.exitcode AS job_instance_exitcode,
+       CAST(jobstate.timestamp AS FLOAT) AS TIMESTAMP,
+       jobstate.state AS jobstate_state,
+       host.hostname AS host_hostname,
+       workflow.user AS workflow_user,
+       workflow.dax_file AS workflow_dax_file,
+       workflow.submit_dir AS work_dir
+FROM job, job_instance, jobstate, HOST, workflow
+WHERE job.job_id = job_instance.job_id
+  AND job_instance.host_id = HOST.host_id
+  AND job_instance.job_instance_id = jobstate.job_instance_id
+  AND job.wf_id = workflow.wf_id
+  AND jobstate.TIMESTAMP > ?
+  AND NOT ((job_instance.exitcode = ?
+            OR job_instance.exitcode = ?)
+           AND (jobstate.state = ?
+                OR jobstate.state = ?))
+  AND (job.exec_job_id NOT LIKE ?
+       OR job.exec_job_id LIKE ?)
+  AND workflow.dax_file LIKE ?
+  AND job.exec_job_id NOT LIKE ?
+  AND job.exec_job_id NOT LIKE ?
+  AND job.exec_job_id NOT LIKE ?
+  AND job.exec_job_id NOT LIKE ?
+ORDER BY jobstate.TIMESTAMP
+'''
     def selectWorkflowEvents (self, since = 0, daxen = {}, jobFilter = None):
-
         ''' Select events from the stampede schema. '''
         query = self.database.session.query (Job.job_id,
                                              Job.exec_job_id,
@@ -144,9 +176,8 @@ class EventScanner (object):
         query = query.order_by (Jobstate.timestamp)
 
         ''' don't include intermediate statuses '''
-        for status in [ 'SUBMIT', 'EXECUTE' ]:
-            query = query.filter (not_(and_(or_(JobInstance.exitcode == 0, JobInstance.exitcode == 1),
-                                            Jobstate.state == status)))
+        query = query.filter (not_(and_(or_(JobInstance.exitcode == 0, JobInstance.exitcode == 1),
+                                        or_(Jobstate.state == 'SUBMIT', Jobstate.state == 'EXECUTE'))))
 
         ''' ensure that either (a) the event does not pertain to a subdax or that,
                                (b) if it does, the subdax is one in the list of daxen '''

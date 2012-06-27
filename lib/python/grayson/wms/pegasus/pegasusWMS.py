@@ -43,17 +43,20 @@ logger = logging.getLogger (__name__)
 
 ''' A plugin for the Pegasus WMS. '''
 class PegasusWMS (WorkflowManagementSystem):
-    def __init__(self):
-        self.outputDir = os.getcwd ()
+    def __init__(self, outputDir):
+        self.outputDir = outputDir
+        if not self.outputDir:
+            raise ValueError ("outputDir required")
         self.pegasusProperties = PegasusProperties ()
         self.siteCatalog = SiteCatalogXML (self)
         self.transformationCatalog = PegasusTC ()
         self.replicaCatalog = PegasusFileRC ()
         self.dataConfiguration = None
-    def setOutputDir (self, outputDir):
-        self.outputDir = os.path.abspath (outputDir)
+
     def getOutputDir (self):
+        logger.debug ("getoutputdir: %s %s", self.outputDir, self)
         return self.outputDir
+
     def getSiteCatalog (self):
         return self.siteCatalog
     def getTransformationCatalog (self):
@@ -61,7 +64,7 @@ class PegasusWMS (WorkflowManagementSystem):
     def getReplicaCatalog (self):
         return self.replicaCatalog
     def createWorkflowModel (self, namespace):
-        return PegasusWorkflowModel (namespace)
+        return PegasusWorkflowModel (namespace, self)
     def enableShellExecution (self, enabled=True):
         return self.pegasusProperties.enableShellExecution (enabled)
     def isShellExecutionEnabled (self):
@@ -568,20 +571,34 @@ class SiteCatalogXML(object):
     Wraps the Pegasus DAX API and ADAG in particular. '''
 class PegasusWorkflowModel (WorkflowModel):
     
-    def __init__(self, namespace):
+    def __init__(self, namespace, wms):
         logger.debug ("wms:pegasus:create-workflowmodel: %s" % namespace)
+        self.wms = wms
+        logger.debug ("outputdir: %s", wms.getOutputDir ())
         self.adag = ADAG (namespace)
         self.namespace = namespace
         self.files = {}
         self.exes = {}
         self.propertyMap = {}
         self.nodes = {}
-        self.workflowRoot = os.getcwd ()
+        #self.workflowRoot = os.getcwd ()
 
         self.jobTransformations = {}
         
+        self.variableMap = {
+            'literalToVariable' : {},
+            'literalToNodeId'   : {}
+            }
+        
+    def addToVariableMap (self, literal, variable, id):
+        self.variableMap ['literalToVariable'][literal] = variable
+        self.variableMap ['literalToNodeId'][literal] = id
+        logger.debug ("variablematch: recorded lit=%s var=%s id=%s", literal, variable, id)
+
+        '''
     def setWorkflowRoot (self, workflowRoot):
         self.workflowRoot = workflowRoot
+        '''
 
     def setProperties (self, nodeId, properties):
         logger.debug ("wms:pegasus:dax:setprops: (%s)->(%s)" % (nodeId, properties))
@@ -608,7 +625,8 @@ class PegasusWorkflowModel (WorkflowModel):
         if not file:            
             file = File (fileName)
             if not fileURL:
-                fileURL = "file://%s/%s" % (self.workflowRoot, fileName)
+                #fileURL = "file://%s/%s" % (self.workflowRoot, fileName)
+                fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
             if not site:
                 site = "local"
  
@@ -739,6 +757,19 @@ class PegasusWorkflowModel (WorkflowModel):
                         
     def writeExecutable (self, stream):
         self.adag.writeXML (stream)
+        filename = "%s.%s" % (self.namespace, 'obj')
+        filepath = os.path.join (self.wms.getOutputDir (), filename)
+        try:
+            output = None
+            try:
+                output = open (filepath, 'w')
+                output.write (json.dumps (self.variableMap, indent=3, sort_keys=True))                
+                output.flush ()                
+            finally:
+                if output:
+                    output.close ()
+        except IOError:
+            traceback.print_stack ()
 
     def getADAG (self):
         return self.adag

@@ -175,8 +175,14 @@ def get_job_output (request):
 
 @login_required
 def get_flow_file (request):
-    path = os.path.join (settings.GRAYSONWEB_WORKFLOW_ROOT, request.REQUEST ['path'])    
+    username = ''
+    if 'addUser' in request.REQUEST:
+        user = ViewUtil.get_user (request)
+        username = user.username
+
+    path = os.path.join (settings.GRAYSONWEB_WORKFLOW_ROOT, username, request.REQUEST ['path'])    
     text = GraysonUtil.readFileAsString (path) if os.path.exists (path) else ''
+    print ("path: %s", path)
     return ViewUtil.get_text_response (text)
     
 @login_required

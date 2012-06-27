@@ -28,44 +28,40 @@ function GraysonGraph () {
     this.nodeMap = {};
     this.labelMap = {};
     this.isRoot = false;
-
-    // variables
     this.variableMap = {};
-    this.variablePattern = new RegExp ('\\$\\{.*?\\}');
 }
+GraysonGraph.prototype.setVariableMap = function (varMap) {
+    this.variableMap = varMap;
+};
 GraysonGraph.prototype.mapNode = function (node) {
     var label = node.label.text;
     this.nodeMap [node.id] = node;
     this.labelMap [label] = node;
-
-    // variables
-    var variable = this.variablePattern.exec (label);
-    if (variable != null) {
-	var pattern = label.replace (variable, '.*?');
-	this.variableMap [pattern] = {
-	    pattern : new RegExp (pattern),
-	    node    : node
-	};
-    }
-
     this.graph.push (node);
     node.graph = this;
 };
 GraysonGraph.prototype.byName = function (name) {
-    var result = null;
-    if (name in this.labelMap) {
-	result = this.labelMap [name];
-    } else {
-	var keys = Object.keys (this.variableMap);
-	var match = null;
-	var key = null;
-	var pattern = null;
-	for (var c = 0, len = keys.length; c < len; c++) {
-	    key = keys [c];
-	    pattern = this.variableMap [key].pattern;
-	    if (pattern.exec (name) !== null) {
-		result = this.variableMap [key].node;
-		break;
+    var result = this.labelMap [name];
+    if (result == null || result == 'undefined') {
+	if (this.variableMap) {
+	    var literalToNodeId = this.variableMap['literalToNodeId'];
+	    if (literalToNodeId && name in literalToNodeId) {
+		var id = this.variableMap['literalToNodeId'][name];
+		if (id) {
+
+		    var numpat = new RegExp ('^[0-9]*');
+		    id = id.replace (numpat, '');
+
+		    result = this.nodeMap [id];
+
+		    if (result != null) {
+			result.graphText.attr ('text', name);
+		    } else {
+			for (k in this.nodeMap) {
+			    console.log (' -- ' + k + ' => ' + this.nodeMap [k].label.text);
+			}
+		    }
+		}
 	    }
 	}
     }
@@ -132,6 +128,7 @@ GraysonModel.prototype.createNode = function (args) { //workflow, id, json, fill
 	this.add ({
 	    id        : args.id,
 	    graphNode : null,
+	    graphText : null,
 	    graph     : null,
 	    workflow  : args.workflow,
 	    instances : [],
@@ -158,6 +155,10 @@ GraysonModel.prototype.createNode = function (args) { //workflow, id, json, fill
 		        "opacity"     : 1
 		    },
 		    text  : args.label.text
+	    },
+	    scheduler : {
+		id     : null,
+		status : null 
 	    }
 	});
     }    
@@ -247,8 +248,12 @@ GraysonAPI.prototype.formJobOutputURL = function (pattern) {
 				  this.flowContext.runId,
 				  pattern);
 };
-GraysonAPI.prototype.formFlowFileURL = function (path) {
-    return [ "get_flow_file?path="  , path ].join ('');
+GraysonAPI.prototype.formFlowFileURL = function (path, addUser) {
+    var addUserParam = '';
+    if (addUser) {
+	addUserParam = 'addUser=true&';
+    }
+    return [ "get_flow_file?", addUserParam, "path=", path ].join ('');
 };
 
 /* TODO: investigate deleting job output stuff now that pats are event driven. */
@@ -853,45 +858,57 @@ GraysonView.prototype.clickNode = function (event) {
 		var flowName = node.label.text;
 		appView.selectWorkflow (flowName);
 
-
-
-
-		if (oldEvents) {
-		    //grayson.applyEvents (grayson.allEvents);
-		} else {
-		    var daxContext = appView.getContext ();
-		    if (daxContext && daxContext.instance) {
-
-			var flowContext = appView.grayson.api.getFlowContext ();
-			/*
-			var daxen = [ basename (flowContext.workflowId) ];
-			for (key in grayson.view.context) {
-			    if (typeof key == 'string')
-				daxen.push (key);
-			}
-			var dax = daxen.join (',');
-			*/
-
-			grayson.log_info ('--> getting flow events: workflowId: ' + flowContext.workflowId + 
-					  ', runId: ' + flowContext.runId);
-			appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', flowContext.workdir,
-						       '&workflowid=',              flowContext.workflowId,
-						       '&runid=',                   flowContext.runId,
-						       '&dax=',                     daxContext.instance  ].join (''),
-						     function (response) {
-							 if (response && response.status == 'ok') {
-							 } else {
-							     grayson.log_error ('error status: ' + response);
-							 }
-						     });
+		var daxContext = appView.getContext ();
+		if (daxContext && daxContext.instance) {
+		    
+		    var flowContext = appView.grayson.api.getFlowContext ();
+		    
+		    var subFlow = daxContext.instance.split ('.') [0];
+		    var graphModel = grayson.model.getGraph (subFlow);
+		    if (graphModel && graphModel.graph) {
+			$.each (graphModel.graph, function (key, node) {
+			    grayson.applyNodeState (node, 'blank', null, true);
+			});
 		    }
+
+		    var objFile = appView.grayson.api.formFlowFileURL ([ flowContext.workdir,
+									 daxContext.instance.replace ('.dax', '.obj') ].join ('/'),
+								       true);
+		    grayson.log_debug ('loading obj file: ' + objFile);
+		    appView.grayson.api.getJSON (objFile,
+						 function (object) {
+						     grayson.log_info ("got object: " + object);
+						     console.log ('==================================================');
+						     console.log (object);
+						     
+						     var graphId = grayson.prefix (daxContext.instance);
+						     var graph = grayson.model.getGraph (graphId);
+						     if (graph) {
+							 graph.setVariableMap (object);
+
+
+							 grayson.log_info ('--> getting flow events: workflowId: ' + flowContext.workflowId + 
+									   ', runId: ' + flowContext.runId);
+							 appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', flowContext.workdir,
+											'&workflowid=',              flowContext.workflowId,
+											'&runid=',                   flowContext.runId,
+											'&dax=',                     daxContext.instance  ].join (''),
+										      function (response) {
+											  if (response && response.status == 'ok') {
+											  } else {
+											      grayson.log_error ('error status: ' + response);
+											  }
+										      });
+
+
+						     }
+						 },
+						 function (err) {
+						     grayson.log_error ('got error: ' + err);
+						 });
+
+
 		}
-
-
-
-
-
-
 	    } else if (appView.isClickable (node)) {
 		var workflowId = node.graph.isRoot ? '' : appView.getContext().instance;
 		var paths = appView.getPaths (workflowId, node.label.text, node);
@@ -1092,12 +1109,6 @@ GraysonView.prototype.connectFlow = function (event) {
     appView.onRenderWorkflow (workflowId, graph, null, function (g) {
 	appView.onRootGraphRendered (workflowId, graph, g);
 
-
-
-
-
-
-
 	var daxen = [ basename (workflowId) ];
 	for (var c = 0; c < g.graph.length; c++) {
 	    var n = g.graph [c];
@@ -1111,7 +1122,6 @@ GraysonView.prototype.connectFlow = function (event) {
 		}
 	    }
 	}
-	
 	appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', workdir,
 				       '&workflowid=',              workflowId, 
 				       '&runid=',                   runId,
@@ -1122,50 +1132,11 @@ GraysonView.prototype.connectFlow = function (event) {
 					     grayson.log_error ("error status: " + response);
 					 }
 				     });
-
-
-
-
-
-
-
-
 	});
 
     appView.selectWorkflow (basename (graph).replace (".graphml", ""));
     if (appView.detailView)
 	appView.detailView.setEventBufferSize (100);
-
-/*
-
-    var daxen = [];
-    var graph = grayson.model.getGraph (basename (workflowId)).graph;
-    for (var c = 0; c < graph.length; c++) {
-	var n = graph [c];
-	if (n && n.annot != null && (n.annot.type === 'workflow' || 
-				     n.annot.type === 'dax'      || 
-				     n.annot.type === 'map'      )) 
-	{
-	    if (n.label && n.label.text) {
-		console.log (n.annot + " " + n.label.text); 
-		daxen.push (n.label.text);
-	    }
-	}
-    }
-
-    appView.grayson.api.getJSON ([ 'get_flow_events/?workdir=', workdir,
-				   '&workflowid=',              workflowId, 
-				   '&runid=',                   runId,
-				   '&dax=',                     daxen.join (',') ].join (''),
-				 function (response) {
-				     if (response && response.status == "ok") {
-				     } else {
-					 grayson.log_error ("error status: " + response);
-				     }
-				 });
-
-*/
-
 };
 GraysonView.prototype.onRootGraphRendered = function (flowId, graphName, graph) {
     base = dirname (flowId);
@@ -1253,31 +1224,33 @@ GraysonView.prototype.initializeFlows = function (callback) {
 	});
 };
 GraysonView.prototype.createConnections = function (graph, paths, paper) {
-    for (var n = 0; n < graph.length; n++) {
-	var node = graph [n];
-	var connections = [];
-	for (var c = 0; c < paths.length; c++) {
-	    var path = paths [c];
-	    var source = null;
-	    var target = null;
-	    if (path.source && path.target) {
-		if (path.source.id == node.id || path.target.id == node.id) {
-		    if (path.source.id == node.id) {
-			source = node;
-			target = path.target;
-		    } else if (path.target.id == node.id) {
-			source = node;
-			target = path.target;
-		    }
-		    if (source && target && (source != target)) {
-			var connection = paper.connection (source.graphNode,
-							   target.graphNode,
-							   null,
-							   "#9a9|2");
-			//connection.line.toBack ().toBack ();
-			connection.line.toFront().toFront ();
-			connections = paper ["connections"];
-			connections.push (connection);
+    if (graph != null) {
+	for (var n = 0; n < graph.length; n++) {
+	    var node = graph [n];
+	    var connections = [];
+	    for (var c = 0; c < paths.length; c++) {
+		var path = paths [c];
+		var source = null;
+		var target = null;
+		if (path.source && path.target) {
+		    if (path.source.id == node.id || path.target.id == node.id) {
+			if (path.source.id == node.id) {
+			    source = node;
+			    target = path.target;
+			} else if (path.target.id == node.id) {
+			    source = node;
+			    target = path.target;
+			}
+			if (source && target && (source != target)) {
+			    var connection = paper.connection (source.graphNode,
+							       target.graphNode,
+							       null,
+							       "#9a9|2");
+			    //connection.line.toBack ().toBack ();
+			    connection.line.toFront().toFront ();
+			    connections = paper ["connections"];
+			    connections.push (connection);
+			}
 		    }
 		}
 	    }
@@ -1342,6 +1315,7 @@ GraysonView.prototype.renderGraphNodes = function (workflow, paper) {
 	    //set.draggable.enable ();
 	    set.push (rectangle, text);
 	    node.graphNode = rectangle;
+	    node.graphText = text;
 	    rectangle.node.id = node.id;
 
 	    $(rectangle.node).unbind ();
@@ -1359,7 +1333,7 @@ GraysonView.prototype.renderGraphNodes = function (workflow, paper) {
 GraysonView.prototype.onRenderWorkflow = function (workflow, graphName, graphURI, callback) {
     var appView = this;
     var drawdivId = this.tabs.addDrawTab (basename (graphName));
-    grayson.log_debug ('grayson:renderworkflow:start');
+    grayson.log_debug ([ 'workflow: ', workflow, ' graphName: ', graphName, ' graphURI: ', graphURI ].join (''));
     $('#' + drawdivId).html ("");
     var paper = new Raphael (drawdivId, "100%", "100%");
     //paper.draggable.enable ();
@@ -1373,105 +1347,104 @@ GraysonView.prototype.onRenderWorkflow = function (workflow, graphName, graphURI
     }
     
     this.grayson.api.getXML (graphURI, function (xml) {
-	    grayson.log_debug ('grayson:renderworkflow: getworkflow.success (' + graphName + ')');
-	    var nodeDataKey = $(xml).find ("key[attr.name='description'][for='node']").attr ('id');
-	    var edgeDataKey = $(xml).find ("key[attr.name='description'][for='edge']").attr ('id');
-	    $(xml).find ('key').each (function () {
-		var attrName = $(this).attr ('attr.name');
-		var isFor = $(this).attr ('for');
-		if (attrName == 'description') {
-		    var id = $(this).attr ('id');
-		    if (isFor == 'node') {
-			nodeDataKey = id;
-		    } else if (isFor == 'edge') {
-			edgeDataKey = id;
-		    }
-		}
-	    });
-	    $(xml).find ('node').each (function (){
+	grayson.log_debug ('grayson:renderworkflow: getworkflow.success (' + graphName + ')');
+	var nodeDataKey = $(xml).find ("key[attr.name='description'][for='node']").attr ('id');
+	var edgeDataKey = $(xml).find ("key[attr.name='description'][for='edge']").attr ('id');
+	$(xml).find ('key').each (function () {
+	    var attrName = $(this).attr ('attr.name');
+	    var isFor = $(this).attr ('for');
+	    if (attrName == 'description') {
 		var id = $(this).attr ('id');
-		var folderType = $(this).attr('yfiles.foldertype');
-		if (! folderType) {
-		    var json = $(this).find (jsonKey).text ();
-		    var fill = $(this).find (NS + 'Fill').attr ('color');
-		    var geom = $(this).find (NS + 'Geometry');
-		    var shape = $(this).find (NS + 'Shape');
-		    var nodeDataExpr = "data[key='" + nodeDataKey + "']";
-		    var nodeDataExpr = "data";
-		    var annotations = null;
-		    $(this).find (nodeDataExpr).each (function () {
-			var text = $(this).text ();
-			var key = $(this).attr ('key');
-			if ( $(this).attr ('key') == nodeDataKey)
-			    annotations = $.parseJSON (text);
-		    });
-		    var label = null;
-		    // skip empty labels
-		    $(this).find (NS + 'NodeLabel').each (function () {
-			    if ( $(this).text () !== '' ) {
-				label = $(this);
-			    }
-			});
-		    var args = {
-			id          : id,
-			workflow    : workflow,
-			annotations : annotations,
-			fill        : fill,
-			shape       : shape ? shape.attr ('type') : 'rectangle',
-			geometry    : new Geometry (geom.attr ('height'),
-						    geom.attr ('width'),
-						    geom.attr ('x'),
-						    geom.attr ('y')),
-			label       : {
-			    geometry : new Geometry (label.attr ('height'),
-						     label.attr ('width'),
-						     label.attr ('x'),
-						     label.attr ('y')),
-			    textColor  : label.attr ('textColor'),
-			    fontSize   : label.attr ('fontSize'),
-			    fontStyle  : label.attr ('fontStyle'),
-			    text       : label.text ()
-			}
-		    };
-		    appView.grayson.model.createNode (args); //workflow, id, json, fill, geom, shape, annotations, label);
+		if (isFor == 'node') {
+		    nodeDataKey = id;
+		} else if (isFor == 'edge') {
+		    edgeDataKey = id;
 		}
-	    });
-	    var paths = [];
-	    $(xml).find ('edge').each (function () {
-		var id = $(this).attr ('id');
-		var source = appView.grayson.model.byId (workflow, $(this).attr ('source'));
-		var target = appView.grayson.model.byId (workflow, $(this).attr ('target'));
-		var json = $(this).find (jsonKey).text ();
-		$(this).find (NS + 'Path').each (function () {
-		    var path = {
-			source : source,
-			target : target,
-			sx : toFloat ($(this).attr ('sx')),
-			sy : toFloat ($(this).attr ('sy')),
-			tx : toFloat ($(this).attr ('tx')),
-			ty : toFloat ($(this).attr ('ty')),
-			points : []
-		    };
-		    paths.push (path);
-		    $(this).find (NS + 'Point').each (function () {
-			var px = toFloat ($(this).attr ('x'))
-			var py = toFloat ($(this).attr ('y'));
-			path.points.push ({ x : px, y : py });
-			grayson.log_debug ('grayson:parse:point: (x:' + px + ', y:' + py + ')');
-		    });
-		});
-	    });
-	    var graph = grayson.model.getGraphNodes (workflow);
-	    appView.renderGraphNodes (workflow, paper);
-	    appView.createConnections (graph, paths, paper);
-	    appView.createFlowSelectors (workflow);
-	    appView.grayson.processSubworkflows (workflow);
-	    appView.grayson.setEventBufferSize (0); 
-
-	    if (callback) {
-		callback (appView.grayson.model.getGraph (workflow));
 	    }
 	});
+	$(xml).find ('node').each (function (){
+	    var id = $(this).attr ('id');
+	    var folderType = $(this).attr('yfiles.foldertype');
+	    if (! folderType) {
+		var json = $(this).find (jsonKey).text ();
+		var fill = $(this).find (NS + 'Fill').attr ('color');
+		var geom = $(this).find (NS + 'Geometry');
+		var shape = $(this).find (NS + 'Shape');
+		var nodeDataExpr = "data[key='" + nodeDataKey + "']";
+		var nodeDataExpr = "data";
+		var annotations = null;
+		$(this).find (nodeDataExpr).each (function () {
+		    var text = $(this).text ();
+		    var key = $(this).attr ('key');
+		    if ( $(this).attr ('key') == nodeDataKey)
+			annotations = $.parseJSON (text);
+		});
+		var label = null;
+		// skip empty labels
+		$(this).find (NS + 'NodeLabel').each (function () {
+		    if ( $(this).text () !== '' ) {
+			label = $(this);
+		    }
+		});
+		var args = {
+		    id          : id,
+		    workflow    : workflow,
+		    annotations : annotations,
+		    fill        : fill,
+		    shape       : shape ? shape.attr ('type') : 'rectangle',
+		    geometry    : new Geometry (geom.attr ('height'),
+						geom.attr ('width'),
+						geom.attr ('x'),
+						geom.attr ('y')),
+		    label       : {
+			geometry : new Geometry (label.attr ('height'),
+						 label.attr ('width'),
+						 label.attr ('x'),
+						 label.attr ('y')),
+			textColor  : label.attr ('textColor'),
+			fontSize   : label.attr ('fontSize'),
+			fontStyle  : label.attr ('fontStyle'),
+			text       : label.text ()
+		    }
+		};
+		appView.grayson.model.createNode (args); //workflow, id, json, fill, geom, shape, annotations, label);
+	    }
+	});
+	var paths = [];
+	$(xml).find ('edge').each (function () {
+	    var id = $(this).attr ('id');
+	    var source = appView.grayson.model.byId (workflow, $(this).attr ('source'));
+	    var target = appView.grayson.model.byId (workflow, $(this).attr ('target'));
+	    var json = $(this).find (jsonKey).text ();
+	    $(this).find (NS + 'Path').each (function () {
+		var path = {
+		    source : source,
+		    target : target,
+		    sx : toFloat ($(this).attr ('sx')),
+		    sy : toFloat ($(this).attr ('sy')),
+		    tx : toFloat ($(this).attr ('tx')),
+		    ty : toFloat ($(this).attr ('ty')),
+		    points : []
+		};
+		paths.push (path);
+		$(this).find (NS + 'Point').each (function () {
+		    var px = toFloat ($(this).attr ('x'))
+		    var py = toFloat ($(this).attr ('y'));
+		    path.points.push ({ x : px, y : py });
+		    grayson.log_debug ('grayson:parse:point: (x:' + px + ', y:' + py + ')');
+		});
+	    });
+	});
+	var graph = grayson.model.getGraphNodes (workflow);
+	appView.renderGraphNodes (workflow, paper);
+	appView.createConnections (graph, paths, paper);
+	appView.createFlowSelectors (workflow);
+	appView.grayson.processSubworkflows (workflow);
+	appView.grayson.setEventBufferSize (0); 
+	if (callback) {
+	    callback (appView.grayson.model.getGraph (workflow));
+	}
+    });
 };
 Grayson.prototype.setEventBufferSize = function (size) {
 	this.eventBufferSize = size;
@@ -1618,12 +1591,13 @@ Grayson.prototype.isSyntheticJob = function (jobName) {
 };
 Grayson.prototype.getColorMap = function () {
     return {
-	"pending"   : '#06f',  // blue
-	"executing" : '#ff3',  // yellow
-	"failed"    : '#f00',  // red
-	"succeeded" : '#3f0',  // green
-	"1"         : '#ff0',  // red
-	"0"         : '#3f0'   // green
+	"blank"     : '#366',     // the empty state
+	"pending"   : '#06f',    // blue
+	"executing" : '#ff3',    // yellow
+	"failed"    : '#f00',    // red
+	"succeeded" : '#3f0',    // green
+	"1"         : '#ff0',    // red
+	"0"         : '#3f0'     // green
     };
 };
 Grayson.prototype.prefix = function (str, sep) {
@@ -1657,10 +1631,6 @@ Grayson.prototype.grokEvent = function (event) {
 	} else {
 	    jobName = name;
 	}
-	
-	if ('transfer' in event) {
-	    jobName = '@multfiles'; //basename (event.transfer.sourceFile);
-	}
 	result = {
 	    state      : state,
 	    jobName    : jobName,
@@ -1671,13 +1641,15 @@ Grayson.prototype.grokEvent = function (event) {
     return result;
 };
 Grayson.prototype.updateNodeLogs = function (event, node) {
-    node.logdir = event.logdir;
-    node.logid = event.job;
-    if (event.detail && event.detail.daglog) {
-	node.daglog = event.log.daglog;
-    }
-    if (event.log && event.log.daglog) {
-	node.daglog = event.log.daglog;
+    if (event && node) {
+	node.logdir = event.logdir;
+	node.logid = event.job;
+	if (event.detail && event.detail.daglog) {
+	    node.daglog = event.log.daglog;
+	}
+	if (event.log && event.log.daglog) {
+	    node.daglog = event.log.daglog;
+	}
     }
 };
 Grayson.prototype.onUpdateJobStatus = function (event) {
@@ -1689,16 +1661,21 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
 	var colorMap = this.getColorMap ();
 	if (grokedEvent.jobName && grokedEvent.state in colorMap) {
 	    // a transfer job containing several files. update status for each node.
-	    if (grokedEvent.jobName == '@multfiles') {
+	    //if (grokedEvent.jobName == '@multfiles') {
+	    if (grokedEvent.jobName.indexOf ('stage_') == 0) {
 		var transfer = null;
 		var jobName = null;
 		for (var c = 0, len = event.transfer.length; c < len; c++) {
 		    transfer = event.transfer [c];
 		    jobName = basename (transfer.sourceFile);
+		    grokedEvent.jobName = jobName;
+		    grayson.applyEvent (event, grokedEvent);
+		    /*
 		    var node = this.model.byName (event.flowId, jobName);
 		    if (node) {
 			this.applyNodeState (node, grokedEvent.state, event);
-		    }	
+			}
+		    */
 		}
 	    } else {
 		var node = this.model.byName (event.flowId, grokedEvent.jobName);
@@ -1722,21 +1699,7 @@ Grayson.prototype.onUpdateJobStatus = function (event) {
 			this.renderSubFlow (subflowId, grokedEvent.jobName);
 		    }
 		}
-
-
-
-
-
-
 		grayson.applyEvent (event, grokedEvent);
-
-
-		
-
-
-
-
-
 	    }
 	}
     }
@@ -1747,19 +1710,16 @@ Grayson.prototype.applyEvent = function (event, grokedEvent) {
     var logBase = basename (logdir);
     var parts = logBase.split ('_');
     if (parts && parts.length > 1) {
-        var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.                                                                          
+        var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
         var concreteName = parts [1].replace ("gid", ".") + ".dax";
         var daxRunPattern = new RegExp ('[0-9]+\.dax');
         // todo: consolidate possible name patterns
         var concreteName3 = parts [1].
-            replace ("gid", ".").                                                                                                                                                               
+            replace ("gid", ".").
             replace (new RegExp ('\.[0-9]{3}'), '') + ".dax";
 
         concreteName = concreteName.replace (daxRunPattern, "dax");
         var concreteName2 = parts [0] + ".dax";
-
-
-
 
 	if (context && context.instance) {
             if (context.instance.endsWith (concreteName)  ||
@@ -1778,42 +1738,41 @@ Grayson.prototype.applyEvent = function (event, grokedEvent) {
 
 };
 
-
-
-
-Grayson.prototype.applyNodeState = function (node, state, event) {
+Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
     if (node && node.graphNode) {
 
 	this.updateNodeLogs (event, node);
 
        	var color = this.getColorMap () [state];
+	var stroke = 2;
+	var delay = immediate ? 0 : 1000;
 
 	if (state == 'running' || state == 'pending') {
 	    node.graphNode.animate ({
 		    stroke         : '#000',
 		    opacity        : 0.7,
-		    'stroke-width' : 3,
+		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
-		}, 50);
+		}, delay);
 	    node.graphNode.animate ({
 		    stroke         : color,
 		    opacity        : 0.7,
-		    'stroke-width' : 2,
+		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
-		    }, 50);
+		    }, delay);
 	} else {
 	    node.graphNode.animate ({
 		    stroke         : '#000',
 		    opacity        : 1,
-		    'stroke-width' : 6,
+		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
-		}, 1000);
+		}, delay);
 	    node.graphNode.animate ({
 		    stroke         : color,
 		    opacity        : 1,
-		    'stroke-width' : 2,
+		    'stroke-width' : stroke,
 		    title          : 'job status: ' + state
-	    }, 1000);	    
+	    }, delay);	    
 	}
     }
 };

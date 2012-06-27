@@ -273,10 +273,10 @@ class PegasusWorkflowMonitor (Processor):
     STATUS_FAILED = "failed"
 
     STATUS_MAP = {
-        'SUBMIT'      : STATUS_PENDING,
-        'EXECUTE'     : STATUS_EXECUTING,
-        'JOB_SUCCESS' : STATUS_SUCCEEDED,
-        'JOB_FAILURE' : STATUS_FAILED
+        SUBMIT      : STATUS_PENDING,
+        EXECUTE     : STATUS_EXECUTING,
+        JOB_SUCCESS : STATUS_SUCCEEDED,
+        JOB_FAILURE : STATUS_FAILED
         }
 
     def __init__(self, workflowId, username, workdir, dax=None, logRelPath=".", amqpSettings=None, eventBufferSize=0):
@@ -286,9 +286,6 @@ class PegasusWorkflowMonitor (Processor):
         self.username = username
         self.monitorRunning = False
 
-
-
-        #self.dax = dax.replace (".dax", "") if dax else None
         self.daxen = {}
         if dax:
             daxen = dax.split (',')
@@ -327,7 +324,7 @@ class PegasusWorkflowMonitor (Processor):
         if self.eventStream:
             self.eventStream.sendEndEvent (self.username, self.workflowId)
 
-    def sendEvent (self, logdir, evt_time, jobId, status):
+    def sendEvent (self, logdir, workflowId, evt_time, jobId, status):
         aux = self.detectEventDetails (logdir, jobId, status)
         logdir = os.path.abspath (logdir)
         logger.debug ("--logdir: %s ", logdir)
@@ -339,15 +336,6 @@ class PegasusWorkflowMonitor (Processor):
                                                  logdir   = logdir,
                                                  evt_time = evt_time,
                                                  aux      = aux)
-    def translateExitCode (self, event):
-        status = GridWorkflowMonitor.STATUS_PENDING
-        if event.exitcode is not None:
-            if event.exitcode == 0:
-                status = GridWorkflowMonitor.STATUS_SUCCEEDED
-            else:
-                status = GridWorkflowMonitor.STATUS_FAILED
-        return status
-
     def translateExitCode (self, event):
         return self.STATUS_MAP [event.state]
 
@@ -364,7 +352,7 @@ class PegasusWorkflowMonitor (Processor):
     def processEvent (self, event):
         if self.accepts (event.dax_file) or event.name.find ("subdax_") == 0:
             if event.state in self.STATUS_MAP:
-                self.sendEvent (event.work_dir, event.timestamp, event.name, self.translateExitCode (event))
+                self.sendEvent (event.work_dir, event.dax_file, event.timestamp, event.name, self.translateExitCode (event))
                 logger.debug ("evt=>(%s)", self.scanner.emitJSON (event))
 
     def detectEventDetails (self, logdir, jobId, status):
