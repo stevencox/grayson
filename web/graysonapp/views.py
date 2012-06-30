@@ -24,24 +24,22 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.decorators import login_required
 
 from grayson.debug.grid import GridWorkflow
+from grayson.debug.grid import WorkflowMonitorDatabase
 from grayson.executor import Executor
 from grayson.myproxycontroller import MyProxyController
 from grayson.common.util import GraysonUtil
 from web.graysonapp.tasks import ExecuteWorkflow
-from web.graysonapp.tasks import MonitorWorkflow
 from web.graysonapp.tasks import WorkflowMonitor
 from web.graysonapp.util import GraysonWebConst
 from grayson.view.common import ViewUtil
 from grayson.view.common import ViewController
 
+logger = logging.getLogger (__name__)
+
 @csrf_protect
 def mobile (request, tests=False):
     context = {}
     return ViewUtil.get_response ("mobile/html/index.html", request, context)
-
-#from web.graysonapp.models import Thing
-
-logger = logging.getLogger (__name__)
 
 @csrf_protect
 def do_login (request):
@@ -113,10 +111,14 @@ def api_run (request):
        amqpSettings : %s
 """, user, file_name, archivePath, settings.AMQP_SETTINGS)
 
+            WorkflowMonitor.ensureRunning (workflowRoot    = settings.GRAYSONWEB_WORKFLOW_ROOT,
+                                           amqpSettings    = settings.AMQP_SETTINGS,
+                                           eventBufferSize = settings.EVENT_BUFFER_SIZE)
+
             ExecuteWorkflow.delay (user         = user,
                                    archive      = file_name,
                                    archivePath  = archivePath,
-                                   logRelPath   = settings.GRAYSONWEB_WORKFLOW_ROOT,
+                                   workflowRoot = settings.GRAYSONWEB_WORKFLOW_ROOT,
                                    amqpSettings = settings.AMQP_SETTINGS)
             logger.debug ("execute called..")
     except Exception as e:
@@ -220,15 +222,22 @@ def get_flow_events (request):
     workdirPath = ViewUtil.form_workflow_path (user, workdirPath)
     logger.debug ("launching monitor: user: %s, workdir: %s, workflowId: %s, runId: %s, dax: %s",
                   user.username, workdirPath, workflowId, runId, dax)
-    monitor = WorkflowMonitor ()
-    monitor.delay (username        = user.username, # route messages to a specific client 
-                   workflowId      = workflowId,
-                   workdir         = workdirPath,
-                   dax             = dax,
-                   logRelPath      = settings.GRAYSONWEB_WORKFLOW_ROOT,
-                   amqpSettings    = settings.AMQP_SETTINGS,
-                   eventBufferSize = settings.EVENT_BUFFER_SIZE)
-    logger.debug ("launched workflow monitor")
+
+    workflowMonitorDatabase = WorkflowMonitorDatabase ()
+    WorkflowMonitor.ensureRunning (workflowRoot    = settings.GRAYSONWEB_WORKFLOW_ROOT,
+                                   amqpSettings    = settings.AMQP_SETTINGS,
+                                   eventBufferSize = settings.EVENT_BUFFER_SIZE)
+    
+    workflowMonitorDatabase.subscribeToWorkflow (
+        settings.GRAYSONWEB_WORKFLOW_ROOT,
+        {
+            "username"    : user.username,
+            "workflowId"  : workflowId,
+            "workdir"     : workdirPath,
+            "daxen"       : dax.split (','),
+            "buffer"      : 20
+            })
+
     return ViewUtil.get_json_response ({ "status" : "ok" })
 
 @login_required
@@ -357,7 +366,6 @@ def debugger (request):
         'pause'  : 'condor_hold',
         'resume' : 'condor_release'
         }
-
     # TODO: Auth check to ensure this job belongs to this user... before running actual condor commands...
 
     output = []
@@ -376,3 +384,4 @@ def debugger (request):
             "status" : "ok",
             "output" : ''.join (output)
             })
+

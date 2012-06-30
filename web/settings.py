@@ -35,7 +35,7 @@ DEBUG = True #False #nodeConf ["debug"]
 DEV = DEBUG #False #True
 TEMPLATE_DEBUG = DEBUG
 
-EVENT_BUFFER_SIZE = 10
+EVENT_BUFFER_SIZE = 0
 
 LOGIN_URL="/login_required/"
 
@@ -305,6 +305,18 @@ LOGGING = {
             'level'    : 'ERROR'
         },
         'grayson.debug.grid' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'grayson.debug.grid' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'DEBUG'
+        },
+        'grayson.debug.monitor' : {
+            'handlers' : [ 'console', 'fileHandler' ],
+            'level'    : 'ERROR'
+        },
+        'grayson.debug.stampede' : {
             'handlers' : [ 'console', 'fileHandler' ],
             'level'    : 'ERROR'
         },

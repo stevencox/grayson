@@ -19,8 +19,9 @@ socket.on ('message', function (eventText) {
 	} else {
 	    grayson.api.progressPlus ();
 	    try {
-		grayson.log_debug (eventText);
+		//grayson.log_debug (eventText);
 		var message = $.parseJSON (eventText);
+		grayson.log_debug (JSON.stringify (message, undefined, 3));
 		grayson.events.handleEvent (message);
 	    } catch (e) {
 		grayson.log_error ('exception: ' + e.message);

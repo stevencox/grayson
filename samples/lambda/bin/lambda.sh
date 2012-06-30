@@ -15,4 +15,6 @@ lambda () {
 
 lambda > $file-$slice-out.tar.gz
 
+sleep 2
+
 exit 0

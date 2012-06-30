@@ -399,11 +399,15 @@ ul#icons span.ui-icon {float: left; margin: 0 4px;}
 }
 .debugOutput {
     border   : lightgray solid 1px;
-    top      : 140px;
+    top      : 187px;
     position : absolute;
     padding  : 10px;
     width    : 500px;
     height   : 224px;
+    overflow : scroll;
+ }
+.debugOutputWrapper {
+    overflow : hidden;
  }
 .debugClear {
     position: absolute;

@@ -56,12 +56,14 @@ GraysonGraph.prototype.byName = function (name) {
 	    }
 	}
     }
+    /*
     if (result == null) {
 	grayson.log_debug ('unable to map ' + name + ' in: ');
 	for (k in this.nodeMap) {
 	    grayson.log_debug (' -- ' + k + ' => ' + this.nodeMap [k].label.text);
 	}
     }
+    */
     return result;
 };
 GraysonGraph.prototype.setRootGraph = function (isRoot) {
@@ -689,30 +691,32 @@ GraysonView.prototype.createFlowSelector = function (workflow, node) {
 	 '	</div>',
 	 '</div>' ].join ("");
 	$("body").append ( text );
-	$(selector); //.resizable ( { alsoResize : ');
+	$(selector).parent().resizable ( );
     }
 };
 GraysonView.prototype.showFlowSelector = function (node) {
     var dom = $("#" + node.id);
     var tip = $("#" + node.id + "_tip");
     if (node && node.instances.length > 0) {
-	var show = new Date().getTime ();
-	$("#" + node.id).tooltip ({
-		tip      : '#' + node.id + '_tip',
-		delay    : 60,
-		position : 'top right',
-		offset   : [ node.geom.x + event.target.offsetTop, node.geom.y + event.target.offsetLeft],
-		effect   : 'fade'
-	 });
-	var css = {
-	    top  : node.geom.y - ( tip.height () * 0.7 ), //- tip.height () + dom.parent().position ().top - 20,
-	    left : node.geom.x - (tip.width () / 2)  + (node.geom.width / 2)
-        };
-	if (css.top !== 'NaN' && css.left !== 'NaN') {
-	    tip.css (css);
+	var nodePos = dom.position ();
+	var nodeWidth = dom.attr ('width'); // rectanlge
+	if (! nodeWidth) {
+	    nodeWidth = dom.attr ('rx') * 2; // ellipse
 	}
+	$("#" + node.id).tooltip ({
+	    tip      : '#' + node.id + '_tip',
+	    delay    : 160,
+	    position : 'top center',
+	    offset   : [ 15, nodeWidth / 2 ], // tweak 10px down and 20 left.
+	    effect   : 'fade'
+	 });
+
     }
 };
+function posNode (n, y, x) {
+    $(n).css ({ top : y, left : x });
+}
+
 GraysonView.prototype.createFlowSelectors = function (graph) {
     var graph = this.grayson.model.getGraphNodes (graph);
     if (graph) {
@@ -746,7 +750,6 @@ GraysonView.prototype.addFlowInstance = function (node, instance) {
     if ($.inArray (instance, node.instances) > -1) {
 	return;
     }
-
     node.instances.push (instance);
 
     var after = 0;
@@ -762,6 +765,11 @@ GraysonView.prototype.addFlowInstance = function (node, instance) {
     var containerSelector = "#" + node.id + "_instances";
     var instanceNumber = parseInt (this.grayson.getInstanceId (instance));
     var id = node.id + '_' + instanceNumber;
+
+    /*
+    var existing = $('#' + id);
+    if (existing == null) {
+    */
     var base = basename (instance);
     var text = [ '<div class="instanceSelector" id="', id, '" instanceNumber="', instanceNumber, '" ',
 		 '     value="', base, '"',
@@ -769,6 +777,7 @@ GraysonView.prototype.addFlowInstance = function (node, instance) {
 		 '     title="', base, '">',
 		 '</div>' ].join ('');
     $(containerSelector).append ( $(text) );
+    //$(containerSelector).append ( $(text) );
 
     // order selectors per sorted array
     for (var c = 0; c < node.instances.length; c++) {
@@ -1034,7 +1043,6 @@ GraysonView.prototype.showJobOutput = function (workflowId, node, text, dagOutpu
 	       '       <br/>',
 	       '       <div>Use the buttons below to control job execution.</div>',
 	       '       <br/>',
-	       '       <div id="debugClear" class="debugClear">Clear</div>',
 	       '       <div class="debugPlayer">',
 	       '          <div class="debugPlayerIcon"><img src="static/img/debug/PlayNormalIcon.jpg"        title="Continue Execution"></div>',
 	       '          <div class="debugPlayerIcon"><img src="static/img/debug/PauseNormalIcon.jpg"       title="Pause Job Execution"></div>',
@@ -1043,6 +1051,7 @@ GraysonView.prototype.showJobOutput = function (workflowId, node, text, dagOutpu
 	       */
 	       '          <div class="debugPlayerIcon"><img src="static/img/debug/StopNormalIcon.jpg"        title="Stop Job Execution"></div>',
 	       '       </div>',
+	       '       <div id="debugClear" class="debugClear">Clear</div>',
 	       '       <div id="debugOutput" class="debugOutput"></div>',
 	       '    </div>',
 	       '  </div>');
@@ -1057,7 +1066,10 @@ GraysonView.prototype.showJobOutput = function (workflowId, node, text, dagOutpu
 			      replace ('Hot', 'Normal').
 			      replace ('Pressed', 'Normal'));
     };
+/*
     $('#debugOutput').resizable ();
+    $('#debugOutput').resize (function (e) { $(e.target).css ( { 'top' : '100px' } ); }); 
+*/
     $('#debugClear').click (function (e) {
 	$('#debugOutput').html ('');
     });
@@ -1198,6 +1210,11 @@ GraysonView.prototype.connectFlow = function (event) {
     appView.onRenderWorkflow (workflowId, graph, null, function (g) {
 	appView.onRootGraphRendered (workflowId, graph, g);
 
+	/**
+	 * Build the list of daxen to get events for. 
+	 * This optimizes the query for daxen.
+	 * TODO: need a way to add daxen for aspects to this list. Probably do that at the back end. 
+	 */
 	var daxen = [ basename (workflowId) ];
 	for (var c = 0; c < g.graph.length; c++) {
 	    var n = g.graph [c];
@@ -1224,8 +1241,10 @@ GraysonView.prototype.connectFlow = function (event) {
 	});
 
     appView.selectWorkflow (basename (graph).replace (".graphml", ""));
+/*
     if (appView.detailView)
 	appView.detailView.setEventBufferSize (100);
+*/
 };
 GraysonView.prototype.onRootGraphRendered = function (flowId, graphName, graph) {
     base = dirname (flowId);
@@ -1409,9 +1428,12 @@ GraysonView.prototype.renderGraphNodes = function (workflow, paper) {
 
 	    $(rectangle.node).unbind ();
 
-	    $(rectangle.node).hover (function (e) {
+	    $(rectangle.node).hover (
+		function (e) {
 		    var node = appView.grayson.model.byId (workflow, this.id);
 		    appView.showFlowSelector (node);
+		},
+		function (e) {
 		});
 
 	    $(rectangle.node).attr ('wf', workflow);
@@ -1861,46 +1883,6 @@ Grayson.prototype.applyNodeState = function (node, state, event, immediate) {
     }
     return applied;
 };
-/*
-Grayson.prototype.applyEvents = function (events) {
-    if (events) {
-	var context = this.view.getContext ();
-	if (context && context.instance) {
-	    for (var c = 0; c < events.length; c++) {		
-		var event = events [c];
-		var grokedEvent = this.grokEvent (event);
-		var logdir = event.logdir;
-		var logBase = basename (logdir);
-		var parts = logBase.split ('_');
-		if (parts && parts.length > 1) {
-		    var flowName = parts [ parts.length - 2 ]; // in scan-flow_scan-flowgid1 , this is 'scan-flow' - the end name.
-		    var concreteName = parts [1].replace ("gid", ".") + ".dax";
-		    var daxRunPattern = new RegExp ('[0-9]+\.dax');
-
-		    // todo: consolidate possible name patterns
-		    var concreteName3 = parts [1].
-			replace ("gid", ".").
-			replace (new RegExp ('\.[0-9]{3}'), '') + ".dax";
-
-		    concreteName = concreteName.replace (daxRunPattern, "dax")
-		    var concreteName2 = parts [0] + ".dax";
-		    if (context.instance.endsWith (concreteName) ||
-			context.instance.endsWith (concreteName2) ||
-			context.instance.endsWith (concreteName3)) 
-		    {
-			if (flowName) {
-			    var node = this.model.byName (flowName, grokedEvent.jobName);
-			    if (node) {
-				this.applyNodeState (node, grokedEvent.state, event);
-			    }
-			}
-		    }
-		}
-	    }
-	}
-    }
-};
-*/
 Grayson.prototype.processSubworkflows = function (workflow) {
     grayson.log_debug ("grayson:process-subworkflows: ");
     consumedEvents = [];
@@ -1986,11 +1968,13 @@ function graysonInit () {
 		     });
 		 grayson.view.tabs.initialize ();
 		 grayson.view.onRenderWorkflow (event.flowId, event.graph, null, function (graph) {
-			 grayson.view.onRootGraphRendered (event.flowId, event.graph, graph);
-		     });
-		 grayson.view.selectWorkflow (event.graph);
+		     grayson.view.onRootGraphRendered (event.flowId, event.graph, graph);
+		     grayson.view.selectWorkflow (event.graph);
+		 });
 	     }
 	 }, 
+	    /**/
+
 	 // annotate the graph with sub-workflow structure data
 	 {
 	     key      : "subworkflow.structure",
@@ -2010,6 +1994,7 @@ function graysonInit () {
 	 },
 	 {
 	     key      : [ 'workflow.structure', 'subworkflow.structure', 'endEventStream', 'jobstatus' ],
+	     //key      : [ 'workflow.structure', 'endEventStream', 'jobstatus' ],
 	     callback : function (event) {
 		 if (grayson.view.detailView)
 		     grayson.view.detailView.addEvent (event);

@@ -1,10 +1,24 @@
 dax name: <alpha>
 files:
+   file: <input.txt>
+      pfn: <file://target/alpha/input.txt>
+   file: <one.out>
+      pfn: <file://.*/target/alpha/work/outputs/one.out>
+   file: <two.out>
+      pfn: <file://.*/target/alpha/work/outputs/two.out>
 jobs:
    job: <one>, id: <1n1> namespace: <alpha> version: <1.0>
+      usedfile: <input.txt>
+      usedfile: <one.out>
    job: <two>, id: <1n3> namespace: <alpha> version: <1.0>
+      usedfile: <one.out>
+      usedfile: <two.out>
 transformations:
 executables:
+   executable: <one> namespace: <alpha>, version: <1.0>, arch: <x86_64>, os: <linux>
+      pfn: <file://target/alpha/bin/alpha.sh>
+   executable: <two> namespace: <alpha>, version: <1.0>, arch: <x86_64>, os: <linux>
+      pfn: <file://target/alpha/bin/alpha.sh>
 dependencies:
    dependency: <1n3>
       parent: parent=><one> edge_label=><None>

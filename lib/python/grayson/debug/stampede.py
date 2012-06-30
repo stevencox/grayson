@@ -89,6 +89,7 @@ class EventScanner (object):
 
     def __init__(self, submit_dir):
         ''' initialize - connect to the database. '''
+        logger.debug ("event-scanner:<init> submit_dir: %s", submit_dir)
         properties = os.path.join (submit_dir, "grayson.stampede.properties")
         properties = None
 	self.db_url, self.wf_uuid = db_utils.get_db_url_wf_uuid (submit_dir, properties)
@@ -117,7 +118,7 @@ class EventScanner (object):
         event.stdout = record.stdout_file
         event.stderr = record.stderr_file
         
-        logger.debug (json.dumps (event, sort_keys=True, indent=3, cls=WorkflowEventEncoder))
+        #logger.debug (json.dumps (event, sort_keys=True, indent=3, cls=WorkflowEventEncoder))
 
         return event
 
@@ -174,7 +175,7 @@ ORDER BY jobstate.TIMESTAMP
                               JobInstance.job_instance_id == Jobstate.job_instance_id,
                               Job.wf_id == Workflow.wf_id,
                               Jobstate.timestamp > since)
-        query = query.order_by (Jobstate.timestamp)
+        query = query.order_by (JobInstance.sched_id, Jobstate.timestamp)
 
         ''' don't include intermediate statuses 
         query = query.filter (not_(and_(or_(JobInstance.exitcode == 0, JobInstance.exitcode == 1),
@@ -245,8 +246,6 @@ ORDER BY jobstate.TIMESTAMP
 class Processor (object):
     def processEvent (self, event):
         pass
-    def accepts (self, daxName):
-        return True
 
 ''' Buffered processor '''
 class BufferProcessor (Processor):

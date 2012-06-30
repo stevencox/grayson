@@ -8,15 +8,12 @@ import string
 import sys
 import time
 import traceback
-
 from celery.decorators import task
 from celery.task import Task
-
 from django.conf import settings
 from django.utils.translation import ugettext as _
 from django.core.cache import cache
 from django.utils.hashcompat import md5_constructor as md5
-
 from grayson.net.amqp import GraysonAMQPTransmitter
 from grayson.pegasus import WorkflowParser
 from grayson.executor import Executor
@@ -25,79 +22,77 @@ from grayson.compiler.compiler import CompilerPlugin
 from grayson.packager import GraysonPackager
 from grayson.net.amqp import GraysonAMQPTransmitter
 from grayson.debug.monitor import WorkflowMonitorCompilerPlugin
-from grayson.debug.grid import GridWorkflowMonitor
-from grayson.debug.grid import PegasusWorkflowMonitor
+from grayson.debug.grid import WorkflowMonitorTask
 from grayson.debug.event import EventStream
-
 from web.graysonapp.util import GraysonWebConst
 from web.graysonapp.util import GraysonWebUtil
-
-
-''' #http://celeryproject.org/docs/django-celery/getting-started/first-steps-with-django.html '''
+from celery.task.control import inspect
 
 logger = logging.getLogger (__name__)
 
-LOCK_EXPIRE = 60 * 5 # Lock expires in 5 minutes
-
 class WorkflowMonitor (Task):
+
     name = "workflow.monitor"
 
-    def run (self, username, workflowId, workdir, dax, logRelPath=".", amqpSettings=None, eventBufferSize=0, **kwargs):
+    '''
+    Load balance event tasks (consumers of requests for events; producers of events) here.
+       - http://docs.celeryproject.org/en/latest/userguide/workers.html#inspecting-workers
+          {
+              'scox.europa.renci.org':  [
+                  { u'args' : u'[]', 
+                    u'time_start': 1340891522.549662, 
+                    u'name': u'web.graysonapp.tasks.ExecuteWorkflow', 
+                    u'delivery_info': {
+                        u'routing_key': u'celery', 
+                        u'exchange': u'celery'}, 
+                        u'hostname': u'scox.europa.renci.org',
+                        u'acknowledged': True, 
+                        u'kwargs': u"{
+                            'archivePath': u'/home/scox/dev/grayson/web/../var/workflows/scox/test-context_30.grayson', 
+                            'workflowRoot': u'/home/scox/dev/grayson/web/../var/workflows', 
+                            'user': <grayson.view.common.DebugUser object at 0x2a10fd0>, 
+                            'amqpSettings': <grayson.net.amqp.AMQPSettings object at 0x2a1f090>, 
+                            'archive': u'/home/scox/dev/grayson/web/../var/workflows/scox/test-context.grayson'
+                        }", 
+                        u'id': u'32070c51-36a5-4c4f-b7bb-3014aedd948a', 
+                        u'worker_pid': 8831
+                  }
+              ]
+          }
+
+          >>> from celery.task.control import revoke
+          >>> revoke("d9078da5-9915-40a0-bfa1-392c7bde42ed")
+          '''
+    @staticmethod
+    def ensureRunning (workflowRoot=".", amqpSettings=None, eventBufferSize=0):
+        running = False
+        tasks = inspect ()
+        active = tasks.active ()
+        logger.debug ("%s" % active)
+        logger.debug ("%s", json.dumps (active, indent=3, sort_keys=True))
+        for atHost in active:
+            activeAt = active [atHost]
+            for task in activeAt:
+                name = task ['name']
+                logger.debug ("task name: %s", name)
+                if WorkflowMonitor.name == name:
+                    logger.debug ("WorkflowMonitor task invoked")
+                    running = True
+                    break
+            if running:
+                break
+        if not running:
+            monitor = WorkflowMonitor ()
+            WorkflowMonitor.delay (workflowRoot, amqpSettings, eventBufferSize)
+
+    def run (self, workflowRoot=".", amqpSettings=None, eventBufferSize=0, **kwargs):
         logger = self.get_logger (**kwargs)
-
-        # The cache key is the task name and the MD5 digest of the workdir.
-        workflow_digest = md5(workdir).hexdigest()
-        lock_id = "%s-lock-%s" % (self.name, workflow_digest)
-
-        # cache.add fails if if the key already exists
-        acquire_lock = lambda: cache.add(lock_id, "true", LOCK_EXPIRE)
-        # memcache delete is very slow, but we have to use it to take
-        # advantage of using add() for atomic locking
-        release_lock = lambda: cache.delete(lock_id)
-
-        logger.debug("Monitoring workflow: %s" % workdir)
-        if acquire_lock ():
-            try:
-                # Read and emit events so far, then loop continually until the workflow completes.
-                if settings.DB_EVENT_MODEL:
-                    logger.error ("=========================================== STAMPEDE MONITOR ==================================================")
-                    monitor = PegasusWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
-                else:
-                    logger.error ("=========================================== GRID MONITOR ==================================================")
-                    monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
-                monitor.execute ()
-            finally:
-
-
-                logger.debug ("=========================================== RELEASE LOCK ==================================================")
-
-                release_lock()
-        else:
-            logger.debug(
-                "Workflow %s is already being monitored by another worker. Emit events so far." % (
-                    workdir))
-            # Read and emit events so far, then exit.
-            monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings)
-            monitor.execute (loop=False)
-
+        logger.debug ("WorkflowMonitor task is being started.")
+        monitor = WorkflowMonitorTask (workflowRoot, amqpSettings, eventBufferSize)
+        monitor.execute ()
 
 @task()
-def MonitorWorkflow (workflowId, username, workdir, dax, amqpSettings=None):
-    '''
-    monitor = GridWorkflowMonitor (workflowId, username, workdir, amqpSettings)
-    monitor.execute (loop=False)
-    '''
-    monitor = None
-    if settings.DB_EVENT_MODEL:
-        logger.error ("2=========================================== STAMPEDE MONITOR ==================================================")
-        monitor = PegasusWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
-    else:
-        logger.error ("2=========================================== GRID MONITOR ==================================================")
-        monitor = GridWorkflowMonitor (workflowId, username, workdir, dax, logRelPath, amqpSettings, eventBufferSize)
-    monitor.execute ()
-
-@task()
-def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=None):
+def ExecuteWorkflow (user, archive, archivePath, workflowRoot=".", amqpSettings=None):
     logger.info ("executeworkflow:amqpsettings: %s", amqpSettings)
     try:
         basename = os.path.basename (archive)
@@ -109,7 +104,10 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=No
         os.system (chmodCommand)
         
         log_file = os.path.join (unpack_dir, "log.txt")
-        executionMonitor = WorkflowMonitorCompilerPlugin (user.username, unpack_dir, logRelPath, amqpSettings)
+        executionMonitor = WorkflowMonitorCompilerPlugin (user.username,
+                                                          unpack_dir,
+                                                          workflowRoot,
+                                                          amqpSettings)
 
         logger.debug ("""
    =======================================================================================
@@ -135,12 +133,6 @@ def ExecuteWorkflow (user, archive, archivePath, logRelPath=".", amqpSettings=No
                                  plugin    = executionMonitor)
     except ValueError, e:
         traceback.print_exc ()
-        '''
-        exc_type, exc_value, exc_traceback = sys.exc_info ()
-        log = open (log_file, "a")
-        traceback.print_tb (exc_traceback, limit=None, file=log)
-        log.close ()
-        '''
         eventStream = EventStream (amqpSettings)
         eventStream.sendCompilationMessagesEvent (username = user.username,
                                                   flowId   = archive,
