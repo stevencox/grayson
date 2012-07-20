@@ -11,7 +11,7 @@ class GraysonUtil (object):
     @staticmethod
     def form_workdir_path (unpackDir, username, workflowId, runId=""):
         return os.path.join (unpackDir, "work", username, "pegasus", workflowId, runId)
-    
+
     @staticmethod
     def containsAny (string, items):
         result = False

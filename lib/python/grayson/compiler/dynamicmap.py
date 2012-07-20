@@ -6,16 +6,17 @@ import json
 
 from string import Template
 from grayson.common.util import GraysonUtil
-from grayson.compiler.operator import Operator
+from grayson.compiler.compiler import Operator
 from grayson.compiler.compiler import GraysonCompiler
 
 logger = logging.getLogger (__name__)
 
 class DynamicMapOperator (Operator):
 
+    DYNAMIC_INDEX = "dynIndex"    
     def __init__(self):
 
-        super (DynamicMapOperator, self).__init__("dynamicMap")
+        #super (DynamicMapOperator, self).__init__("dynamicMap")
 
         logger.debug ("dynamic-map: init()")
 
@@ -90,9 +91,10 @@ class DynamicMapOperator (Operator):
         for archiveMember in members:
             outputname = "%s.%s.dax" % ( outputBasename, c )
             definitions = {
-                variable  : archiveMember.name,
-                index     : "%s" % c,
-                "appHome" : appHome
+                variable      : archiveMember.name,
+                index         : "%s" % c,
+                Operator.DYNAMIC_INDEX : "%s" % c,
+                "appHome"     : appHome
                 }
             logger.debug ("dynamic-map: invoking compiler")
             try:
@@ -125,8 +127,8 @@ class DynamicMapOperator (Operator):
 
             replicaCatalogName = "replica-catalog.rc"
             masterRC = os.path.join (outputDir, replicaCatalogName)
-            self.updateCatalog (masterCat = masterRC,
-                                other     = os.path.join (tmpOutputDir, replicaCatalogName))
+            self.updateCatalog (master = masterRC,
+                                other  = os.path.join (tmpOutputDir, replicaCatalogName))
             c += 1
 
         text.append (self.footer)
@@ -139,14 +141,14 @@ class DynamicMapOperator (Operator):
         GraysonUtil.writeFile (os.path.join (outputDir, "tmp", replicaCatalogName),
                                '\n'.join (replicaText))
 
-        self.updateCatalog (masterCat = masterRC,
-                            other     = os.path.join (tmpOutputDir, replicaCatalogName))
+        self.updateCatalog (master = masterRC,
+                            other  = os.path.join (tmpOutputDir, replicaCatalogName))
                             
 
         transformationCatalogName = "transformation-catalog.tc"
         masterTC = os.path.join (outputDir, transformationCatalogName)
-        self.updateCatalog (masterCat = masterTC,
-                            other     = os.path.join (tmpOutputDir, transformationCatalogName))
+        self.updateCatalog (master = masterTC,
+                            other  = os.path.join (tmpOutputDir, transformationCatalogName))
 
     def updateCatalog (self, masterCat, other):
         newResources = []
@@ -179,4 +181,10 @@ class DynamicMapOperator (Operator):
 
         GraysonUtil.writeFile (masterCat, "%s\n%s" % (master, '\n'.join (newResources)))
 
+    def getFileLines (self, fileName):
+        return GraysonUtil.readFile (fileName).split ('\n')
 
+    def updateCatalog (self, master, other):
+        masterText = GraysonUtil.readFile (master)
+        text = GraysonUtil.readFile (other)
+        GraysonUtil.writeFile (master, "%s\n%s" % (masterText, text))        

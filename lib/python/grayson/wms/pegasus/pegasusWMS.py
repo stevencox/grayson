@@ -240,7 +240,7 @@ tr ${namespace}::${jobName}:${version} {
                   version      = "1.0"):
 
         if not architecture:
-            architecture = "x86_64"
+            architecture = "" #"x86_64"
         if not version:
             version = "1.0"
         if not cluster:

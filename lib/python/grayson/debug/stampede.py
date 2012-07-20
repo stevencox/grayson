@@ -177,10 +177,10 @@ ORDER BY jobstate.TIMESTAMP
                               Jobstate.timestamp > since)
         query = query.order_by (JobInstance.sched_id, Jobstate.timestamp)
 
-        ''' don't include intermediate statuses 
+        ''' don't include intermediate statuses '''
         query = query.filter (not_(and_(or_(JobInstance.exitcode == 0, JobInstance.exitcode == 1),
                                         or_(Jobstate.state == 'SUBMIT', Jobstate.state == 'EXECUTE'))))
-                                        '''
+                                        
 
         ''' ensure that either (a) the event does not pertain to a subdax or that,
                                (b) if it does, the subdax is one in the list of daxen  '''
@@ -189,7 +189,6 @@ ORDER BY jobstate.TIMESTAMP
             filters.append (Job.exec_job_id.like ('subdax_%s%%' % dax))
         query = query.filter (or_( not_(Job.exec_job_id.like ('subdax_%')),
                                    or_(*tuple (filters))))
-
 
         ''' ensure dax_file of this event matches one of the daxen in the filter '''
         filters = []

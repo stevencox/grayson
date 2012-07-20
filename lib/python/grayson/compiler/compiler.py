@@ -24,8 +24,6 @@ from grayson.compiler.abstractsyntax import ASTElement
 from grayson.compiler.exception import GraysonCompilerException
 from grayson.compiler.exception import CycleException
 from grayson.compiler.cycle import CycleDetector
-from grayson.compiler.operator import OperatorRegistry
-from grayson.compiler.operator import DynamicMapOperator
 from grayson.executor import Executor
 
 
@@ -47,6 +45,18 @@ from grayson.wms.pegasus.pegasusWMS import PegasusWMS
 from grayson.wms.workflowManagementSystem import WorkflowManagementSystem
 
 logger = logging.getLogger (__name__)
+
+class Operator (object):
+    
+    DYNAMIC_INDEX = "dynIndex"    
+
+    @staticmethod
+    def isDynamicOperator (properties):
+        return properties and Operator.DYNAMIC_INDEX in properties
+
+    @staticmethod
+    def getDynamicIndex (properties):
+        return properties [Operator.DYNAMIC_INDEX] if Operator.DYNAMIC_INDEX in properties else None
 
 class CompilerPlugin (object):
     """ Defines the API for a compiler plugin."""
@@ -498,17 +508,6 @@ class GraysonCompiler:
                                       value.getType () )
                     else:
                         logger.debug ("        (reference-not-found) (%s)", original.getLabel ())
-                        '''
-                        class ObjEncoder(json.JSONEncoder):
-                        def default(self, obj):
-                        if not isinstance(obj, ASTElement) and not isinstance(obj, Node):
-                        return super (ObjEncoder, self).default (obj)
-                        return obj.__dict__
-
-                        logger.debug ("        (reference-not-found) (%s)\n%s",
-                        label,
-                        json.dumps (self.labelIndex, indent=3, sort_keys=True, cls=ObjEncoder))
-                        '''
         return value
 
     def addError (self, message):
@@ -1052,7 +1051,12 @@ class GraysonCompiler:
                                                                  originEdges)
             elif is_dynamic:
 
-                ''' Syntax: one input file. one target workflow. '''
+                ''' Syntax: one input file. one target workflow. 
+
+                Dynamic operators produce workflow components during the course of a workflow.
+                This enables development of (corecursive) workflow algorighthms that respond to their own outpus.
+                For an absurdly technical overview of corecursion: http://en.wikipedia.org/wiki/Corecursion
+                '''
 
                 ''' validate '''
                 if not element.getType () == self.WORKFLOW:
@@ -1072,27 +1076,11 @@ class GraysonCompiler:
 
                 keep = []
                 for context in self.contextModels:
-                    if not ( self.isContextModel (context) and context is self.getTopModel () ):
-                        keep.append (context)
+                    keep.append (os.path.basename (context))
+
                 contextModels = os.pathsep.join (keep)
                 instanceArgs = element.get ('instanceArgs')
                 logger.debug ("instanceargs: %s %s %s", instanceArgs, element, element.getId ())
-
-                '''
-                elementRefs = self.getReferenceByLabel (element.getLabel ())
-                elementOrigins = elementRefs.getOrigins (self.graph)
-                for originId in elementOrigins:
-                    logger.debug ("add-origin;yeah %s", originId)
-                    origin = self.getElement (originId)
-                    logger.debug ("add-origin;yeah %s", origin)
-                    if origin:
-                        logger.debug ("add-origin;yeah %s", origin.getType ())
-                        if origin.getType () == self.ABSTRACT:
-                            origins = self.getAbstractRootElements (origin)
-                            for o in origins:
-                                logger.debug ("add-origin; do it %s", origin.getType ())
-                                self.ast_effectInheritance (o)
-                                '''
 
                 configuration = {
                     'outputName'    : element.getLabel (),
@@ -1409,13 +1397,14 @@ class GraysonCompiler:
                     fileElement = source
                     jobNode = target
                     jobPattern = toElement
+                    #fileElement = target
                 matchesJob = re.search (jobPattern, jobNode.getLabel ()) 
                 matchesFile = re.search (pattern, fileElement.getLabel ())
 
-                logger.debug ("weave:egg:match---- pat:%s file:%s job:%s %s",
+                logger.debug ("weave:egg:match---- pat:%s file:%s jobpat:%s job:%s %s",
                               pattern,
                               fileElement.getLabel (),
-                              jobNode.getLabel (),
+                              jobPattern, jobNode.getLabel (),
                               pointcut.getId ())
 
                 activationKey = "edge(%s)-point(%s)-job(%s)-file(%s)-cid(%s)" % (edge.getId (),
@@ -1434,41 +1423,29 @@ class GraysonCompiler:
                     aspectActivations [activationKey] = pointcut
 
                     if toElement:
-                        pass
+                        self.ast_weaveAspectFromFileToJob (edge        = edge,
+                                                           aspectName  = aspectName,
+                                                           jobNode     = jobNode,
+                                                           fileElement = fileElement,
+                                                           variable    = variable)
                     elif fromElement:
                         self.ast_weaveAspectFromJobToFile (edge        = edge,
                                                            aspectName  = aspectName,
                                                            jobNode     = jobNode,
                                                            fileElement = fileElement,
                                                            variable    = variable)
-    def ast_weaveAspectFromJobToFile (self, edge, aspectName, jobNode, fileElement, variable):
-        """
-    Given:
-       a. Node   N
-       b. File   F
-       c. Edge   E
-       e. Aspect A
-       Such that 
-          N is the source end of E and
-          F is the target end of E
 
-    1. Create a new workflow node referencing the aspect. A => A'
-
-       1.1 Generate the workflow executable for the aspect instance.
-
-    2. Copy the file node. F => F'
-
-    3. Copy the edge. E => E' : ( A' -> F' )
-       - Make A' the source 
-       - Make F' the target
-
-    4. For every edge originating at the file node, make the new target the new file node:
-       For each edge such that E(source) == F:
-       E(source) <= F'
-       """
-        
+    def ast_weaveAspectCompileAspect (self, edge, aspectName, jobNode, fileElement, variable):
+        logger.debug ("--weaving: compile aspect workflow")
         synthId = self.getSyntheticId (jobNode.getId (), aspectName)
-        number = synthId.split(".")[1]
+
+        ''' Use the dynamic index if one is provided '''
+        dynamicIndex = Operator.getDynamicIndex (self.getInputModelProperties ())
+        if dynamicIndex:
+            number = dynamicIndex
+        else:
+            number = synthId.split(".")[1]
+
         aspectElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
                                           label   = "%s.%s" % (aspectName, number),
                                           typeObj = { "type" : "workflow" },
@@ -1483,18 +1460,21 @@ class GraysonCompiler:
                       fileElement.getLabel (),
                       edge.getId (),
                       self.compilerId)
-        
+        return aspectElement 
+
+    def ast_weaveAspectCreateSynthFile (self, fileElement):
         logger.debug ("--weaving: generating synthetic file node type(%s)", fileElement.getNode().getType ())
-
         synthFileId = "%s.%s" % (fileElement.getId (), self.getSyntheticId (fileElement.getId (), fileElement.getLabel ()))
-        synthFileElement = self.ast_addNode (id      = synthFileId,
-                                             label   = fileElement.getLabel (),
-                                             typeObj = { "type" : "reference" })
+        return self.ast_addNode (id      = synthFileId,
+                                 label   = fileElement.getLabel (),
+                                 typeObj = { "type" : "reference" })
 
+    def ast_weaveAspectCreateChain (self, edge, first, second, third):
         logger.debug ("--weaving: generating synthetic edge")
-        toAspectEdge = self.copyEdge (self.graph, edge, aspectElement, synthFileElement)
-        fromAspectEdge = self.copyEdge (self.graph, edge, fileElement, aspectElement, '{ "type" : "in" }') # TODO: remove/test
-        
+        edgeOne = self.copyEdge (self.graph, edge, second, first)
+        edgeTwo = self.copyEdge (self.graph, edge, third, second)
+
+    def ast_weaveAspectRepointTargets (self, fileElement, synthFileElement, aspectElement):
         logger.debug ("--weaving: remapping old file targets to use synth file as target")
         targetEdges = fileElement.getTargetEdges (self.graph)
         for targetEdge in targetEdges:
@@ -1504,6 +1484,27 @@ class GraysonCompiler:
                 target = self.getElement (targetEdge.getTarget ())
                 logger.debug ("   synth file element now points to %s ", target.getLabel ())
                 targetEdge.setSource (synthFileElement.getId ())
+
+    def ast_weaveAspectRepointSources (self, fileElement, synthFileElement, aspectElement):
+        logger.debug ("--weaving: remapping old file sources to use synth file as source")
+        edges = self.graph.getEdges ()
+        for edge in edges:
+            if edge.getSource () == fileElement.getId ():
+                targetId = edge.getTarget ()
+                if not targetId == aspectElement.getId ():
+                    edge.setSource (synthFileElement.getId ())
+
+    def ast_weaveAspectFromFileToJob (self, edge, aspectName, jobNode, fileElement, variable):
+        aspectElement    = self.ast_weaveAspectCompileAspect (edge, aspectName, jobNode, fileElement, variable)
+        synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
+        self.ast_weaveAspectCreateChain (edge, fileElement, aspectElement, synthFileElement)
+        self.ast_weaveAspectRepointSources (fileElement, synthFileElement, aspectElement)
+
+    def ast_weaveAspectFromJobToFile (self, edge, aspectName, jobNode, fileElement, variable):
+        aspectElement    = self.ast_weaveAspectCompileAspect (edge, aspectName, jobNode, fileElement, variable)
+        synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
+        self.ast_weaveAspectCreateChain (edge, synthFileElement, aspectElement, fileElement)
+        self.ast_weaveAspectRepointTargets (fileElement, synthFileElement, aspectElement)
 
     def setInboundEdgesTarget (self, old, new, skip=[]):
         """Make all edges formerly pointing to old point to new. Skip any ids in the skip list."""
@@ -1633,7 +1634,7 @@ class GraysonCompiler:
                           text.replace ("\n", " "),
                           json.dumps (context).replace ("\n", " "))
             template = Template (text)
-            text = template.substitute (context)
+            text = template.safe_substitute (context)
         return text
 
     def ast_mapNode (self, node):
@@ -1653,6 +1654,7 @@ class GraysonCompiler:
             except KeyError as e:
                 self.addError ("property %s is not defined for element: %s" % (sys.exc_value, node.getLabel ()))
                 traceback.print_exc (e)
+                raise e
         element = ASTElement (node)
         logger.debug ("ast:map-node:add-element: label=(%s) type=(%s)", element.getLabel (), node.getType ())
         self.addElement (node.getId (), element)
@@ -1730,7 +1732,7 @@ class GraysonCompiler:
         if (context):
             node.setContext (context)
         return self.ast_mapNode (node)
-        
+    
     def ast_mapNodes (self):
         """ Map nodes (and property resolution).
         1. Map static nodes.
@@ -1768,9 +1770,9 @@ class GraysonCompiler:
                 compilerId = self.compilerId
                 self.parse (contextModelFiles, self.graph)
                 self.compilerId = compilerId
-        
+
         if self.isContextModel ():
-            if self.isTopModel ():
+            if self.isTopModel () and not Operator.isDynamicOperator (self.getInputModelProperties ()):
                 self.ast_buildSubWorkflows (jobs)
         else:
             ''' resolve properties '''
@@ -1794,21 +1796,28 @@ class GraysonCompiler:
             ''' register aspects '''
             aspectElements = self.getElementsByType (self.ASPECT)
             for aspect in aspectElements:
+
+                ''' Aspects linked to workflow via pointcut edges. probably get rid of this approach in favor of the later syntax. '''
                 pointcuts = aspect.getTargetEdges (self.graph)
                 for pointcut in pointcuts:
                     aspectTarget = pointcut.getTarget ()
                     aspect = self.getElement (pointcut.getSource ())
                     pointcutElement = self.getElement (pointcut.getId ())
                     pointcutElement.set (self.ASPECT, aspect.getLabel ())
-                    logger.debug ("ast:register-aspect: (%s) %s", pointcutElement.getLabel (), pointcutElement.getType ())
+                    self.ast_addPointcut (pointcutElement)
 
-                    # tragic really. todo: fix root cause of dups. 
-                    pointcutKey = "from(%s)-to(%s)-patt(%s)" % (pointcutElement.get (self.ASPECT_FROM),
-                                                                pointcutElement.get (self.ASPECT_TO),
-                                                                pointcutElement.get (self.PATTERN))
-                    if not pointcutKey in self.compilerContext.seenPointcuts:
-                        self.compilerContext.seenPointcuts [pointcutKey] = pointcut
-                        self.compilerContext.aspects.append (pointcutElement)                
+                ''' Embedded pointcuts - all information is in the object itself. '''
+                pointcuts = aspect.get ("pointcuts")
+                if pointcuts:
+                    for key in pointcuts:
+                        pointcut = pointcuts [key]
+
+                        pointcutElement = self.ast_addNode (id      = "%s.%s" % (aspect.getId (), key),
+                                                            label   = key,
+                                                            typeObj = pointcut)
+                        pointcutElement.set (self.ASPECT, aspect.getLabel ())
+                        pointcutElement.set (self.ATTR_TYPE, self.ASPECT_POINTCUT)
+                        self.ast_addPointcut (pointcutElement)
 
             ''' weave aspects '''
             self.ast_weaveAspects ()
@@ -1826,6 +1835,17 @@ class GraysonCompiler:
 
             self.ast_buildSubWorkflows (jobs)
         return jobs
+
+    def ast_addPointcut (self, pointcutElement):
+        logger.debug ("ast:register-aspect: (%s) %s", pointcutElement.getLabel (), pointcutElement.getType ())
+        
+        # tragic really. todo: fix root cause of dups. 
+        pointcutKey = "from(%s)-to(%s)-patt(%s)" % (pointcutElement.get (self.ASPECT_FROM),
+                                                    pointcutElement.get (self.ASPECT_TO),
+                                                    pointcutElement.get (self.PATTERN))
+        if not pointcutKey in self.compilerContext.seenPointcuts:
+            self.compilerContext.seenPointcuts [pointcutKey] = pointcutElement.getId ()
+            self.compilerContext.aspects.append (pointcutElement)                
 
     def ast_buildSubWorkflows (self, jobs):
         """ Build Sub Workflows: Compile each sub-workflow object. """
@@ -2267,15 +2287,6 @@ class GraysonCompiler:
             logger.debug ("grayson:base-model-name: %s", baseModelName)
         return (unpackdir, os.path.join (unpackdir, baseModelName))
 
-    def executeOperator (self, configuration):
-        executed = False
-        operatorRegistry = OperatorRegistry ([ DynamicMapOperator ])
-        operator = configuration ['operator'] if configuration and 'operator' in configuration else None
-        if operator and 'type' in operator:
-            operatorRegistry.execute (operator['type'], configuration)
-            executed = True
-        return executed
-
     #////////////////////////////////////////////////////////////
     #{ 9.0 Static API
     #////////////////////////////////////////////////////////////
@@ -2296,8 +2307,8 @@ class GraysonCompiler:
                  toLogFile=None,
                  packaging=False,
                  packagingAdditionalFiles = [],
-                 plugin=CompilerPlugin (),
-                 configuration={}):
+                 plugin=CompilerPlugin ()):
+
         """ Compile the given input models to create an executable workflow. """
 
         ''' initialize output directory '''

@@ -70,17 +70,19 @@ class WorkflowMonitor (Task):
         active = tasks.active ()
         logger.debug ("%s" % active)
         logger.debug ("%s", json.dumps (active, indent=3, sort_keys=True))
-        for atHost in active:
-            activeAt = active [atHost]
-            for task in activeAt:
-                name = task ['name']
-                logger.debug ("task name: %s", name)
-                if WorkflowMonitor.name == name:
-                    logger.debug ("WorkflowMonitor task invoked")
-                    running = True
+        if active:
+            for atHost in active:
+                activeAt = active [atHost]
+                if activeAt:
+                    for task in activeAt:
+                        name = task ['name']
+                        logger.debug ("task name: %s", name)
+                        if WorkflowMonitor.name == name:
+                            logger.debug ("WorkflowMonitor task invoked")
+                            running = True
+                            break
+                if running:
                     break
-            if running:
-                break
         if not running:
             monitor = WorkflowMonitor ()
             WorkflowMonitor.delay (workflowRoot, amqpSettings, eventBufferSize)

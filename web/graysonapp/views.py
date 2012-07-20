@@ -235,7 +235,7 @@ def get_flow_events (request):
             "workflowId"  : workflowId,
             "workdir"     : workdirPath,
             "daxen"       : dax.split (','),
-            "buffer"      : 20
+            "buffer"      : 0
             })
 
     return ViewUtil.get_json_response ({ "status" : "ok" })
