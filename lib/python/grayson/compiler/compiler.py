@@ -1423,19 +1423,21 @@ class GraysonCompiler:
                     aspectActivations [activationKey] = pointcut
 
                     if toElement:
-                        self.ast_weaveAspectFromFileToJob (edge        = edge,
+                        self.ast_weaveAspectFromFileToJob (pointcut    = pointcut,
+                                                           edge        = edge,
                                                            aspectName  = aspectName,
                                                            jobNode     = jobNode,
                                                            fileElement = fileElement,
                                                            variable    = variable)
                     elif fromElement:
-                        self.ast_weaveAspectFromJobToFile (edge        = edge,
+                        self.ast_weaveAspectFromJobToFile (pointcut    = pointcut,
+                                                           edge        = edge,
                                                            aspectName  = aspectName,
                                                            jobNode     = jobNode,
                                                            fileElement = fileElement,
                                                            variable    = variable)
 
-    def ast_weaveAspectCompileAspect (self, edge, aspectName, jobNode, fileElement, variable):
+    def ast_weaveAspectCompileAspect (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
         logger.debug ("--weaving: compile aspect workflow")
         synthId = self.getSyntheticId (jobNode.getId (), aspectName)
 
@@ -1446,9 +1448,17 @@ class GraysonCompiler:
         else:
             number = synthId.split(".")[1]
 
+        typeObj = pointcut.get ("instanceType")
+        if typeObj:
+            #typeObj = json.loads (typeObj)
+            logger.debug ("====================================== instance type 1: %s", typeObj)
+        else:
+            typeObj = { 'type' : 'workflow' }
+            logger.debug ("====================================== instance type 2: %s", typeObj)
+
         aspectElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
                                           label   = "%s.%s" % (aspectName, number),
-                                          typeObj = { "type" : "workflow" },
+                                          typeObj = typeObj, #{ "type" : "workflow" },
                                           context = { variable : fileElement.getLabel () })
         aspectElement.getContext ()['allowCycle'] = True
 
@@ -1494,14 +1504,14 @@ class GraysonCompiler:
                 if not targetId == aspectElement.getId ():
                     edge.setSource (synthFileElement.getId ())
 
-    def ast_weaveAspectFromFileToJob (self, edge, aspectName, jobNode, fileElement, variable):
-        aspectElement    = self.ast_weaveAspectCompileAspect (edge, aspectName, jobNode, fileElement, variable)
+    def ast_weaveAspectFromFileToJob (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
+        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, edge, aspectName, jobNode, fileElement, variable)
         synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
         self.ast_weaveAspectCreateChain (edge, fileElement, aspectElement, synthFileElement)
         self.ast_weaveAspectRepointSources (fileElement, synthFileElement, aspectElement)
 
-    def ast_weaveAspectFromJobToFile (self, edge, aspectName, jobNode, fileElement, variable):
-        aspectElement    = self.ast_weaveAspectCompileAspect (edge, aspectName, jobNode, fileElement, variable)
+    def ast_weaveAspectFromJobToFile (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
+        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, edge, aspectName, jobNode, fileElement, variable)
         synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
         self.ast_weaveAspectCreateChain (edge, synthFileElement, aspectElement, fileElement)
         self.ast_weaveAspectRepointTargets (fileElement, synthFileElement, aspectElement)
