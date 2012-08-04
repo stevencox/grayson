@@ -50,9 +50,14 @@ class Operator (object):
     
     DYNAMIC_INDEX = "dynIndex"    
 
-    @staticmethod
-    def isDynamicOperator (properties):
+    def _isDynamicOperator (properties):
         return properties and Operator.DYNAMIC_INDEX in properties
+
+    @staticmethod
+    def isDynamicOperator (compiler):
+        #ninja
+        logger.debug ("compiler id: %s isdynamic %s", compiler.compilerId, compiler.compilerContext.isDynamicOperator)
+        return compiler and compiler.compilerContext.isDynamicOperator
 
     @staticmethod
     def getDynamicIndex (properties):
@@ -131,6 +136,8 @@ class CompilerContext (object):
         self.syntheticIds = {}
 
         self.generatedFile = {}
+
+        self.isDynamicOperator = False
 
     def getWorkflowManagementSystem (self):
         return self.workflowManagementSystem
@@ -898,7 +905,7 @@ class GraysonCompiler:
         return value
 
     def ast_synthesizeInstance (self, graph, is_chained, last_instance, operator, operand, context, origins=[]):
-        """Execute map operator on an operand.
+        """ Execute map operator on an operand.
             i.   If operand is itself a map operator, execute the operand as a map operator
             ii.  If operand is a workflow, copy it
                     a. Registering a context object for later pattern replacement
@@ -924,11 +931,25 @@ class GraysonCompiler:
             nodeName = "%s.%s" % (operand.getLabel (), self.nextLambdaId ())
             node = graph.addNode (nodeId, nodeName, typeText)
             node.setContext (copy (context))
-            ''' Map inputs to this synthetic instance copying input nodes to the synthetic graph '''
+
+            ''' Map inputs to this synthetic instance copying input nodes to the synthetic graph. 
+            origins = operator.getOrigins (self.graph)
+            for sourceKey in origins:
+                source = self.getElement (sourceKey)
+                source = self.findOrCopy (source, graph)
+                logger.debug ("add-edgex: %s %s", source.getLabel (), node.getLabel ())
+                edgeId = "%s.%s" % (source.getId (), node.getId ())
+                self.addEdge (graph, edgeId, source.getId (), node.getId ())
+                '''
+
+            ''' scox todo 
+                '''
             for edge in origins:
                 source = self.getElement (edge.getSource ())
                 source = self.findOrCopy (source, graph)
+                logger.debug ("newedge: %s %s", source.getLabel (), node.getLabel ())
                 self.copyEdge (graph, edge, source, node)
+
             ''' if chaining is on, chain each instance to its predecessor node '''
             logger.debug ("is_chained (%s), last_instance(%s)", is_chained, last_instance)
             if is_chained and last_instance:
@@ -938,17 +959,32 @@ class GraysonCompiler:
                 logger.debug ("chained instance %s as parent of %s", parentId, childId)
         return node
 
-    def ast_bindSyntheticNode (self, graph, operand, nodeId, nodeLabel, nodeType, origins):
+    def ast_bindSyntheticNode (self, graph, operator, operand, nodeId, nodeLabel, nodeType, origins):
         """ Edit the graph to bind the synthetic node where the operand and operator were:
               i)   Create a new DAX node
               ii)  Point to it from the operators origin nodes
               iii) Point from it to the operands target nodes. """
 
         node = graph.addNode (nodeId, nodeLabel, nodeType)
+        ''' scox todo
         for edge in origins:
             source = self.getElement (edge.getSource ())
             source = self.findOrCopy (source, graph)
             self.copyEdge (graph, edge, source, node)
+            '''
+
+        '''
+        scox todo
+            '''
+        origins = operator.getOrigins (self.graph)
+        for sourceKey in origins:
+            source = self.getElement (sourceKey)
+            if not source.getType () == self.MAP:
+                source = self.findOrCopy (source, graph)
+                logger.debug ("add-edgex: %s %s", source.getLabel (), node.getLabel ())
+                edgeId = "%s.%s" % (source.getId (), node.getId ())
+                self.addEdge (graph, edgeId, source.getId (), node.getId ())
+                
         targets = operand.getTargetEdges (graph)
         for edge in targets:
             if not type(edge) == unicode: 
@@ -1207,8 +1243,12 @@ class GraysonCompiler:
             syntheticId = self.getSyntheticId (operator.getId (), operator.getLabel ())
             number = syntheticId.split(".")[1]
             syntheticLabel = "%s.%s" % (operator.getLabel (), number)
+
+            logger.debug ("yeah todo --- %s ", syntheticLabel)
+
             syntheticType = '{ "type" : "dax" }'
             syntheticNode = self.ast_bindSyntheticNode (parent_graph,
+                                                        operator,
                                                         element,
                                                         syntheticId,
                                                         syntheticLabel,
@@ -1229,7 +1269,7 @@ class GraysonCompiler:
         if not edgeType:
             edgeType = edge.getType ()
         edgeCopy = self.addEdge (graph, edgeId, source.getId (), target.getId (), edgeType)
-        logger.debug ("ast:copy-edge: from (%s(%s)->%s(%s))type(%s)",
+        logger.debug ("qqq ast:copy-edge: from (%s(%s)->%s(%s))type(%s)",
                        source.getLabel (),
                        source.getId (),
                        target.getLabel (),
@@ -1449,16 +1489,12 @@ class GraysonCompiler:
             number = synthId.split(".")[1]
 
         typeObj = pointcut.get ("instanceType")
-        if typeObj:
-            #typeObj = json.loads (typeObj)
-            logger.debug ("====================================== instance type 1: %s", typeObj)
-        else:
+        if not typeObj:
             typeObj = { 'type' : 'workflow' }
-            logger.debug ("====================================== instance type 2: %s", typeObj)
-
+ 
         aspectElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
                                           label   = "%s.%s" % (aspectName, number),
-                                          typeObj = typeObj, #{ "type" : "workflow" },
+                                          typeObj = typeObj,
                                           context = { variable : fileElement.getLabel () })
         aspectElement.getContext ()['allowCycle'] = True
 
@@ -1630,6 +1666,10 @@ class GraysonCompiler:
             logger.debug ("setting data configuration: %s", dataConfiguration)
             self.getWorkflowManagementSystem().setDataConfiguration (dataConfiguration)
             
+        self.compilerContext.isDynamicOperator = Operator.DYNAMIC_INDEX in self.getInputModelProperties ()
+        logger.debug ("isdynamicoperator: setprop: %s", self.compilerContext.isDynamicOperator)
+        logger.debug ("isdynamicoperator: props: %s", self.getInputModelProperties ())
+
         logger.debug (properties)
 
     def ast_replaceProperties (self, text):
@@ -1722,7 +1762,7 @@ class GraysonCompiler:
                 label = targetJob.getLabel ()
             executableType = {
                 "type" : "executable",
-                "path" : "%s/bin/%s" % (path, label)
+                "path" : "%s/bin/%s.sh" % (path, label)
                 #"installed" : "true" #(required for shell mode)
                 }
             executableElement = self.ast_addNode (id       = '%s_exe' % targetJob.getId (),
@@ -1782,7 +1822,7 @@ class GraysonCompiler:
                 self.compilerId = compilerId
 
         if self.isContextModel ():
-            if self.isTopModel () and not Operator.isDynamicOperator (self.getInputModelProperties ()):
+            if self.isTopModel () and not Operator.isDynamicOperator (self):
                 self.ast_buildSubWorkflows (jobs)
         else:
             ''' resolve properties '''
@@ -1843,7 +1883,8 @@ class GraysonCompiler:
                         logger.debug ("ast:map-nodes: register job: %s", element.getLabel ())
                         jobs.append (element)
 
-            self.ast_buildSubWorkflows (jobs)
+            if not Operator.isDynamicOperator (self):
+                self.ast_buildSubWorkflows (jobs)
         return jobs
 
     def ast_addPointcut (self, pointcutElement):
@@ -1970,7 +2011,6 @@ class GraysonCompiler:
     def ast_addAncestor (self, target, ancestor, tab="", recurse=True):
         logger.debug ("%s-ast:inherit:target: parent=(id=%s,label=%s) target=(id=%s,label=%s)",
                       tab, ancestor.getId (), ancestor.getLabel (), target.getId (), target.getLabel ())
-        logger.debug ("target type: %s", target.getType ())
         target.addAncestor (ancestor)
         logger.debug ("object %s after inheriting %s\n%s",
                       target.getLabel (),
@@ -2016,6 +2056,7 @@ class GraysonCompiler:
         """ Analyze Jobs: Grok inputs and outputs of each job. """
         daxContext = ASTContext ()
         for job in jobs:
+            logger.debug ("consideringjob: %s", job.getLabel ())
             jobId = job.getNode().getId ()
             jobLabel = job.getNode().getLabel ()
             logger.debug ("ast-analyze-job: job=%s, id=%s, cid=%s", jobLabel, jobId, self.compilerId)
@@ -2044,6 +2085,8 @@ class GraysonCompiler:
                     # a file pointing to a job is an input file
                     elif source.getType () == self.FILE:
                         self.addInputFile (jobContext, source, edge)
+                        target = self.getElement (edgeTarget)
+                        logger.debug ("addingfile %s %s", source.getLabel (), target.getLabel ())
 
                     # an abstract job can be the source end of an edge to a job 
                     elif sourceType == self.JOB or sourceType == self.WORKFLOW or sourceType == self.DAX:
@@ -2272,6 +2315,7 @@ class GraysonCompiler:
             logger.debug ("chmodding bin")
 
         logger.debug ("unpacked archive: %s", archive)
+
         ''' load the config object '''
         confFile = os.path.join (unpackdir, self.CONF_FILE)
         if os.path.exists (confFile):

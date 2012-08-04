@@ -8,6 +8,8 @@ import logging
 import traceback
 import re
 
+logger = logging.getLogger (__name__)
+
 ''' A graph node '''
 class Node:
 	def __init__(self, anid, nodeLabel, nodeType):
@@ -80,16 +82,16 @@ class Graph:
 	def getNode (self, id):
 		node = None
 		'''
-		logging.debug ("getnode: %s %s", id, id in self.nodeMap)
+		logger.debug ("getnode: %s %s", id, id in self.nodeMap)
 		for i in self.nodeMap:
-			logging.debug ("nodemap: id=%s", i)
+			logger.debug ("nodemap: id=%s", i)
 			'''
 		if id in self.nodeMap:
 			node = self.nodeMap [id]
 		else:
 			for n in self.nodes:
 				if n.getId () == id:
-					logging.debug ("updating nodemap: id=%s", id)
+					logger.debug ("updating nodemap: id=%s", id)
 					self.nodeMap [id] = node
 					node = n
 					break
@@ -102,15 +104,21 @@ class Graph:
 			value = self.nodeLabelMap [label]
 		return value
 	def addNode (self, id, label, type="{}"):
+
+		if "0.0" in label:
+			logger.debug ("addnodex")
+			traceback.print_stack ()
+
+
 		node = Node (id, label, type)
 		return self.addExistingNode (node)
 	def addExistingNode (self, node):
 		self.nodes.append (node)
 		self.nodeMap [node.getId()] = node
 		'''
-		logging.debug ("addednode: %s %s gid=%s", node.getId (), node.getLabel (), self)
+		logger.debug ("addednode: %s %s gid=%s", node.getId (), node.getLabel (), self)
 		for i in self.nodeMap:
-			logging.debug ("nodemap: id=%s", i)
+			logger.debug ("nodemap: id=%s", i)
 			'''
 		if not node.getId () in self.nodeMap:
 			raise ValueError ("insert failed")
@@ -124,7 +132,7 @@ class Graph:
 			del self.nodeMap [node.getId ()]
 		if node.getLabel () in self.nodeLabelMap:
 			del self.nodeLabelMap [node.getLabel ()]
-		logging.debug ("graph remove node: %s %s", id, node.getLabel ())
+		logger.debug ("graph remove node: %s %s", id, node.getLabel ())
 	def getEdges (self):
 		return self.edges
 	def addEdge (self, id, source, target, type="{}"):
@@ -139,20 +147,20 @@ class Graph:
 			type = node.getType ()
 			if type:
 				typeText = type.replace ("\n", "")
-			logging.debug ("--node (%s(%s)(%s)) ", node.getId (), node.getLabel (), typeText)
+			logger.debug ("--node (%s(%s)(%s)) ", node.getId (), node.getLabel (), typeText)
 		for edge in self.edges:
-			logging.debug ("edge: src: %s trg: %s", edge.getSource (), edge.getTarget ())
+			logger.debug ("edge: src: %s trg: %s", edge.getSource (), edge.getTarget ())
 			try:
 				source = self.nodeMap [edge.getSource ()]
 				target = self.nodeMap [edge.getTarget ()]
 				if not source:
 					targetText = target.getLabel () if target else " unknown target"
-					logging.debug ( "unable to find node for source id %s with target %s", edge.getSource (), targetText)
+					logger.debug ( "unable to find node for source id %s with target %s", edge.getSource (), targetText)
 				elif not target:
 					sourceText = source.getLabel () if source else " unknown source"
-					logging.debug ("unable to find node for target id %s with source %s", edge.getTarget (), sourceText)
+					logger.debug ("unable to find node for target id %s with source %s", edge.getTarget (), sourceText)
 				else:
-					logging.debug ("--edge(id=%s)(src=(id=%s):%s, dst=(id=%s):%s), type(%s)",
+					logger.debug ("--edge(id=%s)(src=(id=%s):%s, dst=(id=%s):%s), type(%s)",
 					       edge.getId(), 
 						       source.getId (),
 						       source.getLabel (), 
@@ -176,7 +184,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 					if match:
 						prefix = int (match.group (1))
 						if prefix > self.idPrefix:
-							logging.debug ( "setting prefix: %s", prefix)
+							logger.debug ( "setting prefix: %s", prefix)
 							self.idPrefix = prefix + 1
 		else:
 			self.graph = Graph ()
@@ -214,7 +222,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 
                 if parent == "Label":
 			self.label = unicode(chars)
-			logging.debug ("graphml-parser: label %s", self.label)
+			logger.debug ("graphml-parser: label %s", self.label)
 		elif parent == "data":
 			if self.isDescription:
 				self.nodeType = self.nodeType + unicode(chars)
@@ -229,7 +237,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 			label = node.getLabel ()
 			if label == "properties" or label == "Properties":
 				self.graph.addProperties (node)
-				logging.debug ("graphml:parse:properties: %s", node.getType ())
+				logger.debug ("graphml:parse:properties: %s", node.getType ())
 			self.nodeId = None
 			self.nodeType = None
 			self.label = None
@@ -247,7 +255,7 @@ class GraphMLParser:
 	def __init__(self): pass	
 
 	def parseStream (self, stream, url, handler):
-		logging.debug ("parser-stream-url: %s" % url)
+		logger.debug ("parser-stream-url: %s" % url)
 		xml.sax.parse (stream, handler)
 		handler.graph.addFileName (os.path.realpath (url))
 
@@ -276,7 +284,7 @@ class GraphMLParser:
 					newUrl = url
 				else:
 					newUrl = "%s/%s" % (prefix, url)
-				logging.debug ("parser-detect-url:%s" % newUrl)
+				logger.debug ("parser-detect-url:%s" % newUrl)
 				if newUrl.startswith (HTTP):
 					stream = urllib2.urlopen (newUrl)
 				elif os.path.isfile (newUrl):
