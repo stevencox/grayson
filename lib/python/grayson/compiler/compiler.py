@@ -1845,9 +1845,16 @@ class GraysonCompiler:
                 path = self.getProperty (self.MAP)[self.APP_HOME]
             if not label:
                 label = targetJob.getLabel ()
+
+            path = "%s/bin/%s.sh" % (path, label)
+            if not os.path.exists (path):
+                path = "%s/bin/%s" % (path, label)                
+                if not os.path.exists (path):
+                    logger.warning ("unable to determine path for executable. last tried: %s", path)
+
             executableType = {
                 "type" : "executable",
-                "path" : "%s/bin/%s.sh" % (path, label)
+                "path" : path #"%s/bin/%s.sh" % (path, label)
                 #"installed" : "true" #(required for shell mode)
                 }
             executableElement = self.ast_addNode (id       = '%s_exe' % targetJob.getId (),
