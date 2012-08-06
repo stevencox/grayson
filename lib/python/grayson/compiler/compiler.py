@@ -196,6 +196,8 @@ class GraysonCompiler:
         self.CONF_FILE = "grayson.conf"
 
         self.ASPECT_POINTCUT = "pointcut"
+        self.ASPECT_AFTER = "after"
+        self.ASPECT_BEFORE = "before"
         self.ASPECT_FROM = "from"
         self.ASPECT_TO = "to"
         self.VARIABLE = "variable"
@@ -453,11 +455,17 @@ class GraysonCompiler:
     def getReferenceByLabel (self, label):
         return self.referenceIndex [label] if label in self.referenceIndex else None
 
-    def getElementsByType (self, type):
+    def getElementsByType (self, kind):
         """ Get an AST element by type. """
         value = []
-        if type in self.typeIndex:
-            value = self.typeIndex [type]
+        if type(kind) == list:
+            for k in kind:
+                v = self.getElementsByType (k)
+                for t in v:
+                    value.append (t)
+        elif kind in self.typeIndex:
+            value = self.typeIndex [kind]
+
         return value
 
     def getElementKeys (self):
@@ -1382,11 +1390,70 @@ class GraysonCompiler:
                             target = self.getElement (targetId)
                             if (target):
                                 self.ast_finalizeMapOperator (operator, target)
-                            
 
     #////////////////////////////////////////////////////////////
     #{ 6.0 Aspects
     #////////////////////////////////////////////////////////////
+
+    def ast_weaveJobAdvice (self):
+        jobs = self.getElementsByType ( [ self.JOB, self.WORKFLOW, self.DAX ] )
+        seen = []
+        for job in jobs:
+            
+            if job.getId () in seen:
+                continue
+
+            logger.debug ("ast:weaveJobAdvice: job(%s)", job.getLabel ())
+
+            for pointcut in self.compilerContext.aspects:
+
+                logger.debug ("ast:job-advice:pointcut: (%s)", pointcut.getLabel ())
+
+                if not pointcut.getType () == self.ASPECT_POINTCUT:
+                    continue
+
+                afterPattern  = pointcut.get (self.ASPECT_AFTER)
+                beforePattern = pointcut.get (self.ASPECT_BEFORE)
+                aspectName    = pointcut.get (self.ASPECT)
+                targetLabel   = job.getLabel ()
+                matchesBefore = re.search (beforePattern, targetLabel) if beforePattern else None
+                matchesAfter  = re.search (afterPattern, targetLabel) if afterPattern else None
+
+                if matchesBefore:
+                    logger.debug ("weave-job-advice(before): job=%s id=%s type=%s pointcut=%s", job.getLabel (), job.getId (), job.getType (), pointcut.getLabel ())
+                    aspectInstance = self.ast_weaveAspectCompileAspect (pointcut, aspectName, job)
+                    edge = self.addEdge (graph    = self.graph,
+                                         edgeId   = "%s_asp_%s" % (aspectInstance.getId (), job.getId ()),
+                                         sourceId = aspectInstance.getId (),
+                                         targetId = job.getId ())
+                if matchesAfter:
+                    logger.debug ("weave-job-advice(before): job=%s id=%s type=%s pointcut=%s", job.getLabel (), job.getId (), job.getType (), pointcut.getLabel ())
+                    aspectInstance = self.ast_weaveAspectCompileAspect (pointcut, aspectName, job)
+                    edge = self.addEdge (graph    = self.graph,
+                                         edgeId   = "%s_asp_%s" % (aspectInstance.getId (), job.getId ()),
+                                         sourceId = job.getId (),
+                                         targetId = aspectInstance.getId ())
+
+                seen.append (job.getId ())
+
+                '''
+
+                                                                                                                                                
+       "provision-pointcut" : {                                                                                                                                               
+           "pattern"      : "fasta-chunks.tar.gz",                                                                                                                            
+           "to"             : "iprscan",                                                                                                                                      
+           "variable"     : "",                                                                                                                                               
+           "instanceType" : {                                                                                                                                                 
+               "type" : "workflow",                                                                                                                                           
+               "args" : "-Dpegasus.execute.*.filesystem.local=true --sites local --verbose --verbose --verbose"                                                               
+           }                                                                                                                                                                  
+       }                           
+
+
+                    '''
+
+
+
 
     def ast_weaveAspects (self):
         """
@@ -1401,8 +1468,14 @@ class GraysonCompiler:
              Create a component workflow representing the aspect graph (i.e. traditional subworkflow)
              Insert the node at the right position in the graph
              """
+
+        ''' weave advice for job advice (before and after pointcuts for  jobs). '''
+        self.ast_weaveJobAdvice ()
+
+
         aspectActivations = {}
         logger.debug ("ast:aspect:weave")
+
         edges = self.graph.getEdges ()
         for edge in edges:
             source = self.getElement (edge.getSource ())
@@ -1415,13 +1488,19 @@ class GraysonCompiler:
             ''' get pointcuts '''
             for pointcut in self.compilerContext.aspects:
                 if not pointcut.getType () == self.ASPECT_POINTCUT:
-                    continue                
-                
+                    continue
+
                 fromElement = pointcut.get (self.ASPECT_FROM)
                 toElement = pointcut.get (self.ASPECT_TO)
                 variable = pointcut.get (self.VARIABLE)
                 pattern = pointcut.get (self.PATTERN)
                 aspectName = pointcut.get (self.ASPECT)
+
+                afterPattern  = pointcut.get (self.ASPECT_AFTER)
+                beforePattern = pointcut.get (self.ASPECT_BEFORE)
+                
+                if beforePattern or afterPattern:
+                    continue
 
                 if not toElement and not fromElement:
                     raise ValueError ("an aspect must have either 'to' or 'from' node specified")
@@ -1430,15 +1509,16 @@ class GraysonCompiler:
                 if not aspectName:
                     raise ValueError ("unable to determine aspect name for pointcut %s " % pointcut.getProperties ())
 
-                jobNode = source
+                jobNode     = source
                 fileElement = target
-                jobPattern = fromElement
+                jobPattern  = fromElement
                 if toElement:
                     fileElement = source
-                    jobNode = target
-                    jobPattern = toElement
-                    #fileElement = target
-                matchesJob = re.search (jobPattern, jobNode.getLabel ()) 
+                    jobNode     = target
+                    jobPattern  = toElement
+
+                targetLabel = jobNode.getLabel ()
+                matchesJob = re.search (jobPattern, targetLabel)
                 matchesFile = re.search (pattern, fileElement.getLabel ())
 
                 logger.debug ("weave:egg:match---- pat:%s file:%s jobpat:%s job:%s %s",
@@ -1452,6 +1532,7 @@ class GraysonCompiler:
                                                                                  jobNode.getId (),
                                                                                  fileElement.getId (),
                                                                                  self.compilerId)
+
                 if matchesJob and matchesFile:
 
                     logger.debug ("[aspect-apply]: %s job:%s file:%s from: %s, patt: %s",
@@ -1477,7 +1558,7 @@ class GraysonCompiler:
                                                            fileElement = fileElement,
                                                            variable    = variable)
 
-    def ast_weaveAspectCompileAspect (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
+    def ast_weaveAspectCompileAspect (self, pointcut, aspectName, jobNode, variableValue=None, variable=None):
         logger.debug ("--weaving: compile aspect workflow")
         synthId = self.getSyntheticId (jobNode.getId (), aspectName)
 
@@ -1491,20 +1572,23 @@ class GraysonCompiler:
         typeObj = pointcut.get ("instanceType")
         if not typeObj:
             typeObj = { 'type' : 'workflow' }
- 
+
+        if not variable:
+            variable = ""
+            variableValue = ""
+
         aspectElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
                                           label   = "%s.%s" % (aspectName, number),
                                           typeObj = typeObj,
-                                          context = { variable : fileElement.getLabel () })
+                                          context = { variable : variableValue })
         aspectElement.getContext ()['allowCycle'] = True
 
         self.ast_compileWorkflow (aspectElement);
         
-        logger.debug ("--weaving: generated synthetic aspect node name=(%s) id=(%s) from=(%s) edgeId=(%s) cid=(%s)",
+        logger.debug ("--weaving: generated synthetic aspect node name=(%s) id=(%s) from=(%s) cid=(%s)",
                       aspectElement.getLabel (),
                       aspectElement.getId (),
-                      fileElement.getLabel (),
-                      edge.getId (),
+                      variableValue,
                       self.compilerId)
         return aspectElement 
 
@@ -1517,7 +1601,8 @@ class GraysonCompiler:
 
     def ast_weaveAspectCreateChain (self, edge, first, second, third):
         logger.debug ("--weaving: generating synthetic edge")
-        edgeOne = self.copyEdge (self.graph, edge, second, first)
+        if first:
+            edgeOne = self.copyEdge (self.graph, edge, second, first)
         edgeTwo = self.copyEdge (self.graph, edge, third, second)
 
     def ast_weaveAspectRepointTargets (self, fileElement, synthFileElement, aspectElement):
@@ -1541,13 +1626,13 @@ class GraysonCompiler:
                     edge.setSource (synthFileElement.getId ())
 
     def ast_weaveAspectFromFileToJob (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
-        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, edge, aspectName, jobNode, fileElement, variable)
+        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, aspectName, jobNode, fileElement.getLabel (), variable)
         synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
         self.ast_weaveAspectCreateChain (edge, fileElement, aspectElement, synthFileElement)
         self.ast_weaveAspectRepointSources (fileElement, synthFileElement, aspectElement)
 
     def ast_weaveAspectFromJobToFile (self, pointcut, edge, aspectName, jobNode, fileElement, variable):
-        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, edge, aspectName, jobNode, fileElement, variable)
+        aspectElement    = self.ast_weaveAspectCompileAspect (pointcut, aspectName, jobNode, fileElement.getLabel (), variable)
         synthFileElement = self.ast_weaveAspectCreateSynthFile (fileElement)
         self.ast_weaveAspectCreateChain (edge, synthFileElement, aspectElement, fileElement)
         self.ast_weaveAspectRepointTargets (fileElement, synthFileElement, aspectElement)
@@ -1891,9 +1976,11 @@ class GraysonCompiler:
         logger.debug ("ast:register-aspect: (%s) %s", pointcutElement.getLabel (), pointcutElement.getType ())
         
         # tragic really. todo: fix root cause of dups. 
-        pointcutKey = "from(%s)-to(%s)-patt(%s)" % (pointcutElement.get (self.ASPECT_FROM),
-                                                    pointcutElement.get (self.ASPECT_TO),
-                                                    pointcutElement.get (self.PATTERN))
+        pointcutKey = "from(%s)-to(%s)-patt(%s)-before(%s)-after(%s)" % (pointcutElement.get (self.ASPECT_FROM),
+                                                                         pointcutElement.get (self.ASPECT_TO),
+                                                                         pointcutElement.get (self.PATTERN),
+                                                                         pointcutElement.get (self.ASPECT_BEFORE),
+                                                                         pointcutElement.get (self.ASPECT_AFTER))
         if not pointcutKey in self.compilerContext.seenPointcuts:
             self.compilerContext.seenPointcuts [pointcutKey] = pointcutElement.getId ()
             self.compilerContext.aspects.append (pointcutElement)                
