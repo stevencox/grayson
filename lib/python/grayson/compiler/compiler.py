@@ -1841,16 +1841,22 @@ class GraysonCompiler:
 
         concrete = self.getElementByLabel ("%s.sh" % targetJob.getLabel ())
         if not concrete:
+            #appHome = None
             if not path:
+                #appHome = self.getProperty (self.MAP)[self.APP_HOME]
                 path = self.getProperty (self.MAP)[self.APP_HOME]
             if not label:
                 label = targetJob.getLabel ()
 
-            path = "%s/bin/%s.sh" % (path, label)
-            if not os.path.exists (path):
-                path = "%s/bin/%s" % (path, label)                
-                if not os.path.exists (path):
-                    logger.warning ("unable to determine path for executable. last tried: %s", path)
+            testPath = "%s/bin/%s.sh" % (path, label)
+            if os.path.exists (testPath):
+                path = testPath
+            else:
+                testPath = "%s/bin/%s" % (path, label)                
+                if os.path.exists (testPath):
+                    path = testPath
+                else:
+                    logger.warning ("unable to determine path for executable. last tried: %s", testPath)
 
             executableType = {
                 "type" : "executable",
