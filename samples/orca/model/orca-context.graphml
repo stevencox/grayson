@@ -30,8 +30,7 @@
         },
         "condor" : {
            "universe"        : "vanilla",
-           "requirements" : "(orcaslice == 'engage-slice')",
-           "+orcaslice"     : "engage-slice"
+           "+orcaslice"     : "\"engage-slice\""
         },
         "env" : {
            "PEGASUS_BIN_DIR"   : "/opt/pegasus/pegasus-4.0.0",
