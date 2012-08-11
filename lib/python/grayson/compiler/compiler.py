@@ -1398,23 +1398,21 @@ class GraysonCompiler:
     def ast_weaveJobAdvice (self):
         jobs = self.getElementsByType ( [ self.JOB, self.WORKFLOW, self.DAX ] )
         seen = []
-        for job in jobs:
-            
+        for job in jobs:            
             if job.getId () in seen:
                 continue
 
             logger.debug ("ast:weaveJobAdvice: job(%s)", job.getLabel ())
-
             for pointcut in self.compilerContext.aspects:
 
                 logger.debug ("ast:job-advice:pointcut: (%s)", pointcut.getLabel ())
-
                 if not pointcut.getType () == self.ASPECT_POINTCUT:
                     continue
 
                 afterPattern  = pointcut.get (self.ASPECT_AFTER)
                 beforePattern = pointcut.get (self.ASPECT_BEFORE)
                 aspectName    = pointcut.get (self.ASPECT)
+
                 targetLabel   = job.getLabel ()
                 matchesBefore = re.search (beforePattern, targetLabel) if beforePattern else None
                 matchesAfter  = re.search (afterPattern, targetLabel) if afterPattern else None
@@ -1435,25 +1433,6 @@ class GraysonCompiler:
                                          targetId = aspectInstance.getId ())
 
                 seen.append (job.getId ())
-
-                '''
-
-                                                                                                                                                
-       "provision-pointcut" : {                                                                                                                                               
-           "pattern"      : "fasta-chunks.tar.gz",                                                                                                                            
-           "to"             : "iprscan",                                                                                                                                      
-           "variable"     : "",                                                                                                                                               
-           "instanceType" : {                                                                                                                                                 
-               "type" : "workflow",                                                                                                                                           
-               "args" : "-Dpegasus.execute.*.filesystem.local=true --sites local --verbose --verbose --verbose"                                                               
-           }                                                                                                                                                                  
-       }                           
-
-
-                    '''
-
-
-
 
     def ast_weaveAspects (self):
         """
