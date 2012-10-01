@@ -104,12 +104,6 @@ class Graph:
 			value = self.nodeLabelMap [label]
 		return value
 	def addNode (self, id, label, type="{}"):
-
-		if "0.0" in label:
-			logger.debug ("addnodex")
-			traceback.print_stack ()
-
-
 		node = Node (id, label, type)
 		return self.addExistingNode (node)
 	def addExistingNode (self, node):
