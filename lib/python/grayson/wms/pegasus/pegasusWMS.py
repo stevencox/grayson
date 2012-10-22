@@ -498,11 +498,11 @@ class SiteCatalogXML(object):
                         hostname = site [self.HOSTNAME]
                         fileURL = "%s://%s/%s/%s" % (protocol, hostname, mountPoint, fileName)
                 logger.debug ("getURL (url=%s hostname=%s, protocol=%s, mountPoint=%s\nsite=%s)",
-                               fileURL,
-                               hostname,
-                               protocol,
-                               mountPoint,
-                               site)
+                              fileURL,
+                              hostname,
+                              protocol,
+                              mountPoint,
+                              site)
         return fileURL
     
     def generateXML (self):
@@ -618,14 +618,13 @@ class PegasusWorkflowModel (WorkflowModel):
         if not file:            
             file = File (fileName)
             if not fileURL:
-                #fileURL = "file://%s/%s" % (self.workflowRoot, fileName)
                 fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
+                logger.debug ("fileurl: %s", fileURL)
             if not site:
                 site = "local"
  
             if not isinstance(fileURL, basestring) and len (fileURL) > 0:
                 fileURL = fileURL [0]
-
 
             logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
             pfn = PFN (fileURL, site)

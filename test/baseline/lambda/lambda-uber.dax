@@ -1,9 +1,9 @@
 dax name: <lambda-uber>
 files:
    file: <input-one.tar.gz>
-      pfn: <file://target/lambda/work/input-one.tar.gz>
+      pfn: <file://.*/work/input-one.tar.gz>
    file: <input-two.tar.gz>
-      pfn: <file://target/lambda/work/input-two.tar.gz>
+      pfn: <file://.*/work/input-two.tar.gz>
    file: <report.txt>
       pfn: <file://.*/target/lambda/work/outputs/report.txt>
 jobs:
@@ -18,9 +18,9 @@ jobs:
 transformations:
 executables:
    executable: <merge> namespace: <lambda-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/lambda/bin/merge.sh>
+      pfn: <file://.*/bin/merge.sh>
    executable: <package> namespace: <lambda-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/lambda/bin/package.sh>
+      pfn: <file://.*/bin/package.sh>
 dependencies:
    dependency: <1n6>
       parent: parent=><wind.0.dax> edge_label=><None>

@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+'''
+http://docs.python.org/library/cmd.html
+'''
+
 import os
 import sys
 import xml.sax
@@ -12,11 +16,12 @@ logger = logging.getLogger (__name__)
 
 ''' A graph node '''
 class Node:
-	def __init__(self, anid, nodeLabel, nodeType):
+	def __init__(self, anid, nodeLabel, nodeType, inferredType=None):
 		self.id = anid
 		self.type = nodeType
 		self.label = nodeLabel
 		self.context = {}
+		self.inferredType = inferredType
 	def getId (self):
 		return self.id
 	def getType (self):
@@ -103,8 +108,8 @@ class Graph:
 		if label in self.nodeLabelMap:
 			value = self.nodeLabelMap [label]
 		return value
-	def addNode (self, id, label, type="{}"):
-		node = Node (id, label, type)
+	def addNode (self, id, label, type="{}", inferredType=None):
+		node = Node (id, label, type, inferredType)
 		return self.addExistingNode (node)
 	def addExistingNode (self, node):
 		self.nodes.append (node)
@@ -189,6 +194,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 		self.label = None
 		self.nodeId = None
 		self.nodeType = None
+		self.inferredType = None
 		self.isDescription = False
 	def nextFile (self):
 		self.idPrefix += 1
@@ -211,6 +217,12 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 			self.edgeId = "%s%s" % (self.idPrefix, attrs.get ("id"))
 			self.source = "%s%s" % (self.idPrefix, attrs.get ("source"))
 			self.target = "%s%s" % (self.idPrefix, attrs.get ("target"))
+		elif element == "y:Shape":
+			self.inferredType = 'file'
+			shapeType = attrs.get ("type")
+			if shapeType == "ellipse":
+				self.inferredType = 'job'
+				
         def characters (self, chars):
                 parent = self.elements[0]
 
@@ -227,7 +239,7 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
                 self.elements = self.elements[1:]
                 if element == "node":
 
-			node = self.graph.addNode (self.nodeId, self.label, self.nodeType)
+			node = self.graph.addNode (self.nodeId, self.label, self.nodeType, self.inferredType)
 			label = node.getLabel ()
 			if label == "properties" or label == "Properties":
 				self.graph.addProperties (node)
@@ -245,15 +257,22 @@ class GraphMLHandler(xml.sax.handler.ContentHandler):
 	def endDocument (self):
 		x = 0
 		
+class ModelNotFoundError (Exception):
+	def __init__(self, value):
+		self.value = value
+	def __str__(self):
+		return repr(self.value)
+
 class GraphMLParser:
 	def __init__(self): pass	
 
-	def parseStream (self, stream, url, handler):
+	def parseStream (self, stream, url, handler=None):
 		logger.debug ("parser-stream-url: %s" % url)
 		xml.sax.parse (stream, handler)
-		handler.graph.addFileName (os.path.realpath (url))
+		if handler:
+			handler.graph.addFileName (os.path.realpath (url))
 
-	def parseURL (self, url, handler, path=[]):
+	def parseURL (self, url, handler=None, path=[]):
 		stream = None
 		HTTP = "http://"
 		if not "" in path:
@@ -287,7 +306,8 @@ class GraphMLParser:
 					self.parseStream (stream, newUrl, handler)
 					break
 		if not stream:
-			raise ValueError ("unable to find model: %s" % url)
+			raise ModelNotFoundError ("Unable to find model: %s" % url)
+
 	def parse (self, fname):
 		handler = GraphMLHandler ()
 		self.parseURL (fname, handle)

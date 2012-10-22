@@ -103,6 +103,7 @@ class GraysonCompilerTests (GraysonTestCase):
         GraysonCompiler.compile (models = models,
                                  modelPath = modelPath,
                                  outputdir = outputPath,
+                                 #appHome=os.getcwd (),
                                  logLevel = "debug",
                                  modelProperties = inputProperties,
                                  output=models[0].replace (".graphml", ".dax"),

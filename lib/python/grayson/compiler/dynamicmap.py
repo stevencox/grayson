@@ -59,6 +59,7 @@ class DynamicMapOperator (Operator):
         version        = operatorContext ["version"]
         instanceArgs   = operatorContext ["instanceArgs"]
 
+        mapType        = context ["mapType"]
         outputBasename = context ["outputName"]
         modelPath      = context ["modelPath"]
         outputDir      = context ["outputDir"]
@@ -85,51 +86,97 @@ class DynamicMapOperator (Operator):
 
 	replicaText = []
         
-        tar = tarfile.open (inputFile, "r:gz")
-        members = tar.getmembers ()
-        c = 0
-        for archiveMember in members:
-            outputname = "%s.%s.dax" % ( outputBasename, c )
-            definitions = {
-                variable      : archiveMember.name,
-                index         : "%s" % c,
-                Operator.DYNAMIC_INDEX : "%s" % c,
-                "appHome"     : appHome
-                }
-            logger.debug ("dynamic-map: invoking compiler")
-            try:
-                output = open (os.path.join (outputDir, outputname), 'w')
+        if mapType == 'tar':
+            tar = tarfile.open (inputFile, "r:gz")
+            members = tar.getmembers ()
+            c = 0
+            for archiveMember in members:
+                outputname = "%s.%s.dax" % ( outputBasename, c )
+                definitions = {
+                    variable      : archiveMember.name,
+                    index         : "%s" % c,
+                    Operator.DYNAMIC_INDEX : "%s" % c,
+                    "appHome"     : appHome
+                    }
+                logger.debug ("dynamic-map: invoking compiler")
                 try:
-                    GraysonCompiler.compile (models          = models,
-                                             output          = output,
-                                             modelPath       = modelPath.split (os.pathsep),
-                                             namespace       = namespace,
-                                             version         = None, #version,
-                                             logLevel        = "debug",
-                                             modelProperties = definitions,
-                                             outputdir       = tmpOutputDir,
-                                             sites           = sites,
-                                             toLogFile       = os.path.join (outputDir, "log.txt"))
-                finally:
-                    if output:
-                        output.close ()
-            except IOError as e:
-                logger.error ("Encountered IOError %s compiling subdax %s", e.__str__ (), output)
-                raise e
-            replicaText.append ('%s file://%s/%s pool="local"' % (outputname, outputDir, outputname))
+                    output = open (os.path.join (outputDir, outputname), 'w')
+                    try:
+                        GraysonCompiler.compile (models          = models,
+                                                 output          = output,
+                                                 modelPath       = modelPath.split (os.pathsep),
+                                                 namespace       = namespace,
+                                                 version         = None,
+                                                 logLevel        = "debug",
+                                                 modelProperties = definitions,
+                                                 outputdir       = tmpOutputDir,
+                                                 sites           = sites,
+                                                 toLogFile       = os.path.join (outputDir, "log.txt"))
+                    finally:
+                        if output:
+                            output.close ()
+                except IOError as e:
+                    logger.error ("Encountered IOError %s compiling subdax %s", e.__str__ (), output)
+                    raise e
+                replicaText.append ('%s file://%s/%s pool="local"' % (outputname, outputDir, outputname))
 
-            template = Template (self.subdax)
-            flowContext ['c'] = c
-            flowContext ['outputname'] = outputname
-            flowContext ['instanceArgs'] = instanceArgs
-            flowContext ['sites'] = "--sites %s" % sites if instanceArgs == "" else ""
-            text.append (template.substitute (flowContext))
+                template = Template (self.subdax)
+                flowContext ['c'] = c
+                flowContext ['outputname'] = outputname
+                flowContext ['instanceArgs'] = instanceArgs
+                flowContext ['sites'] = "--sites %s" % sites if instanceArgs == "" else ""
+                text.append (template.substitute (flowContext))
 
-            replicaCatalogName = "replica-catalog.rc"
-            masterRC = os.path.join (outputDir, replicaCatalogName)
-            self.updateCatalog (master = masterRC,
-                                other  = os.path.join (tmpOutputDir, replicaCatalogName))
-            c += 1
+                replicaCatalogName = "replica-catalog.rc"
+                masterRC = os.path.join (outputDir, replicaCatalogName)
+                self.updateCatalog (master = masterRC,
+                                    other  = os.path.join (tmpOutputDir, replicaCatalogName))
+                c += 1
+        elif mapType == 'list':
+            stream = open (inputFile, "r")
+            c = 0
+            for line in stream:
+                outputname = "%s.%s.dax" % ( outputBasename, c )
+                definitions = {
+                    variable      : line,
+                    index         : "%s" % c,
+                    Operator.DYNAMIC_INDEX : "%s" % c,
+                    "appHome"     : appHome
+                    }
+                logger.debug ("dynamic-map: invoking compiler")
+                try:
+                    output = open (os.path.join (outputDir, outputname), 'w')
+                    try:
+                        GraysonCompiler.compile (models          = models,
+                                                 output          = output,
+                                                 modelPath       = modelPath.split (os.pathsep),
+                                                 namespace       = namespace,
+                                                 version         = None,
+                                                 logLevel        = "debug",
+                                                 modelProperties = definitions,
+                                                 outputdir       = tmpOutputDir,
+                                                 sites           = sites,
+                                                 toLogFile       = os.path.join (outputDir, "log.txt"))
+                    finally:
+                        if output:
+                            output.close ()
+                except IOError as e:
+                    logger.error ("Encountered IOError %s compiling subdax %s", e.__str__ (), output)
+                    raise e
+                replicaText.append ('%s file://%s/%s pool="local"' % (outputname, outputDir, outputname))
+
+                template = Template (self.subdax)
+                flowContext ['c'] = c
+                flowContext ['outputname'] = outputname
+                flowContext ['instanceArgs'] = instanceArgs
+                flowContext ['sites'] = "--sites %s" % sites if instanceArgs == "" else ""
+                text.append (template.substitute (flowContext))
+
+                replicaCatalogName = "replica-catalog.rc"
+                masterRC = os.path.join (outputDir, replicaCatalogName)
+                self.updateCatalog (master = masterRC,
+                                    other  = os.path.join (tmpOutputDir, replicaCatalogName))
+                c += 1
 
         text.append (self.footer)
         mainFlowContent = ''.join (text)

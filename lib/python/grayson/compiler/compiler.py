@@ -18,6 +18,7 @@ import traceback
 from copy import copy
 from string import Template
 from sys import settrace
+from uuid import uuid4
 
 ''' local '''
 from grayson.compiler.abstractsyntax import ASTElement
@@ -55,7 +56,6 @@ class Operator (object):
 
     @staticmethod
     def isDynamicOperator (compiler):
-        #ninja
         logger.debug ("compiler id: %s isdynamic %s", compiler.compilerId, compiler.compilerContext.isDynamicOperator)
         return compiler and compiler.compilerContext.isDynamicOperator
 
@@ -130,7 +130,7 @@ class CompilerContext (object):
         self.allModelPaths = []
         self.packaging = False
         self.compilerPlugin = CompilerPlugin ()
-
+        #self.appHome = None
         self.appliedAspects = {}
         self.seenPointcuts = {}
         self.syntheticIds = {}
@@ -234,10 +234,12 @@ class GraysonCompiler:
 
         self.clean = clean       # Delete previous artifacts and tests
         self.appHome = appHome   # Home directory of the application
+        #self.appHome = appHome   # Home directory of the application
         self.roots = []          # Jobs that dont depend on other jobs
         self.contextModels = []  # Models that provide context (are not workflows)
 
         self.compilerContext = CompilerContext (outputDir)
+
         self.workflowModel = self.compilerContext.getWorkflowManagementSystem().createWorkflowModel (self.namespace)
          
         path = os.getenv (self.GRAYSONPATH)
@@ -621,6 +623,7 @@ class GraysonCompiler:
         # default path to $appHome/bin/<nodeName>
         if not path:
             path = os.path.join (self.appHome, 'bin', source.getLabel ())
+            #path = os.path.join (self.compilerContext.appHome, 'bin', source.getLabel ())
 
         path = os.path.normpath (path)
 
@@ -727,7 +730,7 @@ class GraysonCompiler:
                                            site)
 
         ''' Ensure we add only files that are inputs to the workflow rather
-            than intermeidate (generated) files
+            than intermediate (generated) files
         targetEdges = fileElement.getTargetEdges (self.graph)
         isWorkflowInput = not fileName in self.ctx().generatedFile
         if len (targetEdges) == 0 and isWorkflowInput:
@@ -760,7 +763,7 @@ class GraysonCompiler:
                                     version    = version,
                                     logManager = self.logManager,
                                     clean      = self.clean,
-                                    appHome    = self.appHome,
+                                    appHome    = self.appHome, #apphomefix
                                     outputDir  = self.getOutputDir ())
         compiler.compilerContext = self.compilerContext
         return compiler
@@ -770,7 +773,9 @@ class GraysonCompiler:
         compiler.buildAST ()
         if not self.isPackaging ():
             outputFileName = os.path.join (self.getOutputDir (), outputFile)
-            output = open (os.path.join (self.getOutputDir (), outputFile), "w")
+            #outputFileName = "%s-%s" % (outputFileName, uuid4().int)
+            output = open (outputFileName, "w")
+            #output = open (os.path.join (self.getOutputDir (), outputFile), "w")
             compiler.writeDAX (output)
             output.close ()
 
@@ -797,7 +802,7 @@ class GraysonCompiler:
 
         ''' add context models '''
         for contextModel in self.contextModels:
-            logger.debug ("ast:compile-workflow:add-context-model: %s", contextModel)
+            logger.debug ("ast:compile-workflow:add-context-model: %s %s", element.getLabel (), contextModel)
             models.append (contextModel)
 
         ''' load graphs '''
@@ -826,7 +831,6 @@ class GraysonCompiler:
     def ast_compileSyntheticWorkflow (self, element, workflowName, graph, syntheticNode):
         """ Compile a synthetic workflow from a generated graph to an output file. """
         compiler = self.createComponentCompiler (workflowName, element.get (self.ATTR_VERSION))
-
         if len (graph.nodes) == 0:
             text = "each map operator"
             if element:
@@ -868,7 +872,7 @@ class GraysonCompiler:
                     logger.debug ("ast:replace-map-vars:replace: %s %s in expr: %s", key, unicode (context[key]), expression)
                     expression = expression.replace (key, unicode (context[key]))
                 text = text.replace (overall, unicode (eval (expression)))
-            logger.debug ("ast:replace-map-vars:  outcome[%s]", text)
+            logger.debug ("ast:replace-map-vars:  outcome[%s] context[%s]", text, context)
 
         if recordMatches and workflowModel and not value == text:
             workflowModel.addToVariableMap (value, text, recordMatches)
@@ -885,7 +889,7 @@ class GraysonCompiler:
             if text:
                 template = Template (text)
                 value = template.safe_substitute (context)
-                logger.debug ("ast:replace-map-vars:  outcome[%s]", value)
+                logger.debug ("ast:replace-map-vars:  outcome[%s] context(2)[%s]", value, context)
 
         if recordMatches and workflowModel and not value == text:
             workflowModel.addToVariableMap (value, text, recordMatches)
@@ -907,10 +911,16 @@ class GraysonCompiler:
         result = "%s.%s" % (result, id)
         return result
 
+    def getSyntheticId0 (self, baseId, prefix):
+        return "%s.%s" % (baseId, self.nextLambdaId ())
+
     def nextLambdaId (self):
         value = self.LAMBDA_ID
         self.LAMBDA_ID = self.LAMBDA_ID + 1
         return value
+
+    def nextLambdaId0 (self):
+        return uuid4().int #str (uuid4 ()).replace ('-', '')
 
     def ast_synthesizeInstance (self, graph, is_chained, last_instance, operator, operand, context, origins=[]):
         """ Execute map operator on an operand.
@@ -1072,10 +1082,14 @@ class GraysonCompiler:
                 expression = each [ index + len(FILE_PROTO): ]
                 files = glob.glob (expression)
                 files.sort ()
+                count = 0
                 for file in files:
                     logger.debug ("ast:map(%s)(glob)[item=%s,expression=%s,element=%s]", self.compilerId, file, expression, element.getLabel ())
                     file = file.replace (os.path.sep, "/")
                     context [variable] = file
+                    context ["%s_index" % variable] = count
+                    context ["%s_index" % variable] = uuid4().int
+                    count += 1
                     basename = os.path.basename (file)
                     context ["%s_base" % variable] = basename
                     
@@ -1110,10 +1124,18 @@ class GraysonCompiler:
                 if not "://" in each:
                     raise SyntaxError ('Invalid syntax for each=[%s] in dynamic map operator [%s]' % (each, operator.getLabel ()))
 
-                mapType = 'tar' if each.startswith ('tar://') else None
+                mapType = None
+                if each.startswith ('tar://'):
+                    mapType = 'tar'
+                elif each.startswith ('list://'):
+                    mapType = 'list'
+
                 if not mapType:
                     raise SyntaxError ('Unrecognized input type [%s] derived from each=[%s] for dynamic map operator [%s]' % (mapType, each, operator.getLabel ()))
 
+                '''
+                Record the configuration of this map operator so that it can be loaded once it is invoked.
+                '''
 
                 inputFile = each.replace ('%s://' % mapType, '')
                 index = operator.get ('index')
@@ -1127,12 +1149,14 @@ class GraysonCompiler:
                 logger.debug ("instanceargs: %s %s %s", instanceArgs, element, element.getId ())
 
                 configuration = {
+                    'mapType'       : mapType,
                     'outputName'    : element.getLabel (),
                     'modelPath'     : os.pathsep.join (self.getModelPath ()),
                     'outputDir'     : self.getOutputDir (),
                     'contextModels' : contextModels,
                     'sites'         : self.getSites () ,
                     'graysonHome'   : self.getProperty (self.MAP)[self.GRAYSON_HOME],
+                    #'appHome'       : self.compilerContext.appHome,
                     'appHome'       : self.getProperty (self.MAP)[self.APP_HOME],
                     'operator'      : {
                         "type"      : 'dynamicMap',
@@ -1148,6 +1172,10 @@ class GraysonCompiler:
                     }
                 config = os.path.join (self.getOutputDir (), "%s.grayconf" % operator.getLabel ())
                 GraysonUtil.writeFile (config, json.dumps (configuration, indent=4, sort_keys=True))
+
+                '''
+                Now create a job object and weave it into the graph to invoke the operator at the appropriate point.                
+                '''
 
                 ld_library_path = os.environ ["LD_LIBRARY_PATH"] if "LD_LIBRARY_PATH" in os.environ else ""
 
@@ -1215,7 +1243,7 @@ class GraysonCompiler:
                         logger.debug ("--(map): adding origin %s of %s executable.", origin.getLabel (), operator.getLabel ())
                         exe.addAncestor (origin)
 
-                ''' Ensure we dont plan this job to some other site - its installed here. '''
+                ''' Ensure we dont plan this job to some other site - map operators call grayson and are inherently local. '''
                 exeProps = exe.getProperties () 
                 exeProps ['installed'] = 'true'
 
@@ -1425,7 +1453,7 @@ class GraysonCompiler:
                                          sourceId = aspectInstance.getId (),
                                          targetId = job.getId ())
                 if matchesAfter:
-                    logger.debug ("weave-job-advice(before): job=%s id=%s type=%s pointcut=%s", job.getLabel (), job.getId (), job.getType (), pointcut.getLabel ())
+                    logger.debug ("weave-job-advice(after): job=%s id=%s type=%s pointcut=%s", job.getLabel (), job.getId (), job.getType (), pointcut.getLabel ())
                     aspectInstance = self.ast_weaveAspectCompileAspect (pointcut, aspectName, job)
                     edge = self.addEdge (graph    = self.graph,
                                          edgeId   = "%s_asp_%s" % (aspectInstance.getId (), job.getId ()),
@@ -1548,28 +1576,50 @@ class GraysonCompiler:
         else:
             number = synthId.split(".")[1]
 
-        typeObj = pointcut.get ("instanceType")
-        if not typeObj:
-            typeObj = { 'type' : 'workflow' }
-
         if not variable:
             variable = ""
             variableValue = ""
 
-        aspectElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
-                                          label   = "%s.%s" % (aspectName, number),
-                                          typeObj = typeObj,
-                                          context = { variable : variableValue })
-        aspectElement.getContext ()['allowCycle'] = True
+        #aspectElement = self.getElement (pointcut.get ("aspectId"))
+        aspectElement = self.getElementByLabel (aspectName)
 
-        self.ast_compileWorkflow (aspectElement);
+        logger.debug ("aaaa pc aspect id: %s", pointcut.get ("aspectId"))
+        logger.debug ("aaaa aspect element: %s", aspectElement)
+
+        aspectElements = self.getElementsByType (self.ASPECT)
+        for aspect in aspectElements:
+            logger.debug ("aaaa ===========> %s %s", aspect.getLabel (), aspect.getId ())
+
+        typeObj = None
+        if aspectElement:
+            typeObj = aspectElement.get ("instanceType")
+        if not typeObj:
+            typeObj = { 'type' : 'workflow' }
+
+        synthId = synthId.replace (".", "_")
+        if typeObj ['type'] == 'workflow':
+            generatedElement = self.ast_addNode (id      = "%s.%s" % (aspectName, synthId),
+                                                 label   = "%s.%s" % (aspectName, number),
+                                                 typeObj = typeObj,
+                                                 context = { variable : variableValue })
+            generatedElement.getContext ()['allowCycle'] = True
+            self.ast_compileWorkflow (generatedElement);
+        else:
+            pointcutName = pointcut.get ("name")
+            generatedElement = self.ast_addNode (id      = "pct_%s" % synthId,
+                                                 label   = "%s.%s" % (pointcutName, number),
+                                                 typeObj = typeObj,
+                                                 context = { variable : variableValue })
+            generatedElement.getContext ()['allowCycle'] = True
+            label = aspectElement.getLabel ()
+            self.synthesizeExecutable (generatedElement, label)
         
         logger.debug ("--weaving: generated synthetic aspect node name=(%s) id=(%s) from=(%s) cid=(%s)",
-                      aspectElement.getLabel (),
-                      aspectElement.getId (),
+                      generatedElement.getLabel (),
+                      generatedElement.getId (),
                       variableValue,
                       self.compilerId)
-        return aspectElement 
+        return generatedElement 
 
     def ast_weaveAspectCreateSynthFile (self, fileElement):
         logger.debug ("--weaving: generating synthetic file node type(%s)", fileElement.getNode().getType ())
@@ -1697,6 +1747,7 @@ class GraysonCompiler:
         for path in [ os.path.join (graysonHome, 'var'), os.path.join (graysonHome, '..', 'var') ]:
             if os.path.isdir (path):
                 properties [self.MAP][self.GRAYSON_VAR] = path
+        #properties [self.MAP][self.APP_HOME] = self.compilerContext.appHome.replace ("\\", "/")
         properties [self.MAP][self.APP_HOME] = self.appHome.replace ("\\", "/")
         properties [self.MAP][self.OUTPUT_DIR] = self.getOutputDir ()
         properties [self.MAP][self.FQDN] = socket.getfqdn ()
@@ -1820,15 +1871,13 @@ class GraysonCompiler:
 
         concrete = self.getElementByLabel ("%s.sh" % targetJob.getLabel ())
         if not concrete:
-            #appHome = None
             if not path:
-                #appHome = self.getProperty (self.MAP)[self.APP_HOME]
                 path = self.getProperty (self.MAP)[self.APP_HOME]
             if not label:
                 label = targetJob.getLabel ()
 
             testPath = "%s/bin/%s.sh" % (path, label)
-            if os.path.exists (testPath):
+            if os.path.isfile (testPath) and os.access (testPath, os.X_OK): #os.path.exists (testPath):
                 path = testPath
             else:
                 testPath = "%s/bin/%s" % (path, label)                
@@ -1845,10 +1894,11 @@ class GraysonCompiler:
             executableElement = self.ast_addNode (id       = '%s_exe' % targetJob.getId (),
                                                   label    = '%s.sh'  % targetJob.getLabel (),
                                                   typeObj  = json.dumps (executableType))
-            logger.debug ("ast:synthesize-executable: id(%s) label(%s) type(%s)",
+            logger.debug ("ast:synthesize-executable: id(%s) label(%s) type(%s) path(%s)",
                           executableElement.getId (), 
-                          executableElement.getLabel (), 
-                          executableElement.getType ())
+                          executableElement.getLabel (),
+                          executableElement.getType (),
+                          executableElement.get ("path"))
         return executableElement
         
     def ast_addNode (self, id, label, typeObj, context=None):
@@ -1942,6 +1992,9 @@ class GraysonCompiler:
                         pointcutElement = self.ast_addNode (id      = "%s.%s" % (aspect.getId (), key),
                                                             label   = key,
                                                             typeObj = pointcut)
+                        pointcutElement.set ("name", key)
+                        pointcutElement.set ("aspectId", aspect.getId ())
+                        #logger.info ("aaaa set pointcut aspect id %s %s", pointcutElement.get('name'), pointcutElement.get('aspectId'))
                         pointcutElement.set (self.ASPECT, aspect.getLabel ())
                         pointcutElement.set (self.ATTR_TYPE, self.ASPECT_POINTCUT)
                         self.ast_addPointcut (pointcutElement)
@@ -2447,10 +2500,12 @@ class GraysonCompiler:
         ''' initialize output directory '''
         if not os.path.exists (outputdir):
             os.makedirs (outputdir)
+
+        logging.info ("outputdir: %s", outputdir)
+
         if not appHome:
             appHome = os.getcwd ()
-        logger.debug ("apphome: %s", appHome)
-
+        
         ''' initialize logging '''
         logManager = LogManager.getInstance (logLevel, logDir, toFile=toLogFile)
         fileHandler = logManager.getFileHandler ()
@@ -2463,6 +2518,7 @@ class GraysonCompiler:
                                     logManager  = logManager,
                                     clean       = clean,
                                     appHome     = appHome,
+                                    #appHome     = appHome,
                                     outputDir   = outputdir)
         compiler.output = output
         if type(output) == file:
@@ -2472,7 +2528,7 @@ class GraysonCompiler:
         if modelProperties:
             compiler.setInputModelProperties (modelProperties)
         compiler.setCompilerPlugin (plugin)
-
+        
         modelName = models [0]
         if not modelPath:
             modelPath = []
@@ -2484,10 +2540,12 @@ class GraysonCompiler:
             (unpackdir, newName) = compiler.unpack (modelName, outputdir)
 
             compiler.appHome = unpackdir
+            #compiler.compilerContext.appHome = unpackdir
             compiler.getWorkflowManagementSystem().getSiteCatalog().configureLocal ()
             local = compiler.getWorkflowManagementSystem().getSiteCatalog().getEntry ("local")
 
             localStorage = "%s/work/outputs" % compiler.appHome
+            #localStorage = "%s/work/outputs" % compiler.compilerContext.appHome
 	    local ["scratchFileServerMountPoint"] = localStorage
             local ["scratchInternalMountPoint"]   = localStorage
             local ["storageFileServerMountPoint"] = localStorage
@@ -2511,6 +2569,8 @@ class GraysonCompiler:
             logger.info ("   model: %s", model)
         compiler.parse (models)
         compiler.setTopModel (models [0])
+        #compiler.compilerContext.appHome = appHome
+        compiler.appHome = appHome
         compiler.buildAST ()
 
         ''' write output workflow '''

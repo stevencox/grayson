@@ -1,7 +1,7 @@
 dax name: <alpha>
 files:
    file: <input.txt>
-      pfn: <file://target/alpha/input.txt>
+      pfn: <file://.*/input.txt>
    file: <one.out>
       pfn: <file://.*/target/alpha/work/outputs/one.out>
    file: <two.out>
@@ -16,9 +16,9 @@ jobs:
 transformations:
 executables:
    executable: <one> namespace: <alpha>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/alpha/bin/alpha.sh>
+      pfn: <file://.*/bin/alpha.sh>
    executable: <two> namespace: <alpha>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/alpha/bin/alpha.sh>
+      pfn: <file://.*/bin/alpha.sh>
 dependencies:
    dependency: <1n3>
       parent: parent=><one> edge_label=><None>

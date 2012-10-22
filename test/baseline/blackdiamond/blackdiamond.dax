@@ -30,13 +30,13 @@ jobs:
 transformations:
 executables:
    executable: <analyze> namespace: <blackdiamond>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/blackdiamond/bin/keg>
+      pfn: <file://.*/bin/keg>
    executable: <findrange.1> namespace: <blackdiamond>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/blackdiamond/bin/keg>
+      pfn: <file://.*/bin/keg>
    executable: <findrange.2> namespace: <blackdiamond>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/blackdiamond/bin/keg>
+      pfn: <file://.*/bin/keg>
    executable: <preprocess> namespace: <blackdiamond>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/blackdiamond/bin/keg>
+      pfn: <file://.*/bin/keg>
 dependencies:
    dependency: <1n2>
       parent: parent=><preprocess> edge_label=><None>

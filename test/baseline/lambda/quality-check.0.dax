@@ -8,5 +8,5 @@ jobs:
 transformations:
 executables:
    executable: <check> namespace: <quality-check.0>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/lambda/bin/check.sh>
+      pfn: <file://.*/bin/check.sh>
 dependencies:

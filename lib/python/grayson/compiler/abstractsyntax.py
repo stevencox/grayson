@@ -35,6 +35,7 @@ class ASTElement:
             try:
                 text = string.replace (text, "\n", " ")
                 properties = json.loads (text)
+                #self.inferType (properties)
                 logger.debug ("properties %s", properties)
             except:
                 message = "ERROR:ast:parse-json: node(id=%s, label=%s, json=%s)" % (id, self.node.getLabel (), text)
@@ -43,6 +44,16 @@ class ASTElement:
                 traceback.print_exc ()
                 raise ValueError (message)
         return properties
+
+    def inferType (self, properties):
+        if not self.ATTR_TYPE in properties and self.node.inferredType:
+            if self.node.inferredType == 'job':
+                label = self.node.getLabel ()
+                if label.startswith ('map-') or label.endswith ('map'):
+                    self.node.inferredType = 'map'
+                elif label.endswith ('uber') or label.endswith ("-flow"):
+                    self.node.inferredType = 'workflow'
+            properties [self.ATTR_TYPE] = self.node.inferredType
 
     def getProperties (self):
         return self.properties
@@ -111,7 +122,10 @@ class ASTElement:
         return self.node
 
     def getContext (self):
-        return self.node.getContext ()
+        context = self.get ('context')
+        if not context:
+            context = self.node.getContext ()
+        return context
 
     def setDaxNode (self, daxNode):
         self.daxNode = daxNode

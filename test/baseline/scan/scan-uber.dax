@@ -5,15 +5,15 @@ files:
    file: <database.txt>
       pfn: <file://.*/target/scan/work/outputs/database.txt>
    file: <fasta-chunks.tar.gz>
-      pfn: <file://target/scan/work/outputs/fasta-chunks.tar.gz>
+      pfn: <file://.*/work/outputs/fasta-chunks.tar.gz>
    file: <fasta.txt>
-      pfn: <file://target/scan/input/fasta.txt>
+      pfn: <file://.*/input/fasta.txt>
    file: <full-sifs.txt>
       pfn: <file://.*/target/scan/work/outputs/full-sifs.txt>
    file: <matrix.txt>
       pfn: <file://.*/target/scan/work/outputs/matrix.txt>
    file: <score.x>
-      pfn: <file://target/scan/bin/score.x>
+      pfn: <file://.*/bin/score.x>
 jobs:
    job: <map>, id: <1n12_synth> namespace: <scan-uber> version: <1.0>
       usedfile: <fasta-chunks.tar.gz>
@@ -41,11 +41,11 @@ executables:
    executable: <map> namespace: <scan-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
       pfn: <file://.*/bin/graysonc>
    executable: <prepare> namespace: <scan-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/scan/bin/prepare.sh>
+      pfn: <file://.*/bin/prepare.sh>
    executable: <reduce> namespace: <scan-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/scan/bin/reduce.sh>
+      pfn: <file://.*/bin/reduce.sh>
    executable: <score> namespace: <scan-uber>, version: <1.0>, arch: <x86_64>, os: <linux>
-      pfn: <file://target/scan/bin/score.sh>
+      pfn: <file://.*/bin/score.sh>
 dependencies:
    dependency: <1n10>
       parent: parent=><scan-flow.dax> edge_label=><None>
