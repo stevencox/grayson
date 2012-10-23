@@ -1088,7 +1088,7 @@ class GraysonCompiler:
                     file = file.replace (os.path.sep, "/")
                     context [variable] = file
                     context ["%s_index" % variable] = count
-                    context ["%s_index" % variable] = uuid4().int
+                    #context ["%s_index" % variable] = uuid4().int
                     count += 1
                     basename = os.path.basename (file)
                     context ["%s_base" % variable] = basename
