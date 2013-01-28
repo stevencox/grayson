@@ -21,7 +21,7 @@
           <y:Geometry height="388.52187499999945" width="568.6258703296523" x="-1746.7231026228785" y="-1450.305501497006"/>
           <y:Fill color="#ECF5FF" color2="#98B4FF40" transparent="false"/>
           <y:BorderStyle color="#808080" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.271484375" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="63.375" x="252.62543516482606" y="4.0">Alpha</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="20" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="27.28125" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="68.384765625" x="250.12055235232606" y="4.0">Alpha</y:NodeLabel>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="custom" rotationAngle="270.0" textColor="#000000" visible="true" width="4.0" x="3.0" y="131.625">
             <y:LabelModel>
               <y:RowNodeLabelModel offset="3.0"/>
@@ -30,14 +30,14 @@
               <y:RowNodeLabelModelParameter horizontalPosition="0.0" id="row_0" inside="true"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="custom" textColor="#000000" visible="true" width="34.392578125" x="88.58903482098299" y="33.0">Input<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="35.072265625" x="88.24919107098299" y="33.0">Input<y:LabelModel>
               <y:ColumnNodeLabelModel offset="3.0"/>
             </y:LabelModel>
             <y:ModelParameter>
               <y:ColumnNodeLabelModelParameter id="column_0" inside="true" verticalPosition="0.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="custom" textColor="#000000" visible="true" width="22.65625" x="228.136611876693" y="33.0">Job<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="22.498046875" x="228.215713439193" y="33.0">Job<y:LabelModel>
               <y:ColumnNodeLabelModel offset="3.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -52,14 +52,14 @@
               <y:RowNodeLabelModelParameter horizontalPosition="0.0" id="row_1" inside="true"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="custom" textColor="#000000" visible="true" width="44.74609375" x="326.9857791114198" y="33.0">Output<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="45.68359375" x="326.5170291114198" y="33.0">Output<y:LabelModel>
               <y:ColumnNodeLabelModel offset="3.0"/>
             </y:LabelModel>
             <y:ModelParameter>
               <y:ColumnNodeLabelModelParameter id="column_2" inside="true" verticalPosition="0.0"/>
             </y:ModelParameter>
           </y:NodeLabel>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="custom" textColor="#000000" visible="true" width="66.96484375" x="453.4440872579614" y="33.0">Executable<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="70.662109375" x="451.5954544454614" y="33.0">Executable<y:LabelModel>
               <y:ColumnNodeLabelModel offset="3.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -128,7 +128,7 @@
               <y:Geometry height="30.0" width="81.64371257485067" x="-1440.8846574429267" y="-1124.9319985029945"/>
               <y:Fill color="#FFCC00" transparent="false"/>
               <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="br" textColor="#000000" visible="true" width="57.962890625" x="19.680821949850724" y="5.7099609375">two.out</y:NodeLabel>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="br" textColor="#000000" visible="true" width="64.83984375" x="12.803868824850724" y="5.703125">two.out</y:NodeLabel>
               <y:StyleProperties>
                 <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
               </y:StyleProperties>
@@ -145,7 +145,7 @@
               <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
               <y:BorderStyle color="#000000" type="line" width="1.0"/>
               <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="16" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" hasText="false" height="4.0" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="4.0" x="53.32185628742536" y="15.781062874251347"/>
-              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.962890625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="53.083984375" x="28.779864099925362" y="8.799617561751347">alpha.sh</y:NodeLabel>
+              <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="54.935546875" x="27.854082849925362" y="8.796687874251347">alpha.sh</y:NodeLabel>
               <y:StyleProperties>
                 <y:Property class="java.lang.Boolean" name="y.view.ShadowNodePainter.SHADOW_PAINTING" value="true"/>
               </y:StyleProperties>
@@ -164,7 +164,7 @@
           <y:Geometry height="29.999999999999986" width="61.14371257485004" x="-1537.0283700177765" y="-1367.5999999999997"/>
           <y:Fill color="#993300" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="30.3388671875" x="15.402422693674907" y="4.85498046875">one</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="33.080078125" x="14.031817224924907" y="4.8515625">one</y:NodeLabel>
         </y:GenericNode>
       </data>
     </node>
@@ -179,7 +179,7 @@
           <y:Geometry height="30.0" width="110.64371257485072" x="-1704.5096350268213" y="-1367.5999999999997"/>
           <y:Fill color="#FF9900" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="64.9697265625" x="22.836993006175362" y="4.85498046875">input.txt</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="73.1796875" x="18.732012537425362" y="4.8515625">input.txt</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
           </y:StyleProperties>
@@ -198,7 +198,7 @@
           <y:Geometry height="29.248502994011957" width="61.14371257484993" x="-1537.0283700177765" y="-1209.5562500000003"/>
           <y:Fill color="#993300" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="30.6943359375" x="15.224688318674907" y="4.479231965756071">two</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="c" textColor="#FFFFFF" visible="true" width="33.244140625" x="13.949785974924907" y="4.475813997006071">two</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
           </y:StyleProperties>
@@ -213,7 +213,7 @@
           <y:Geometry height="30.0" width="86.64371257485078" x="-1443.3846574429267" y="-1300.0445639970062"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.2900390625" modelName="internal" modelPosition="b" textColor="#000000" visible="true" width="57.607421875" x="14.518145349925362" y="5.7099609375">one.out</y:NodeLabel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="14" fontStyle="bold" hasBackgroundColor="false" hasLineColor="false" height="20.296875" modelName="internal" modelPosition="b" textColor="#000000" visible="true" width="64.67578125" x="10.983965662425362" y="5.703125">one.out</y:NodeLabel>
           <y:StyleProperties>
             <y:Property class="java.lang.Boolean" name="ModernNodeShadow" value="true"/>
           </y:StyleProperties>

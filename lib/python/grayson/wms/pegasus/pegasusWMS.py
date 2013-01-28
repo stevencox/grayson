@@ -313,7 +313,8 @@ class PegasusFileRC (object):
         if fileName in self.entries:
             logger.debug ("zzz: DELETING filename: %s", fileName)
             del self.entries [fileName]
-            
+            #traceback.print_stack ()
+
     def generateRC (self):
         logger.debug ("wms:pegasus:replica-catalog:generateRC")
         values = []
@@ -613,19 +614,41 @@ class PegasusWorkflowModel (WorkflowModel):
             node = self.nodes [id]
             return node
         
-    def addFile (self, fileName, fileURL=None, site=None):
+    def createFile (self, fileName, fileURL=None, site=None):
+        #traceback.print_stack ()
         file = self.getFile (fileName)
-        if not file:            
+        if not file:
             file = File (fileName)
             if not fileURL:
                 fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
                 logger.debug ("fileurl: %s", fileURL)
             if not site:
                 site = "local"
- 
             if not isinstance(fileURL, basestring) and len (fileURL) > 0:
                 fileURL = fileURL [0]
-
+            logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
+            pfn = PFN (fileURL, site)
+            file.addPFN (pfn)
+            self.files [fileName] = file
+        return file
+    def addFileToDAG (self, file):
+        self.adag.addFile (file)
+    def removeFileFromDAG (self, file):
+        if file in self.adag.files:
+            self.adag.files.remove (file)
+        
+    def addFile (self, fileName, fileURL=None, site=None):
+        #traceback.print_stack ()
+        file = self.getFile (fileName)
+        if not file:
+            file = File (fileName)
+            if not fileURL:
+                fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
+                logger.debug ("fileurl: %s", fileURL)
+            if not site:
+                site = "local"
+            if not isinstance(fileURL, basestring) and len (fileURL) > 0:
+                fileURL = fileURL [0]
             logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
             pfn = PFN (fileURL, site)
             file.addPFN (pfn)
@@ -634,13 +657,15 @@ class PegasusWorkflowModel (WorkflowModel):
         return file
 	
     def getFile (self, fileName, prefix=""):
+        value = None
         key = "%s%s" % (prefix, fileName)
         if key in self.files:
             logger.debug ("wms:pegasus:dax:get-file: (%s)" % key)
-            return self.files [key]
+            value = self.files [key]
         else:
-            return None
-	
+            value = None
+	return value
+
     def addExecutable (self, jobId, name, path, version="1.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
         e_exe = self.getExecutable (name)
         
@@ -727,7 +752,15 @@ class PegasusWorkflowModel (WorkflowModel):
                 fileElement = tuple [0]
                 file = fileElement.getDaxNode ()
                 try:
+
+                    isLeaf = tuple [2]
+                    if isLeaf:
+                        abstractJob.uses (file, link=link, transfer=True)
+                    else:
+                        abstractJob.uses (file, link=link)
+                    '''
                     abstractJob.uses (file, link=link)
+                    '''
                     arg = tuple [1]
                     if arg:
                         abstractJob.addArguments (arg, file)

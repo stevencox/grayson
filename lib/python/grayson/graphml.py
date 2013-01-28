@@ -15,7 +15,7 @@ import re
 logger = logging.getLogger (__name__)
 
 ''' A graph node '''
-class Node:
+class Node (object):
 	def __init__(self, anid, nodeLabel, nodeType, inferredType=None):
 		self.id = anid
 		self.type = nodeType
@@ -38,7 +38,7 @@ class Node:
 		return self.context
 
 ''' A gaph edge '''
-class Edge:
+class Edge (object):
 	def __init__(self, anid, source, target, type):
 		self.id = anid
 		self.type = type
@@ -62,7 +62,7 @@ class Edge:
 		return self.id
 
 ''' A graph '''
-class Graph:
+class Graph (object):
 	def __init__(self):
 		self.nodes = []
 		self.edges = []

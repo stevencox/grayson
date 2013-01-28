@@ -12,6 +12,8 @@ from grayson.compiler.dynamicmap import DynamicMapOperator
 from grayson.compiler.exception import GraysonCompilerException
 from grayson.common.util import GraysonUtil
 
+from grayson.cli.cli import Parser
+
 # usage #
 def usage ():
     logger = logging.getLogger ()
@@ -48,6 +50,8 @@ def main (argv):
     packagingAdditionalFiles = []
     appHome = None
 
+    cliModel = None
+
     configuration = {}
 
     try:
@@ -66,6 +70,8 @@ def main (argv):
                                        "sites=",
                                        
                                        "configuration=",
+
+                                       "cli=",
 
                                        "execute",
                                        "help"
@@ -107,6 +113,10 @@ def main (argv):
                 packagingAdditionalFiles.append (arg)
             elif opt in ("-e", "--execute"):
                 execute = True
+
+            elif opt in ("--cli"):
+                cliModel = arg
+
             elif opt in ("-h", "--help"):
                 usage ()
                 sys.exit ()
@@ -120,6 +130,9 @@ def main (argv):
         if configuration:
             dynamicMap = DynamicMapOperator ()
             dynamicMap.execute (configuration)
+        elif cliModel:
+            Parser.set_log_level (logLevel)
+            Parser.parse (cliModel)
         elif len(models) == 0:
             usage ()
             sys.exit ()
@@ -144,6 +157,8 @@ def main (argv):
                 return 1
 
     except getopt.GetoptError, ex:
+        traceback.print_stack ()
+        traceback.print_exc (ex)
         usage ()
         formatted_lines = traceback.format_exc().splitlines()
         print formatted_lines[-1]

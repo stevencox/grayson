@@ -676,7 +676,7 @@ class GraysonCompiler:
         job = jobContext.getJob ()
         fileName = fileElement.getNode().getLabel ()
         file = self.workflowModel.createFile (fileName)
-        fileElement.setDaxNode (file)
+        #fileElement.setDaxNode (file)
         arg = edge.get (self.ATTR_ARG)
         logger.debug ("ast:add-output: arg=%s file=%s source=%s" % 
                       (arg,
@@ -686,6 +686,15 @@ class GraysonCompiler:
 
         site = fileElement.get (self.ATTR_SITE)
         fileURL = self.getFileURL (fileElement, site),
+
+
+
+        targetEdges = fileElement.getTargetEdges (self.graph)
+        isLeaf = len (targetEdges) == 0
+        if not isLeaf:
+            self.workflowModel.addFileToDAG (file)        
+            self.getReplicaCatalog().addEntry (fileName, fileURL, site)
+
         if not site:
             site = self.ATTR_LOCAL
         if site == self.ATTR_LOCAL:
@@ -694,7 +703,7 @@ class GraysonCompiler:
         file = self.workflowModel.addFile (fileName, fileURL, site)
         fileElement.setDaxNode (file)
 
-        jobContext.outFiles [fileElement.getLabel ()] = (fileElement, arg)        
+        jobContext.outFiles [fileElement.getLabel ()] = (fileElement, arg, isLeaf)
         self.ctx().generatedFile [fileElement.getLabel ()] = True
         self.getReplicaCatalog().removeEntry (fileName)
 
@@ -720,14 +729,14 @@ class GraysonCompiler:
         if site == self.ATTR_LOCAL:
             if fileName in self.compilerContext.localFileLocations:
                 fileURL = self.compilerContext.localFileLocations [fileName]
+                '''                                            
         file = self.workflowModel.addFile (fileName, fileURL, site)
         fileElement.setDaxNode (file)
         jobContext.inFiles [fileElement.getLabel ()] = (fileElement, arg)
-        '''
-                                           '''
         self.getReplicaCatalog().addEntry (fileName,
                                            self.getFileURL (fileElement, site),
                                            site)
+                                           '''
 
         ''' Ensure we add only files that are inputs to the workflow rather
             than intermediate (generated) files
@@ -738,6 +747,29 @@ class GraysonCompiler:
                                                self.getFileURL (fileElement, site),
                                                site)
                                                '''
+
+
+        '''
+                                               '''
+        file = self.workflowModel.createFile (fileName, fileURL, site)
+        fileElement.setDaxNode (file)
+        jobContext.inFiles [fileElement.getLabel ()] = (fileElement, arg, None)
+
+        sourceEdges = fileElement.getSourceEdges (self.graph)
+        isGenerated = False
+        for edge in sourceEdges:
+            element = self.getElement (edge.getSource ())
+            if element.getType ().startswith (self.JOB):
+                isGenerated = True
+                
+        isWorkflowInput = (not isGenerated) and (not fileName in self.ctx().generatedFile)
+        if isWorkflowInput:
+            self.workflowModel.addFileToDAG (file)
+            self.getReplicaCatalog().addEntry (fileName, fileURL, site)
+        else:
+            self.workflowModel.removeFileFromDAG (file)
+            self.getReplicaCatalog().removeEntry (fileName)
+            
     def formWorkflowName (self, element):
         return "%s.dax" % element.getLabel ()
 
@@ -945,23 +977,19 @@ class GraysonCompiler:
         else:
             ''' Create a new graph node replacing mapping parameters '''
             typeText = self.replaceMapVariables (operand.getNode().getType (), context)
+
+            ''' if the template operand contains instance args, propagate those to each synthetic instance. '''
+            typeObj = json.loads (typeText)
+            typeObj [self.ATTR_ARGS] = "--conf=%s/pegasus.properties --nocleanup --force %s" % (self.getOutputDir (),
+                                                                            operand.get ('instanceArgs'))
+            typeText = json.dumps (typeObj)
+
+            ''' create the node. '''
             nodeId = self.getSyntheticId (operand.getId (), operand.getLabel ())
             nodeName = "%s.%s" % (operand.getLabel (), self.nextLambdaId ())
             node = graph.addNode (nodeId, nodeName, typeText)
             node.setContext (copy (context))
 
-            ''' Map inputs to this synthetic instance copying input nodes to the synthetic graph. 
-            origins = operator.getOrigins (self.graph)
-            for sourceKey in origins:
-                source = self.getElement (sourceKey)
-                source = self.findOrCopy (source, graph)
-                logger.debug ("add-edgex: %s %s", source.getLabel (), node.getLabel ())
-                edgeId = "%s.%s" % (source.getId (), node.getId ())
-                self.addEdge (graph, edgeId, source.getId (), node.getId ())
-                '''
-
-            ''' scox todo 
-                '''
             for edge in origins:
                 source = self.getElement (edge.getSource ())
                 source = self.findOrCopy (source, graph)
@@ -1279,9 +1307,6 @@ class GraysonCompiler:
             syntheticId = self.getSyntheticId (operator.getId (), operator.getLabel ())
             number = syntheticId.split(".")[1]
             syntheticLabel = "%s.%s" % (operator.getLabel (), number)
-
-            logger.debug ("yeah todo --- %s ", syntheticLabel)
-
             syntheticType = '{ "type" : "dax" }'
             syntheticNode = self.ast_bindSyntheticNode (parent_graph,
                                                         operator,
@@ -1305,7 +1330,7 @@ class GraysonCompiler:
         if not edgeType:
             edgeType = edge.getType ()
         edgeCopy = self.addEdge (graph, edgeId, source.getId (), target.getId (), edgeType)
-        logger.debug ("qqq ast:copy-edge: from (%s(%s)->%s(%s))type(%s)",
+        logger.debug ("ast:copy-edge: from (%s(%s)->%s(%s))type(%s)",
                        source.getLabel (),
                        source.getId (),
                        target.getLabel (),
@@ -1583,13 +1608,7 @@ class GraysonCompiler:
         #aspectElement = self.getElement (pointcut.get ("aspectId"))
         aspectElement = self.getElementByLabel (aspectName)
 
-        logger.debug ("aaaa pc aspect id: %s", pointcut.get ("aspectId"))
-        logger.debug ("aaaa aspect element: %s", aspectElement)
-
         aspectElements = self.getElementsByType (self.ASPECT)
-        for aspect in aspectElements:
-            logger.debug ("aaaa ===========> %s %s", aspect.getLabel (), aspect.getId ())
-
         typeObj = None
         if aspectElement:
             typeObj = aspectElement.get ("instanceType")
@@ -1994,7 +2013,6 @@ class GraysonCompiler:
                                                             typeObj = pointcut)
                         pointcutElement.set ("name", key)
                         pointcutElement.set ("aspectId", aspect.getId ())
-                        #logger.info ("aaaa set pointcut aspect id %s %s", pointcutElement.get('name'), pointcutElement.get('aspectId'))
                         pointcutElement.set (self.ASPECT, aspect.getLabel ())
                         pointcutElement.set (self.ATTR_TYPE, self.ASPECT_POINTCUT)
                         self.ast_addPointcut (pointcutElement)
@@ -2046,7 +2064,7 @@ class GraysonCompiler:
                         args = self.getExecuteArguments ()
                         logger.debug ("ast:map-nodes: set workflow args %s: %s", element.getLabel (), args)
                         element.set (self.ATTR_ARGS, args)
-                        self.ast_compileWorkflow (element)
+                    self.ast_compileWorkflow (element)
                 else:
                     ''' compilation is disabled for this workflow. presumably something else will generate it dynamically, later. '''
                     fileName = "%s.dax" % element.getLabel ()
@@ -2493,7 +2511,8 @@ class GraysonCompiler:
                  toLogFile=None,
                  packaging=False,
                  packagingAdditionalFiles = [],
-                 plugin=CompilerPlugin ()):
+                 plugin=CompilerPlugin (),
+                 graph = None):
 
         """ Compile the given input models to create an executable workflow. """
 
@@ -2520,6 +2539,9 @@ class GraysonCompiler:
                                     appHome     = appHome,
                                     #appHome     = appHome,
                                     outputDir   = outputdir)
+        if graph:
+            compiler.graph = graph
+
         compiler.output = output
         if type(output) == file:
             compiler.output = "stdout"
@@ -2600,6 +2622,9 @@ class GraysonCompiler:
             ''' generate meta data catalogs '''
             compiler.generateCatalogs ()
             
+            if os.path.exists ('./patch'):
+                subprocess.call ([ './patch', compiler.getOutputDir () ])
+
             ''' execute the workflow '''
             if execute:
                 workflowName = os.path.join (outputdir, compiler.output)
