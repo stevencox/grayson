@@ -6,12 +6,6 @@ files:
       pfn: <file://.*/target/blackdiamond/work/outputs/f.b1>
    file: <f.b2>
       pfn: <file://.*/target/blackdiamond/work/outputs/f.b2>
-   file: <f.c1>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.c1>
-   file: <f.c2>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.c2>
-   file: <f.d>
-      pfn: <file://.*/target/blackdiamond/work/outputs/f.d>
 jobs:
    job: <analyze>, id: <1n5> namespace: <blackdiamond> version: <1.0>
       usedfile: <f.c1>

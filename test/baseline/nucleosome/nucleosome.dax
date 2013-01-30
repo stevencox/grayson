@@ -1,17 +1,9 @@
 dax name: <nucleosome>
 files:
-   file: <dyn1.out>
-      pfn: <file://.*/target/nucleosome/work/outputs/dyn1.out>
-   file: <dyn2.out>
-      pfn: <file://.*/target/nucleosome/work/outputs/dyn2.out>
    file: <heatsystem.1.mdin>
       pfn: <file://.*/target/nucleosome/work/outputs/heatsystem.1.mdin>
    file: <heatsystem.2.mdin>
       pfn: <file://.*/target/nucleosome/work/outputs/heatsystem.2.mdin>
-   file: <logfile>
-      pfn: <file://.*/target/nucleosome/work/outputs/logfile>
-   file: <min.out>
-      pfn: <file://.*/target/nucleosome/work/outputs/min.out>
    file: <minimization.mdin>
       pfn: <file://.*/target/nucleosome/work/outputs/minimization.mdin>
    file: <prmtop>
@@ -22,8 +14,6 @@ files:
       pfn: <file://.*/target/nucleosome/work/outputs/restart.2>
    file: <restart.min>
       pfn: <file://.*/target/nucleosome/work/outputs/restart.min>
-   file: <restrt>
-      pfn: <file://.*/target/nucleosome/work/outputs/restrt>
 jobs:
    job: <dynamics-1>, id: <1n5> namespace: <nucleosome> version: <1.0>
       usedfile: <dyn1.out>

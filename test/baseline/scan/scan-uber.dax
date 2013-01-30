@@ -1,17 +1,9 @@
 dax name: <scan-uber>
 files:
-   file: <adjacency.txt>
-      pfn: <file://.*/target/scan/work/outputs/adjacency.txt>
-   file: <database.txt>
-      pfn: <file://.*/target/scan/work/outputs/database.txt>
-   file: <fasta-chunks.tar.gz>
-      pfn: <file://.*/work/outputs/fasta-chunks.tar.gz>
    file: <fasta.txt>
       pfn: <file://.*/input/fasta.txt>
    file: <full-sifs.txt>
       pfn: <file://.*/target/scan/work/outputs/full-sifs.txt>
-   file: <matrix.txt>
-      pfn: <file://.*/target/scan/work/outputs/matrix.txt>
    file: <score.x>
       pfn: <file://.*/bin/score.x>
 jobs:

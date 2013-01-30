@@ -2,10 +2,6 @@ dax name: <lambda-flow.20>
 files:
    file: <c.22.tar.gz>
       pfn: <file://.*/samples/lambda/data/c.22.tar.gz>
-   file: <c.22.tar.gz-5-out.tar.gz>
-      pfn: <file://.*/target/lambda/work/outputs/c.22.tar.gz-5-out.tar.gz>
-   file: <c.22.tar.gz-6-out.tar.gz>
-      pfn: <file://.*/target/lambda/work/outputs/c.22.tar.gz-6-out.tar.gz>
    file: <input-one.tar.gz>
       pfn: <file://.*/work/outputs/input-one.tar.gz>
    file: <input-two.tar.gz>

@@ -2,10 +2,6 @@ dax name: <alpha>
 files:
    file: <input.txt>
       pfn: <file://.*/input.txt>
-   file: <one.out>
-      pfn: <file://.*/target/alpha/work/outputs/one.out>
-   file: <two.out>
-      pfn: <file://.*/target/alpha/work/outputs/two.out>
 jobs:
    job: <one>, id: <1n1> namespace: <alpha> version: <1.0>
       usedfile: <input.txt>

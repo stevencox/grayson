@@ -632,7 +632,8 @@ class PegasusWorkflowModel (WorkflowModel):
             self.files [fileName] = file
         return file
     def addFileToDAG (self, file):
-        self.adag.addFile (file)
+        if not self.adag.hasFile (file):
+            self.adag.addFile (file)
     def removeFileFromDAG (self, file):
         if file in self.adag.files:
             self.adag.files.remove (file)
