@@ -14,24 +14,27 @@ from grayson.common.util import GraysonUtil
 
 from grayson.cli.cli import Parser
 
+FORMAT = '%(asctime)-15s %(message)s'
+logging.basicConfig(format=FORMAT)
+logger = logging.getLogger (__name__)
+logger.setLevel (logging.DEBUG)
+
 # usage #
 def usage ():
-    logger = logging.getLogger ()
-    logger.setLevel (logging.INFO)
-    logging.info ("usage: graysonc")
-    logging.info ("  -m|--model      a model file to compile")
-    logging.info ("  -o|--output     the name of the output DAX file")
-    logging.info ("  -n|--namespace  the namespace of the application")
-    logging.info ("  -v|--version    application version")
-    logging.info ("  -s|--sites      sites to execute at. valid only with --execute")
-    logging.info ("  -l|--loglevel   set logging level to [debug|info|warning|info|critical]")
-    logging.info ("  -p|--define     define a model property. eg: --define='name=value'")
-    logging.info ("  -d|--directory  output directory for generated artifacts")
-    logging.info ("  -e|--execute    execute the workflow")
-    logging.info ("  --modelpath     list of paths on which to search for models")
-    logging.info ("  --package       package all referenced models into an archive")
-    logging.info ("  --package-file  package a specific file")
-    logging.info ("  -h|--help       show this message")
+    logger.info ("usage: graysonc")
+    logger.info ("  -m|--model      a model file to compile")
+    logger.info ("  -o|--output     the name of the output DAX file")
+    logger.info ("  -n|--namespace  the namespace of the application")
+    logger.info ("  -v|--version    application version")
+    logger.info ("  -s|--sites      sites to execute at. valid only with --execute")
+    logger.info ("  -l|--loglevel   set logger level to [debug|info|warning|info|critical]")
+    logger.info ("  -p|--define     define a model property. eg: --define='name=value'")
+    logger.info ("  -d|--directory  output directory for generated artifacts")
+    logger.info ("  -e|--execute    execute the workflow")
+    logger.info ("  --modelpath     list of paths on which to search for models")
+    logger.info ("  --package       package all referenced models into an archive")
+    logger.info ("  --package-file  package a specific file")
+    logger.info ("  -h|--help       show this message")
 
 # main #
 def main (argv):
@@ -91,7 +94,7 @@ def main (argv):
                 sites = arg
 
             elif opt in ("--configuration"):
-                print arg
+                logger.debug ("configuration: %s", arg)
                 text = GraysonUtil.readFile (arg)
                 configuration = json.loads (text)
 
@@ -153,15 +156,15 @@ def main (argv):
                                          packagingAdditionalFiles=packagingAdditionalFiles)
 
             except GraysonCompilerException as e:
-                logging.error (str (e.__str__ ()))
+                logger.error (str (e.__str__ ()))
                 return 1
 
-    except getopt.GetoptError, ex:
+    except getopt.GetoptError as ex:
         traceback.print_stack ()
         traceback.print_exc (ex)
         usage ()
         formatted_lines = traceback.format_exc().splitlines()
-        print formatted_lines[-1]
+        logger.error (formatted_lines [-1])
 
 # main
 if __name__ == "__main__":

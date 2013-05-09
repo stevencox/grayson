@@ -16,7 +16,7 @@ class GraysonUtil (object):
     
     @staticmethod
     def getPegasusHome ():
-        pegasusLocation = unicode (os.getenv ("PEGASUS_HOME"))
+        pegasusLocation = os.getenv ("PEGASUS_HOME")
         if not pegasusLocation:
             raise ValueError ("PEGASUS_HOME must be defined")
         return pegasusLocation
@@ -75,7 +75,7 @@ class GraysonUtil (object):
                 stream = open (fileName, 'r')
                 for line in stream:
                     text.append (line)
-            except IOError, e:
+            except IOError as e:
                 traceback.print_exc ()
         finally:
             if stream:

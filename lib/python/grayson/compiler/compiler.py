@@ -152,8 +152,8 @@ class GraysonCompiler:
         self.ABSTRACT = "abstract"
         self.GRAYSON_HOME = "graysonHome"
         self.GRAYSON_VAR = "graysonVar"
-        self.APP_HOME = unicode ("appHome")
-        self.OUTPUT_DIR = unicode ("outputDir")
+        self.APP_HOME = "appHome"
+        self.OUTPUT_DIR = "outputDir"
         self.FQDN = "FQDN"
         self.ASPECT  = "aspect"
         self.ATTR_ARCHITECTURE  = "arch"
@@ -596,7 +596,7 @@ class GraysonCompiler:
 
     def validateModel (self):
         logger.debug ("validate-graph")
-        for key in self.astElements.iterkeys ():
+        for key in self.astElements.keys (): # iterkeys
             element = self.getElement (key)
             if element:
                 if element.get (self.ATTR_TYPE) == self.FILE:
@@ -901,9 +901,9 @@ class GraysonCompiler:
             isAnExpression = re.search ("[+\-\*\\/\%(\)\<\>\==]", expression)
             if isAnExpression:
                 for key in context:
-                    logger.debug ("ast:replace-map-vars:replace: %s %s in expr: %s", key, unicode (context[key]), expression)
-                    expression = expression.replace (key, unicode (context[key]))
-                text = text.replace (overall, unicode (eval (expression)))
+                    logger.debug ("ast:replace-map-vars:replace: %s %s in expr: %s", key, context[key], expression)
+                    expression = expression.replace (key, context[key])
+                text = text.replace (overall, eval (expression))
             logger.debug ("ast:replace-map-vars:  outcome[%s] context[%s]", text, context)
 
         if recordMatches and workflowModel and not value == text:
@@ -1105,8 +1105,8 @@ class GraysonCompiler:
                                                                  context,
                                                                  originEdges)
         elif ( type(each) == str or type(each) == unicode):
-            if string.find (each, FILE_PROTO) == 0:
-                index = string.find (each, FILE_PROTO)
+            if str.find (each, FILE_PROTO) == 0:
+                index = str.find (each, FILE_PROTO)
                 expression = each [ index + len(FILE_PROTO): ]
                 files = glob.glob (expression)
                 files.sort ()
@@ -2307,7 +2307,7 @@ class GraysonCompiler:
 
     def replaceProps (self, obj):
         value = obj
-        if isinstance (obj, basestring):
+        if isinstance (obj, str):
             value = self.ast_replaceProperties (obj)
         elif isinstance (obj, dict):
             value = {}
@@ -2361,14 +2361,14 @@ class GraysonCompiler:
         sites = self.getProperty ('sites')
         if sites:
             logger.debug ("site: %s", sites)
-            for key in sites.iterkeys ():
+            for key in sites.keys (): # iterkeys
                 logger.debug ("site:key: %s", key)
                 original = self.getSiteCatalog().getEntry (key)
                 if original:
                     logger.debug ("site:original: %s", json.dumps (original, indent=4))
                     site = sites [key]
                     if site:
-                        for k in site.iterkeys ():
+                        for k in site.keys (): # iterkeys
                             site [k] = self.ast_replaceProperties (site [k])
                         original.update (site)
                         logger.debug ("site:site: %s", site)
@@ -2543,8 +2543,6 @@ class GraysonCompiler:
             compiler.graph = graph
 
         compiler.output = output
-        if type(output) == file:
-            compiler.output = "stdout"
         compiler.setSites (sites)        
         compiler.setPackaging (packaging)
         if modelProperties:
@@ -2567,12 +2565,11 @@ class GraysonCompiler:
             local = compiler.getWorkflowManagementSystem().getSiteCatalog().getEntry ("local")
 
             localStorage = "%s/work/outputs" % compiler.appHome
-            #localStorage = "%s/work/outputs" % compiler.compilerContext.appHome
-	    local ["scratchFileServerMountPoint"] = localStorage
+            local ["scratchFileServerMountPoint"] = localStorage
             local ["scratchInternalMountPoint"]   = localStorage
             local ["storageFileServerMountPoint"] = localStorage
             local ["storageInternalMountPoint"]   = localStorage
-
+            
             models.remove (modelName)
             models.insert (0, newName)
             modelName = newName

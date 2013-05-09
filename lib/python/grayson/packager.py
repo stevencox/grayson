@@ -19,7 +19,7 @@ class GraysonPackager:
         try:
             output = sys.stdout
             if output_file:
-                output = open (output_file, "w")
+                output = open (output_file, "wb")
             zip_file = zipfile.ZipFile (output, "w")
             try:
                 if type (patterns) == list:

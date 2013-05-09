@@ -33,7 +33,8 @@ class ASTElement:
         text = self.node.getType ()
         if id and text:
             try:
-                text = string.replace (text, "\n", " ")
+                #text = string.replace (text, "\n", " ")
+                text = str.replace (text, "\n", " ")
                 properties = json.loads (text)
                 #self.inferType (properties)
                 logger.debug ("properties %s", properties)

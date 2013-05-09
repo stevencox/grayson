@@ -18,7 +18,7 @@ import traceback
 import glob
 from sys import settrace
 
-# third-party 
+# third-party
 from Pegasus.DAX3 import ADAG
 from Pegasus.DAX3 import DAX
 from Pegasus.DAX3 import Dependency
@@ -39,136 +39,158 @@ from grayson.common.util import GraysonUtil
 from grayson.wms.workflowManagementSystem import WorkflowManagementSystem
 from grayson.wms.workflowManagementSystem import WorkflowModel
 
-logger = logging.getLogger (__name__)
+logger = logging.getLogger(__name__)
 
 ''' A plugin for the Pegasus WMS. '''
+
+
 class PegasusWMS (WorkflowManagementSystem):
     def __init__(self, outputDir):
         self.outputDir = outputDir
         if not self.outputDir:
-            raise ValueError ("outputDir required")
-        self.pegasusProperties = PegasusProperties ()
-        self.siteCatalog = SiteCatalogXML (self)
-        self.transformationCatalog = PegasusTC ()
-        self.replicaCatalog = PegasusFileRC ()
+            raise ValueError("outputDir required")
+        self.pegasusProperties = PegasusProperties()
+        self.siteCatalog = SiteCatalogXML(self)
+        self.transformationCatalog = PegasusTC()
+        self.replicaCatalog = PegasusFileRC()
         self.dataConfiguration = None
 
-    def getOutputDir (self):
-        logger.debug ("getoutputdir: %s %s", self.outputDir, self)
+    def getOutputDir(self):
+        logger.debug("getoutputdir: %s %s", self.outputDir, self)
         return self.outputDir
 
-    def getSiteCatalog (self):
+    def getSiteCatalog(self):
         return self.siteCatalog
-    def getTransformationCatalog (self):
+
+    def getTransformationCatalog(self):
         return self.transformationCatalog
-    def getReplicaCatalog (self):
+
+    def getReplicaCatalog(self):
         return self.replicaCatalog
-    def createWorkflowModel (self, namespace):
-        return PegasusWorkflowModel (namespace, self)
-    def enableShellExecution (self, enabled=True):
-        return self.pegasusProperties.enableShellExecution (enabled)
-    def isShellExecutionEnabled (self):
-        return self.pegasusProperties.isShellExecutionEnabled ()
-        if self.isShellExecutionEnabled ():
+
+    def createWorkflowModel(self, namespace):
+        return PegasusWorkflowModel(namespace, self)
+
+    def enableShellExecution(self, enabled=True):
+        return self.pegasusProperties.enableShellExecution(enabled)
+
+    def isShellExecutionEnabled(self):
+        return self.pegasusProperties.isShellExecutionEnabled()
+        if self.isShellExecutionEnabled():
             installed = "false"
-    def setDataConfiguration (self, dataConfiguration):
+
+    def setDataConfiguration(self, dataConfiguration):
         self.dataConfiguration = dataConfiguration
-    def getDataConfiguration (self):
+
+    def getDataConfiguration(self):
         return self.dataConfiguration
-    def enableSymlinkTransfers (self, enabled=True):
-        self.pegasusProperties.enableSymlinkTransfers (enabled)
+
+    def enableSymlinkTransfers(self, enabled=True):
+        self.pegasusProperties.enableSymlinkTransfers(enabled)
 
     ''' Get Pegasus specific arguments '''
-    def getExecuteArguments (self, sites, workflow=None, other=[]):
+    def getExecuteArguments(self, sites, workflow=None, other=[]):
         result = None
 
-        pegasusHome = GraysonUtil.getPegasusHome ()
+        pegasusHome = GraysonUtil.getPegasusHome()
         args = ["--conf=${outputDir}/${pegasusProperties}",
                 "--sites ${sites}",
                 "--force",
                 "--verbose",
                 "--verbose",
                 "--verbose",
-                "--nocleanup",                    
+                "--nocleanup",
                 "--output local"]
         ''' if using one of the new data configuration modes '''
         if self.dataConfiguration:
-            args.append ("-Dpegasus.data.configuration=%s" % self.dataConfiguration)
-            args.append ("--staging-site=local") # TODO - make this more flexible
+            args.append("-Dpegasus.data.configuration=%s" %
+                        self.dataConfiguration)
+            args.append(
+                "--staging-site=local")  # TODO - make this more flexible
 
         for arg in other:
-            args.append (arg)
-        template = Template (" ".join (args))
+            args.append(arg)
+        template = Template(" ".join(args))
         context = {
-            "outputDir"         : self.getOutputDir (),
-            "pegasusProperties" : PegasusProperties.PEGASUS_PROPERTIES,
-            "sites"             : sites
-            }
+            "outputDir": self.getOutputDir(),
+            "pegasusProperties": PegasusProperties.PEGASUS_PROPERTIES,
+            "sites": sites
+        }
         if workflow:
-            context ["outputDax"] = os.path.join (self.getOutputDir (), workflow)
-        result = template.substitute (context)
-        logger.debug ("generated workflow execute arguments: %s", result) 
+            context["outputDax"] = os.path.join(
+                self.getOutputDir(), workflow)
+        result = template.substitute(context)
+        logger.debug("generated workflow execute arguments: %s", result)
         return result
 
     ''' Execute workflow the Pegasus way. '''
-    def executeWorkflow (self, sites, workflowName, compilerPlugin=None):
-        additionalArgs = [ " --dir ${outputDir}/work --dax ${outputDax} --submit" ]
-        arguments = self.getExecuteArguments (sites=sites,
-                                              workflow=workflowName,
-                                              other=additionalArgs)
+    def executeWorkflow(self, sites, workflowName, compilerPlugin=None):
+        additionalArgs = [
+            " --dir ${outputDir}/work --dax ${outputDax} --submit"]
+        arguments = self.getExecuteArguments(sites=sites,
+                                             workflow=workflowName,
+                                             other=additionalArgs)
         executeCommand = "pegasus-plan %s" % arguments
-        logger.debug ("getExecuteArguments: %s", executeCommand)
-        executor = Executor ({})
-        logger.info ("--(pegasus-plan): %s", executeCommand)
+        logger.debug("getExecuteArguments: %s", executeCommand)
+        executor = Executor({})
+        logger.info("--(pegasus-plan): %s", executeCommand)
 
         lines = []
-        def submitProcessor (line):
-            line = line.replace ("\n", "")
-            lines.append (line)
-            logger.info ("--(pegasus-plan): %s", line)
+
+        def submitProcessor(line):
+            line = line.replace("\n", "")
+            lines.append(line)
+            logger.info("--(pegasus-plan): %s", line)
 
         wrappedOutputProcessor = submitProcessor
         if compilerPlugin:
-            def wrappedOutputProcessor (line):
-                submitProcessor (line)
-                compilerPlugin.notifyShellEvent (line, workflowName)
+            def wrappedOutputProcessor(line):
+                submitProcessor(line)
+                compilerPlugin.notifyShellEvent(line, workflowName)
         try:
-            executor.execute (executeCommand, pipe=True, processor=wrappedOutputProcessor)
+            executor.execute(
+                executeCommand, pipe=True, processor=wrappedOutputProcessor)
         except Exception as e:
-            traceback.print_exc (e)
+            traceback.print_exc(e)
             # missing stderr.
-            logger.error ('\n'.join (lines))
+            logger.error('\n'.join(lines))
             raise e
 
     ''' Write Pegasus meta data catalogs. '''
-    def writeMetaDataCatalogs (self):
-        GraysonUtil.writeFile (
-            outputPath=os.path.join (self.outputDir, PegasusProperties.SITE_CATALOG),
-            data=self.getSiteCatalog().generateXML ())
-        
+    def writeMetaDataCatalogs(self):
+        GraysonUtil.writeFile(
+            outputPath=os.path.join(
+                self.outputDir, PegasusProperties.SITE_CATALOG),
+            data=self.getSiteCatalog().generateXML())
+
         ''' replica catalog '''
-        GraysonUtil.writeFile (
-            outputPath=os.path.join (self.outputDir, PegasusProperties.REPLICA_CATALOG),
-            data=self.getReplicaCatalog().generateRC ())
-        
+        GraysonUtil.writeFile(
+            outputPath=os.path.join(
+                self.outputDir, PegasusProperties.REPLICA_CATALOG),
+            data=self.getReplicaCatalog().generateRC())
+
         ''' transformation catalog '''
-        GraysonUtil.writeFile (
-            outputPath=os.path.join (self.outputDir, PegasusProperties.TRANSFORMATION_CATALOG),
-            data=self.getTransformationCatalog().generateTC ())
-        
+        GraysonUtil.writeFile(
+            outputPath=os.path.join(
+                self.outputDir, PegasusProperties.TRANSFORMATION_CATALOG),
+            data=self.getTransformationCatalog().generateTC())
+
         ''' properties '''
-        GraysonUtil.writeFile (
-            outputPath=os.path.join (os.path.join (self.outputDir, PegasusProperties.PEGASUS_PROPERTIES)),
-            data=self.pegasusProperties.generateProperties (configDir=self.outputDir))
+        GraysonUtil.writeFile(
+            outputPath=os.path.join(os.path.join(
+                self.outputDir, PegasusProperties.PEGASUS_PROPERTIES)),
+            data=self.pegasusProperties.generateProperties(configDir=self.outputDir))
 
 ''' Pegasus properties '''
+
+
 class PegasusProperties:
 
     PEGASUS_PROPERTIES = "pegasus.properties"
     REPLICA_CATALOG = "replica-catalog.rc"
     SITE_CATALOG = "sites.xml"
     TRANSFORMATION_CATALOG = "transformation-catalog.tc"
-    
+
     CODE_GENERATOR_EQUALS_SHELL = "pegasus.code.generator = Shell"
 
     def __init__(self):
@@ -191,27 +213,30 @@ ${pegasusCodeGenerator}
 """
         self.pegasusCodeGenerator = ""
 
-    def enableSymlinkTransfers (self, enabled=True):
+    def enableSymlinkTransfers(self, enabled=True):
         self.symlinkTransfers = enabled
-        
-    def enableShellExecution (self, enabled=True):
+
+    def enableShellExecution(self, enabled=True):
         self.pegasusCodeGenerator = self.CODE_GENERATOR_EQUALS_SHELL
-    def isShellExecutionEnabled (self):
+
+    def isShellExecutionEnabled(self):
         return self.pegasusCodeGenerator == self.CODE_GENERATOR_EQUALS_SHELL
 
-    def generateProperties (self, siteFile="sites.xml", configDir="."):
-        template = Template (self.text)
+    def generateProperties(self, siteFile="sites.xml", configDir="."):
+        template = Template(self.text)
         context = {
-            "configDir"             : configDir,
-            "siteCatalog"           : self.SITE_CATALOG,
-            "replicaCatalog"        : self.REPLICA_CATALOG,
-            "transformationCatalog" : self.TRANSFORMATION_CATALOG,
-            "symlinkTransfers"      : str(self.symlinkTransfers).lower (),
-            "pegasusCodeGenerator"  : self.pegasusCodeGenerator 
-            }
-        return template.substitute (context)
+            "configDir": configDir,
+            "siteCatalog": self.SITE_CATALOG,
+            "replicaCatalog": self.REPLICA_CATALOG,
+            "transformationCatalog": self.TRANSFORMATION_CATALOG,
+            "symlinkTransfers": str(self.symlinkTransfers).lower(),
+            "pegasusCodeGenerator": self.pegasusCodeGenerator
+        }
+        return template.substitute(context)
 
 ''' Emit a pegasus transformation catalog '''
+
+
 class PegasusTC:
 
     def __init__(self):
@@ -228,144 +253,151 @@ tr ${namespace}::${jobName}:${version} {
 """
 
         self.entries = {}
-        
-    def addEntry (self,
-                  jobName,
-                  location,
-                  transfer     = "INSTALLED",
-                  architecture = "x86_64",
-                  OS           = "linux",
-                  cluster      = "local",
-                  namespace    = "app",
-                  version      = "1.0"):
+
+    def addEntry(self,
+                 jobName,
+                 location,
+                 transfer="INSTALLED",
+                 architecture="x86_64",
+                 OS="linux",
+                 cluster="local",
+                 namespace="app",
+                 version="1.0"):
 
         if not architecture:
-            architecture = "" #"x86_64"
+            architecture = ""  # "x86_64"
         if not version:
             version = "1.0"
         if not cluster:
             cluster = "local"
-        if location.startswith (os.sep):
+        if location.startswith(os.sep):
             location = "file://%s" % location
-        
+
         if not transfer:
             transfer = "STAGEABLE"
 
-        logger.debug ("wms:pegasus:transformationcatalog:add-entry : job=%s, location=%s, transfer=%s, arch=%s, os=%s, cluster=%s, namespace=%s",
-                       jobName,
-                       location,
-                       transfer,
-                       architecture,
-                       OS,
-                       cluster,
-                       namespace)
-        template = Template (self.text)
+        logger.debug(
+            "wms:pegasus:transformationcatalog:add-entry : job=%s, location=%s, transfer=%s, arch=%s, os=%s, cluster=%s, namespace=%s",
+            jobName,
+            location,
+            transfer,
+            architecture,
+            OS,
+            cluster,
+            namespace)
+        template = Template(self.text)
         context = {
-            "jobName"               : jobName,
-            "location"              : location,
-            "transfer"              : transfer,
-            "architecture"          : architecture,
-            "OS"                    : OS,
-            "cluster"               : cluster,
-            "namespace"             : namespace,
-            "version"               : version
-            }
-        entryText = template.substitute (context)
+            "jobName": jobName,
+            "location": location,
+            "transfer": transfer,
+            "architecture": architecture,
+            "OS": OS,
+            "cluster": cluster,
+            "namespace": namespace,
+            "version": version
+        }
+        entryText = template.substitute(context)
 
-        key = self.getKey (namespace, jobName, version)
-        self.entries [key] = entryText
+        key = self.getKey(namespace, jobName, version)
+        self.entries[key] = entryText
 
-    def getKey (self, namespace, app, version):
+    def getKey(self, namespace, app, version):
         return "%s::%s:%s" % (namespace, app, version)
 
-    def generateTC (self):
+    def generateTC(self):
         text = []
-        keys = sorted (self.entries.iterkeys())
+        #keys = sorted(self.entries.iterkeys())
+        keys = sorted(self.entries.keys())
         for key in keys:
-            text.append (self.entries [key])
-        return ''.join (text)
+            text.append(self.entries[key])
+        return ''.join(text)
 
 ''' Write a pegasus file replica catalog '''
+
+
 class PegasusFileRC (object):
 
     def __init__(self):
         self.text = '${fileName} ${fileURL} pool="${poolName}"'
         self.entries = {}
-        
-    def addEntry (self, fileName, fileURL, pool):
+
+    def addEntry(self, fileName, fileURL, pool):
         if not fileURL is None:
-            logger.debug ("wms:pegasus:replica-catalog:add-entry: file(%s)=>(%s,%s)", fileName, fileURL, pool)
-            template = Template (self.text)
+            logger.debug(
+                "wms:pegasus:replica-catalog:add-entry: file(%s)=>(%s,%s)", fileName, fileURL, pool)
+            template = Template(self.text)
             context = {
-                "fileName"  : fileName,
-                "fileURL"   : fileURL,
-                "poolName"  : pool
-                }
-            entryText = template.substitute (context)
-            self.entries [fileName] = entryText
+                "fileName": fileName,
+                "fileURL": fileURL,
+                "poolName": pool
+            }
+            entryText = template.substitute(context)
+            self.entries[fileName] = entryText
 
-    def dump (self):
-        keys = sorted (self.entries.keys ())
+    def dump(self):
+        keys = sorted(self.entries.keys())
         for k in keys:
-            logger.debug ("zzz: RC: %s", k)
-        
-    def removeEntry (self, fileName):
-        if fileName in self.entries:
-            logger.debug ("zzz: DELETING filename: %s", fileName)
-            del self.entries [fileName]
-            #traceback.print_stack ()
+            logger.debug("zzz: RC: %s", k)
 
-    def generateRC (self):
-        logger.debug ("wms:pegasus:replica-catalog:generateRC")
+    def removeEntry(self, fileName):
+        if fileName in self.entries:
+            logger.debug("zzz: DELETING filename: %s", fileName)
+            del self.entries[fileName]
+            # traceback.print_stack ()
+
+    def generateRC(self):
+        logger.debug("wms:pegasus:replica-catalog:generateRC")
         values = []
         for key in self.entries:
-            values.append (self.entries [key])
-        values.sort ()
-        return "\n".join (values)
+            values.append(self.entries[key])
+        values.sort()
+        return "\n".join(values)
 
 ''' Emit pegasus site catalog. '''
+
+
 class SiteCatalogXML(object):
 
     LOCAL = "local"
     HOSTNAME = "hostName"
 
     def __init__(self, wms):
-        self.wms = wms;
+        self.wms = wms
         self.sites = {}
         self.stagingTemplate = {
-            "architecture" : "x86_64",
-            "os"           : "LINUX",
-            "protocol"     : "file",
-            "name"         : "staging"
-            }
+            "architecture": "x86_64",
+            "os": "LINUX",
+            "protocol": "file",
+            "name": "staging"
+        }
 
         self.siteProperties = {
-            "siteName"      : "local",
-            "hostName"      : "localhost",
-            "architecture"  : "x86_64",
-            "os"            : "LINUX",
-            "gridType"      : "gt2",
-            "scheduler"     : "fork",
-            "schedulerType" : "Fork",
-            "jobType"       : "compute",
-            "scratchFileServerProtocol"           : "file",
-            "scratchFileServerURL"                : "file://",
-            "scratchFileServerMountPoint"         : "",
-            "scratchInternalMountPoint"           : "",
-            "scratchInternalMountPointFreeSize"   : "100G",
-            "scratchInternalTotalSize"            : "30G",
-            "storageFileServerProtocol"   : "file",
-            "storageFileServerMountPoint" : "",
-            "storageMountPoint"           : "",
-            "storageFreeSize"             : "100G",
-            "storageTotalSize"            : "30G",
-            "storageInternalMountPoint"   : "",
-            "storageFreeSize"             : "100G",
-            "storageTotalSize"            : "30G",
-            "pegasusLocation"             : "/opt/pegasus",
-            "globusLocation"              : "/opt/globus",
+            "siteName": "local",
+            "hostName": "localhost",
+            "architecture": "x86_64",
+            "os": "LINUX",
+            "gridType": "gt2",
+            "scheduler": "fork",
+            "schedulerType": "Fork",
+            "jobType": "compute",
+            "scratchFileServerProtocol": "file",
+            "scratchFileServerURL": "file://",
+            "scratchFileServerMountPoint": "",
+            "scratchInternalMountPoint": "",
+            "scratchInternalMountPointFreeSize": "100G",
+            "scratchInternalTotalSize": "30G",
+            "storageFileServerProtocol": "file",
+            "storageFileServerMountPoint": "",
+            "storageMountPoint": "",
+            "storageFreeSize": "100G",
+            "storageTotalSize": "30G",
+            "storageInternalMountPoint": "",
+            "storageFreeSize": "100G",
+            "storageTotalSize": "30G",
+            "pegasusLocation": "/opt/pegasus",
+            "globusLocation": "/opt/globus",
         }
-        self.configureLocal ()
+        self.configureLocal()
 
         self.xmlHeader = """<?xml version="1.0" encoding="UTF-8"?>
 <sitecatalog
@@ -375,7 +407,7 @@ class SiteCatalogXML(object):
         version="3.0">
         """
 
-        self.xmlSite ="""    
+        self.xmlSite = """
    <site  handle="${siteName}" arch="${architecture}" os="${os}">
       <grid  type="${gridType}" contact="${hostName}/jobmanager-fork" scheduler="Fork" jobtype="auxillary"/>
       <grid  type="${gridType}" contact="${hostName}/jobmanager-${scheduler}" scheduler="${schedulerType}" jobtype="${jobType}"/>
@@ -423,97 +455,101 @@ class SiteCatalogXML(object):
         ${profileText}
     </site>"""
 
-        self.xmlFooter="""
+        self.xmlFooter = """
 </sitecatalog>
         """
 
-    def configureLocal (self):
-        pegasusLocation = GraysonUtil.getPegasusHome ()
+    def configureLocal(self):
+        pegasusLocation = GraysonUtil.getPegasusHome()
 
-        globusLocation = os.getenv ("GLOBUS_LOCATION")
+        globusLocation = os.getenv("GLOBUS_LOCATION")
         if not globusLocation:
-            raise ValueError ("GLOBUS_LOCATION must be defined")
+            raise ValueError("GLOBUS_LOCATION must be defined")
 
-        self.addEntry (
+        self.addEntry(
             "local",
             {
-            "architecture"                : "x86_64",            # TODO: inspect environment
-            "scratchFileServerProtocol"   : "file",
-            "scratchFileServerMountPoint" : "%s/work/outputs" % self.wms.getOutputDir (),
-            "scratchInternalMountPoint"   : "%s/work/outputs" % self.wms.getOutputDir (),
-            "storageFileServerProtocol"   : "file",
-            "storageFileServerMountPoint" : "%s/work/outputs" % self.wms.getOutputDir (),
-            "storageMountPoint"           : "%s/work/outputs" % self.wms.getOutputDir (),
-            "storageInternalMountPoint"   : "%s/work/outputs" % self.wms.getOutputDir (),
-            "pegasusLocation"             : pegasusLocation,
-            "globusLocation"              : globusLocation 
+            "architecture": "x86_64",            # TODO: inspect environment
+            "scratchFileServerProtocol": "file",
+            "scratchFileServerMountPoint": "%s/work/outputs" % self.wms.getOutputDir(),
+            "scratchInternalMountPoint": "%s/work/outputs" % self.wms.getOutputDir(),
+            "storageFileServerProtocol": "file",
+            "storageFileServerMountPoint": "%s/work/outputs" % self.wms.getOutputDir(),
+            "storageMountPoint": "%s/work/outputs" % self.wms.getOutputDir(),
+            "storageInternalMountPoint": "%s/work/outputs" % self.wms.getOutputDir(),
+            "pegasusLocation": pegasusLocation,
+            "globusLocation": globusLocation
             })
-        
 
     ''' Add a site catalog entry '''
-    def addEntry (self, siteName, properties, profiles = []):
+    def addEntry(self, siteName, properties, profiles=[]):
         if not siteName in self.sites:
             if "clusterId" in properties:
-                for key in [ 'os', 'architecture', 'scheduler' ]:                    
-                    properties [key] = self.siteProperties [key] 
-                self.sites [siteName] = properties                
-                logger.debug ("wms:pegasus:register-site %s", properties)
+                for key in ['os', 'architecture', 'scheduler']:
+                    properties[key] = self.siteProperties[key]
+                self.sites[siteName] = properties
+                logger.debug("wms:pegasus:register-site %s", properties)
             else:
-                base = copy (self.siteProperties)        
-                logger.debug ("wms:pegasus:register-site %s", base)
-                base.update (properties)
-                self.sites [siteName] = base
+                base = copy(self.siteProperties)
+                logger.debug("wms:pegasus:register-site %s", base)
+                base.update(properties)
+                self.sites[siteName] = base
 
     ''' Get an entry '''
-    def getEntry (self, siteName):
-        return self.sites [siteName]
-    
-    def getScratchURL (self, fileName, siteKey="local"):
-        return self.getURL (fileName, siteKey, urlType="scratch")
+    def getEntry(self, siteName):
+        return self.sites[siteName]
+
+    def getScratchURL(self, fileName, siteKey="local"):
+        return self.getURL(fileName, siteKey, urlType="scratch")
 
     ''' Get a site specific URL for storage or scratch space on a site '''
-    def getURL (self, fileName, siteKey="local", urlType="storage"):
+    def getURL(self, fileName, siteKey="local", urlType="storage"):
         fileURL = None
         protocolKey = "%sFileServerProtocol" % urlType
         mountPointKey = "%sFileServerMountPoint" % urlType
-        if logging.getLogger().isEnabledFor (logging.DEBUG):
-            logger.debug ("getURL(%s, %s, %s) protocolKey: %s, mountPointKey: %s",
-                           fileName,
-                           siteKey,
-                           urlType,
-                           protocolKey,
-                           mountPointKey)
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            logger.debug(
+                "getURL(%s, %s, %s) protocolKey: %s, mountPointKey: %s",
+                fileName,
+                siteKey,
+                urlType,
+                protocolKey,
+                mountPointKey)
         if siteKey in self.sites:
-            logger.debug ("siteinsites %s", siteKey)
+            logger.debug("siteinsites %s", siteKey)
 
-            site = self.getEntry (siteKey)
+            site = self.getEntry(siteKey)
             if protocolKey in site and mountPointKey in site:
-                hostname = site ["hostName"]
-                protocol = site [protocolKey]
-                mountPoint = site [mountPointKey]
-                if protocol == "file":            
-                    path = os.path.abspath ("%s/%s" % (mountPoint, fileName))
+                hostname = site["hostName"]
+                protocol = site[protocolKey]
+                mountPoint = site[mountPointKey]
+                if protocol == "file":
+                    path = os.path.abspath("%s/%s" % (mountPoint, fileName))
                     fileURL = "file://%s" % path
                 else:
                     if self.HOSTNAME in site:
-                        hostname = site [self.HOSTNAME]
-                        fileURL = "%s://%s/%s/%s" % (protocol, hostname, mountPoint, fileName)
-                logger.debug ("getURL (url=%s hostname=%s, protocol=%s, mountPoint=%s\nsite=%s)",
-                              fileURL,
-                              hostname,
-                              protocol,
-                              mountPoint,
-                              site)
+                        hostname = site[self.HOSTNAME]
+                        fileURL = "%s://%s/%s/%s" % (
+                            protocol, hostname, mountPoint, fileName)
+                logger.debug(
+                    "getURL (url=%s hostname=%s, protocol=%s, mountPoint=%s\nsite=%s)",
+                    fileURL,
+                    hostname,
+                    protocol,
+                    mountPoint,
+                    site)
         return fileURL
-    
-    def generateXML (self):
+
+    def generateXML(self):
         siteText = [self.xmlHeader]
         for siteName in self.sites:
-            logger.debug ("generating site catalog data for site (%s)", siteName)
-            site = self.sites [siteName]
+            logger.debug(
+                "generating site catalog data for site (%s)", siteName)
+            site = self.sites[siteName]
 
             template = None
-            logger.debug ("site: %s", json.dumps (site, sort_keys=True, indent=3))
+            logger.debug("site: %s", json.dumps(
+                site, sort_keys=True, indent=3))
 
             staging = None
 
@@ -522,174 +558,184 @@ class SiteCatalogXML(object):
                 x509userproxyProfileKey = 'X509_user_proxy_profile'
                 x509userproxyProfile = ''
                 if x509userproxyKey in site:
-                    x509userproxyProfile = '<profile namespace="condor" key="x509userproxy" >%s</profile>' % site [x509userproxyKey]
-                site [x509userproxyProfileKey] = x509userproxyProfile
+                    x509userproxyProfile = '<profile namespace="condor" key="x509userproxy" >%s</profile>' % site[
+                        x509userproxyKey]
+                site[x509userproxyProfileKey] = x509userproxyProfile
 
-                for kind in [ 'scratch', 'storage' ]:
+                for kind in ['scratch', 'storage']:
                     fileServerProtocolKey = "%sFileServerProtocol" % kind
                     fileServerURLKey = "%sFileServerURL" % kind
-                    if site [fileServerProtocolKey] is "file":
-                        site [fileServerURLKey] = "file://"
+                    if site[fileServerProtocolKey] is "file":
+                        site[fileServerURLKey] = "file://"
                     else:
-                        site [fileServerURLKey] = "%s://%s" % (site [fileServerProtocolKey], site ["hostName"])
-                template = Template (self.xmlSite)
-                
+                        site[fileServerURLKey] = "%s://%s" % (site[
+                                                              fileServerProtocolKey], site["hostName"])
+                template = Template(self.xmlSite)
+
             elif "clusterId" in site:
                 ''' TODO - migrate above approach to this. '''
 
                 ''' profiles '''
                 profileText = []
                 if 'profiles' in site:
-                    profiles = site ['profiles']
+                    profiles = site['profiles']
                     for groupKey in profiles:
-                        profileGroup = profiles [groupKey]
+                        profileGroup = profiles[groupKey]
                         for key in profileGroup:
-                            value = profileGroup [key]
-                            profileText.append ('\n        <profile namespace="%s" key="%s" >%s</profile>' % (groupKey, key, value))
-                    site ['profileText'] = ''.join (profileText)
+                            value = profileGroup[key]
+                            profileText.append('\n        <profile namespace="%s" key="%s" >%s</profile>' % (
+                                groupKey, key, value))
+                    site['profileText'] = ''.join(profileText)
 
                 ''' site xml '''
-                template = Template (self.xmlSitePool)
+                template = Template(self.xmlSitePool)
 
                 ''' staging '''
                 if 'staging' in site:
-                    staging = site ['staging']
+                    staging = site['staging']
 
-            siteText.append (template.substitute (site))
+            siteText.append(template.substitute(site))
 
             if staging:
                 symmetric_difference = set(staging) ^ set(self.stagingTemplate)
                 for k in symmetric_difference:
                     if not k in staging:
-                        staging [k] = self.stagingTemplate [k]
-                template = Template (self.xmlStaging)
-                siteText.append (template.substitute (staging))
+                        staging[k] = self.stagingTemplate[k]
+                template = Template(self.xmlStaging)
+                siteText.append(template.substitute(staging))
 
-        siteText.append (self.xmlFooter)
-        return "\n".join (siteText)
+        siteText.append(self.xmlFooter)
+        return "\n".join(siteText)
 
 ''' A Pegasus specific representation of a workflow.
     Wraps the Pegasus DAX API and ADAG in particular. '''
+
+
 class PegasusWorkflowModel (WorkflowModel):
-    
+
     def __init__(self, namespace, wms):
-        logger.debug ("wms:pegasus:create-workflowmodel: %s" % namespace)
+        logger.debug("wms:pegasus:create-workflowmodel: %s" % namespace)
         self.wms = wms
-        logger.debug ("outputdir: %s", wms.getOutputDir ())
-        self.adag = ADAG (namespace)
+        logger.debug("outputdir: %s", wms.getOutputDir())
+        self.adag = ADAG(namespace)
         self.namespace = namespace
         self.files = {}
         self.exes = {}
         self.propertyMap = {}
         self.nodes = {}
         self.jobTransformations = {}
-        
+
         self.variableMap = {
-            'literalToVariable' : {},
-            'literalToNodeId'   : {}
-            }
-        
-    def addToVariableMap (self, literal, variable, id):
-        self.variableMap ['literalToVariable'][literal] = variable
-        self.variableMap ['literalToNodeId'][literal] = id
-        logger.debug ("variablematch: recorded lit=%s var=%s id=%s", literal, variable, id)
+            'literalToVariable': {},
+            'literalToNodeId': {}
+        }
 
-    def setProperties (self, nodeId, properties):
-        logger.debug ("wms:pegasus:dax:setprops: (%s)->(%s)" % (nodeId, properties))
-        self.propertyMap [nodeId] = properties
-        
-    def getProperties (self, nodeId):
-        return self.propertyMap [nodeId]
-    
-    def createFile (self, fileName):
-        return File (fileName)
-    
-    def addNode (self, id, node):
-        logger.debug ("wms:pegasus:dax:add-node: (%s)->(%s)" % (node.getId(), properties))
-        self.nodes [id] = node
+    def addToVariableMap(self, literal, variable, id):
+        self.variableMap['literalToVariable'][literal] = variable
+        self.variableMap['literalToNodeId'][literal] = id
+        logger.debug(
+            "variablematch: recorded lit=%s var=%s id=%s", literal, variable, id)
 
-    def getNode (self, id):
+    def setProperties(self, nodeId, properties):
+        logger.debug("wms:pegasus:dax:setprops: (%s)->(%s)" %
+                    (nodeId, properties))
+        self.propertyMap[nodeId] = properties
+
+    def getProperties(self, nodeId):
+        return self.propertyMap[nodeId]
+
+    def createFile(self, fileName):
+        return File(fileName)
+
+    def addNode(self, id, node):
+        logger.debug("wms:pegasus:dax:add-node: (%s)->(%s)" % (
+            node.getId(), properties))
+        self.nodes[id] = node
+
+    def getNode(self, id):
         node = None
         if id in self.nodes:
-            node = self.nodes [id]
+            node = self.nodes[id]
             return node
-        
-    def createFile (self, fileName, fileURL=None, site=None):
-        #traceback.print_stack ()
-        file = self.getFile (fileName)
+
+    def createFile(self, fileName, fileURL=None, site=None):
+        # traceback.print_stack ()
+        file = self.getFile(fileName)
         if not file:
-            file = File (fileName)
+            file = File(fileName)
             if not fileURL:
-                fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
-                logger.debug ("fileurl: %s", fileURL)
+                fileURL = "file://%s/%s" % (self.wms.getOutputDir(), fileName)
+                logger.debug("fileurl: %s", fileURL)
             if not site:
                 site = "local"
-            if not isinstance(fileURL, basestring) and len (fileURL) > 0:
-                fileURL = fileURL [0]
-            logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
-            pfn = PFN (fileURL, site)
-            file.addPFN (pfn)
-            self.files [fileName] = file
+            if not isinstance(fileURL, str) and len(fileURL) > 0:
+                fileURL = fileURL[0]
+            logger.debug("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
+            pfn = PFN(fileURL, site)
+            file.addPFN(pfn)
+            self.files[fileName] = file
         return file
-    def addFileToDAG (self, file):
-        if not self.adag.hasFile (file):
-            self.adag.addFile (file)
-    def removeFileFromDAG (self, file):
+
+    def addFileToDAG(self, file):
+        if not self.adag.hasFile(file):
+            self.adag.addFile(file)
+
+    def removeFileFromDAG(self, file):
         if file in self.adag.files:
-            self.adag.files.remove (file)
-        
-    def addFile (self, fileName, fileURL=None, site=None):
-        #traceback.print_stack ()
-        file = self.getFile (fileName)
+            self.adag.files.remove(file)
+
+    def addFile(self, fileName, fileURL=None, site=None):
+        # traceback.print_stack ()
+        file = self.getFile(fileName)
         if not file:
-            file = File (fileName)
+            file = File(fileName)
             if not fileURL:
-                fileURL = "file://%s/%s" % (self.wms.getOutputDir (), fileName)
-                logger.debug ("fileurl: %s", fileURL)
+                fileURL = "file://%s/%s" % (self.wms.getOutputDir(), fileName)
+                logger.debug("fileurl: %s", fileURL)
             if not site:
                 site = "local"
-            if not isinstance(fileURL, basestring) and len (fileURL) > 0:
-                fileURL = fileURL [0]
-            logger.debug ("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
-            pfn = PFN (fileURL, site)
-            file.addPFN (pfn)
-            self.adag.addFile (file)
-            self.files [fileName] = file
+            if not isinstance(fileURL, str) and len(fileURL) > 0:
+                fileURL = fileURL[0]
+            logger.debug("--add-pfn: (%s)(%s)(%s)", fileName, fileURL, site)
+            pfn = PFN(fileURL, site)
+            file.addPFN(pfn)
+            self.adag.addFile(file)
+            self.files[fileName] = file
         return file
-	
-    def getFile (self, fileName, prefix=""):
+
+    def getFile(self, fileName, prefix=""):
         value = None
         key = "%s%s" % (prefix, fileName)
         if key in self.files:
-            logger.debug ("wms:pegasus:dax:get-file: (%s)" % key)
-            value = self.files [key]
+            logger.debug("wms:pegasus:dax:get-file: (%s)" % key)
+            value = self.files[key]
         else:
             value = None
-	return value
+        return value
 
-    def addExecutable (self, jobId, name, path, version="1.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
-        e_exe = self.getExecutable (name)
-        
+    def addExecutable(self, jobId, name, path, version="1.0", exe_os="linux", exe_arch="x86_64", site="local", installed="true"):
+        e_exe = self.getExecutable(name)
+
         if not version:
             version = "1.0"
         if not exe_arch:
-            exe_arch="x86_64"
+            exe_arch = "x86_64"
 
         if not e_exe:
-            e_exe = Executable (
-                namespace=self.namespace, 
-                name=name, 
-                version=version, 
-                os=exe_os, 
-                arch=exe_arch, 
+            e_exe = Executable(
+                namespace=self.namespace,
+                name=name,
+                version=version,
+                os=exe_os,
+                arch=exe_arch,
                 installed=installed)
             if not site:
                 site = "local"
             if not installed:
                 installed = False
-            if logging.getLogger().isEnabledFor (logging.DEBUG):
-                logger.debug ("wms:pegasus:dax:add-exe: (name=[%s], path=[%s], version=[%s], os=[%s], arch=[%s], site=[%s], installed=[%s])" % 
-                               (name,
+            if logging.getLogger().isEnabledFor(logging.DEBUG):
+                logger.debug("wms:pegasus:dax:add-exe: (name=[%s], path=[%s], version=[%s], os=[%s], arch=[%s], site=[%s], installed=[%s])" %
+                            (name,
                                 path,
                                 version,
                                 exe_os,
@@ -699,103 +745,107 @@ class PegasusWorkflowModel (WorkflowModel):
             if not "://" in path:
                 path = "file://%s" % path
             if not path:
-                raise ValueError ("empty path for executable: %s at site %s" % (name, site))
+                raise ValueError(
+                    "empty path for executable: %s at site %s" % (name, site))
 
-            e_exe.addPFN (PFN (path, site))
+            e_exe.addPFN(PFN(path, site))
             if not installed:
                 e_exe.installed = installed
-            self.adag.addExecutable (e_exe)
-            self.exes [name] = e_exe
+            self.adag.addExecutable(e_exe)
+            self.exes[name] = e_exe
 
-            transformation = Transformation (name, self.namespace, version)
-            self.jobTransformations [jobId] = transformation
-            
+            transformation = Transformation(name, self.namespace, version)
+            self.jobTransformations[jobId] = transformation
+
         return e_exe
-    
-    def getExecutable (self, name):
+
+    def getExecutable(self, name):
         key = name
         if key in self.exes:
-            return self.exes [key]
+            return self.exes[key]
         else:
             return None
 
-    def addSubWorkflow (self, name, transformation=None):
-        #self.adag.addTransformation (transformation)
-        abstractJob = DAX (name)
-        self.adag.addDAX (abstractJob)
+    def addSubWorkflow(self, name, transformation=None):
+        # self.adag.addTransformation (transformation)
+        abstractJob = DAX(name)
+        self.adag.addDAX(abstractJob)
         return abstractJob
-    
-    def addJob (self, id):
-        #self.adag.addTransformation (transformation)
-        transformation = self.jobTransformations [id]
-        logger.debug ("wms:pegasus:add-job: transformation(%s) jobid(%s)", transformation.name, id)
-        abstractJob = Job (name=transformation, id=id)
-        self.adag.addJob (abstractJob)
+
+    def addJob(self, id):
+        # self.adag.addTransformation (transformation)
+        transformation = self.jobTransformations[id]
+        logger.debug(
+            "wms:pegasus:add-job: transformation(%s) jobid(%s)", transformation.name, id)
+        abstractJob = Job(name=transformation, id=id)
+        self.adag.addJob(abstractJob)
         return abstractJob
-    
-    def addProfiles (self, abstractJob, profiles):
+
+    def addProfiles(self, abstractJob, profiles):
         if profiles:
             for astProfile in profiles:
-                logger.debug ("wms:pegasus:add-profile: (namespace=%s,key=%s,value=%s) to job (%s)",
-                               astProfile.namespace,
-                               astProfile.key,
-                               astProfile.value,
-                               abstractJob.name)
-                profile = Profile (astProfile.namespace,
-                                   astProfile.key,
-                                   astProfile.value)
-                abstractJob.addProfile (profile)
+                logger.debug(
+                    "wms:pegasus:add-profile: (namespace=%s,key=%s,value=%s) to job (%s)",
+                    astProfile.namespace,
+                    astProfile.key,
+                    astProfile.value,
+                    abstractJob.name)
+                profile = Profile(astProfile.namespace,
+                                  astProfile.key,
+                                  astProfile.value)
+                abstractJob.addProfile(profile)
 
-    def addFiles (self, abstractJob, files, link):
+    def addFiles(self, abstractJob, files, link):
         if files:
             for fileKey in files:
-                tuple = files [fileKey]
-                fileElement = tuple [0]
-                file = fileElement.getDaxNode ()
+                tuple = files[fileKey]
+                fileElement = tuple[0]
+                file = fileElement.getDaxNode()
                 try:
 
-                    isLeaf = tuple [2]
+                    isLeaf = tuple[2]
                     if isLeaf:
-                        abstractJob.uses (file, link=link, transfer=True)
+                        abstractJob.uses(file, link=link, transfer=True)
                     else:
-                        abstractJob.uses (file, link=link)
+                        abstractJob.uses(file, link=link)
                     '''
                     abstractJob.uses (file, link=link)
                     '''
-                    arg = tuple [1]
+                    arg = tuple[1]
                     if arg:
-                        abstractJob.addArguments (arg, file)
+                        abstractJob.addArguments(arg, file)
                 except DuplicateError:
                     pass
 
-    def addInputFiles (self, abstractJob, files):
-        self.addFiles (abstractJob, files, Link.INPUT)
+    def addInputFiles(self, abstractJob, files):
+        self.addFiles(abstractJob, files, Link.INPUT)
 
-    def addOutputFiles (self, abstractJob, files):
-        self.addFiles (abstractJob, files, Link.OUTPUT)
+    def addOutputFiles(self, abstractJob, files):
+        self.addFiles(abstractJob, files, Link.OUTPUT)
 
-    def addArguments (self, abstractJob, arguments):
+    def addArguments(self, abstractJob, arguments):
         if arguments:
-            abstractJob.addArguments (arguments)
+            abstractJob.addArguments(arguments)
 
-    def addDependency (self, parent, child):
-        self.adag.addDependency (Dependency (parent, child))
-                        
-    def writeExecutable (self, stream):
-        self.adag.writeXML (stream)
+    def addDependency(self, parent, child):
+        self.adag.addDependency(Dependency(parent, child))
+
+    def writeExecutable(self, stream):
+        self.adag.writeXML(stream)
         filename = "%s.%s" % (self.namespace, 'obj')
-        filepath = os.path.join (self.wms.getOutputDir (), filename)
+        filepath = os.path.join(self.wms.getOutputDir(), filename)
         try:
             output = None
             try:
-                output = open (filepath, 'w')
-                output.write (json.dumps (self.variableMap, indent=3, sort_keys=True))                
-                output.flush ()                
+                output = open(filepath, 'w')
+                output.write(json.dumps(
+                    self.variableMap, indent=3, sort_keys=True))
+                output.flush()
             finally:
                 if output:
-                    output.close ()
+                    output.close()
         except IOError:
-            traceback.print_stack ()
+            traceback.print_stack()
 
-    def getADAG (self):
+    def getADAG(self):
         return self.adag

@@ -77,7 +77,6 @@ class GraysonCompilerTests (GraysonTestCase):
         return equal
 
     def output (self, text):
-        print text
         logger.info (text)
     
     def do_compile_model (self, test_name):
@@ -374,7 +373,6 @@ class GraysonCycleDetectionTests (GraysonTestCase):
 == C Y C L E   D E T E C T I O N  ==
 ===================================="""
         logger.info (banner)
-        print banner
         testName = "detect-cycle"
         model = "%s.graphml" % testName
         outputPath = os.path.join (self.outputDir, testName)
@@ -393,7 +391,7 @@ class GraysonUITests (GraysonTestCase):
         super(GraysonUITests, self).setUp ()
 
     def test_ui (self):
-        print "+======================================== %s" % len (sys.argv)
+        print ("+======================================== %s" % len (sys.argv))
         if len (sys.argv) > 1 and sys.argv[1] == '--ui':
             context = {
                 'GRAYSON_HOME' : os.environ ['GRAYSON_HOME'],
@@ -401,7 +399,7 @@ class GraysonUITests (GraysonTestCase):
                 }
 
             def processor (line):
-                print " ||- %s" % line.rstrip ()
+                print (" ||- %s" % line.rstrip ())
 
             executor = Executor (context)
             try:
