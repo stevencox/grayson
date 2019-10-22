@@ -13,7 +13,7 @@
   "dependencies": {
       "amqp"      : "0.0.2",
       "express"   : "2.5.9",
-      "socket.io" : "0.9.6",
+      "socket.io" : "2.3.0",
       "ws"        : "0.4.14 --ws:native"
   },
   "devDependencies" : {
